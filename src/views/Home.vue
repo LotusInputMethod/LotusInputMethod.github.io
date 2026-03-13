@@ -17,8 +17,7 @@ import {
   Cpu,
   Plus,
   Aim,
-  Sunny,
-  Moon,
+  Brush,
 } from '@element-plus/icons-vue';
 
 // --- STATE ---
@@ -26,14 +25,23 @@ const mobileMenuOpen = ref<boolean>(false);
 const activeOS = ref<string>('arch');
 const setupStep = ref<number>(0);
 const isScrolled = ref<boolean>(false);
-const isDark = ref<boolean>(false);
 
-// --- DARK MODE LOGIC ---
-const toggleDark = (): void => {
-  isDark.value = !isDark.value;
-  document.documentElement.classList.toggle('dark', isDark.value);
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
+// --- CATPPUCCIN THEME LOGIC ---
+const catppuccinThemes = ['latte', 'frappe', 'macchiato', 'mocha'];
+const currentTheme = ref<string>('mocha');
+
+const cycleTheme = (): void => {
+  const currentIndex = catppuccinThemes.indexOf(currentTheme.value);
+  const nextIndex = (currentIndex + 1) % catppuccinThemes.length;
+  currentTheme.value = catppuccinThemes[nextIndex]!;
+
+  document.documentElement.setAttribute('data-theme', currentTheme.value);
+  localStorage.setItem('catppuccin-theme', currentTheme.value);
 };
+
+// Hàm định dạng tên theme để hiển thị đẹp hơn
+const formatThemeName = (name: string) =>
+  name.charAt(0).toUpperCase() + name.slice(1);
 
 // --- SCROLL HANDLING ---
 const handleScroll = (): void => {
@@ -41,23 +49,20 @@ const handleScroll = (): void => {
 };
 
 onMounted(() => {
-  // Lấy theme từ localStorage hoặc thiết lập hệ thống
-  const savedTheme = localStorage.getItem('theme');
-  if (
-    savedTheme === 'dark' ||
-    (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  // Lấy theme Catppuccin đã lưu, mặc định là Mocha nếu chưa có
+  const savedTheme = localStorage.getItem('catppuccin-theme');
+  if (savedTheme && catppuccinThemes.includes(savedTheme)) {
+    currentTheme.value = savedTheme;
+  } else if (
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: light)').matches
   ) {
-    isDark.value = true;
-    document.documentElement.classList.add('dark');
+    currentTheme.value = 'latte'; // Tự động nhận diện hệ thống
   } else {
-    document.documentElement.classList.remove('dark');
+    currentTheme.value = 'mocha';
   }
 
-  // Áp dụng màu nền toàn cục cho thẻ body dựa trên biến Element Plus
-  document.body.style.backgroundColor = 'var(--el-bg-color-page)';
-  document.body.style.color = 'var(--el-text-color-primary)';
-  document.body.style.transition = 'background-color 0.3s, color 0.3s';
-
+  document.documentElement.setAttribute('data-theme', currentTheme.value);
   window.addEventListener('scroll', handleScroll);
 });
 
@@ -263,6 +268,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           <a href="#setup">Thiết lập</a>
           <a href="#usage">Hướng dẫn</a>
           <a href="#contributors">Đóng góp</a>
+
+          <el-button round class="btn-theme" @click="cycleTheme">
+            <el-icon class="mr-2"><Brush /></el-icon>
+            {{ formatThemeName(currentTheme) }}
+          </el-button>
+
           <el-button
             type="primary"
             round
@@ -271,14 +282,11 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           >
             <el-icon><Link /></el-icon> GitHub
           </el-button>
-          <el-button circle @click="toggleDark" class="theme-toggle">
-            <el-icon><Sunny v-if="!isDark" /><Moon v-else /></el-icon>
-          </el-button>
         </div>
 
         <div class="mobile-controls">
-          <el-button circle @click="toggleDark" class="theme-toggle">
-            <el-icon><Sunny v-if="!isDark" /><Moon v-else /></el-icon>
+          <el-button circle class="btn-theme" @click="cycleTheme">
+            <el-icon><Brush /></el-icon>
           </el-button>
           <el-button
             class="mobile-menu-btn"
@@ -300,7 +308,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
       </div>
     </nav>
 
-    <header class="hero section-bg-alt">
+    <header class="hero section-bg-mantle">
       <div class="container hero-container">
         <div class="hero-text">
           <div class="badge">
@@ -365,7 +373,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
       </div>
     </header>
 
-    <section id="features" class="section section-bg-main">
+    <section id="features" class="section section-bg-base">
       <div class="container">
         <div class="section-title">
           <h2>Tính năng nổi bật</h2>
@@ -388,7 +396,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
             </p>
           </div>
           <div class="custom-card">
-            <div class="icon-wrapper icon-green">
+            <div class="icon-wrapper color-green">
               <el-icon><Lightning /></el-icon>
             </div>
             <h3>Hiệu năng cực cao</h3>
@@ -398,7 +406,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
             </p>
           </div>
           <div class="custom-card">
-            <div class="icon-wrapper icon-purple">
+            <div class="icon-wrapper color-mauve">
               <el-icon><MagicStick /></el-icon>
             </div>
             <h3>Macro & Sửa lỗi thông minh</h3>
@@ -408,7 +416,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
             </p>
           </div>
           <div class="custom-card">
-            <div class="icon-wrapper icon-orange">
+            <div class="icon-wrapper color-peach">
               <el-icon><Check /></el-icon>
             </div>
             <h3>Kiểm soát hoàn toàn</h3>
@@ -418,7 +426,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
             </p>
           </div>
           <div class="custom-card">
-            <div class="icon-wrapper icon-pink">
+            <div class="icon-wrapper color-pink">
               <el-icon><ChatLineRound /></el-icon>
             </div>
             <h3>Emoji & Chế độ linh hoạt</h3>
@@ -428,7 +436,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
             </p>
           </div>
           <div class="custom-card">
-            <div class="icon-wrapper icon-cyan">
+            <div class="icon-wrapper color-sky">
               <el-icon><Monitor /></el-icon>
             </div>
             <h3>Wayland & Ứng dụng khó nhằn</h3>
@@ -441,7 +449,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
       </div>
     </section>
 
-    <section id="installation" class="section section-bg-alt">
+    <section id="installation" class="section section-bg-mantle">
       <div class="container">
         <div class="section-title">
           <h2>Cài đặt dễ dàng</h2>
@@ -484,7 +492,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   type="success"
                   description="Sau khi cài đặt bằng script này, post-install sẽ tự động hỏi bạn để thiết lập môi trường. Bạn chỉ cần nhấn Y để đồng ý!"
                   :closable="false"
-                  class="mb-4"
+                  class="mb-4 custom-alert"
                 />
                 <div class="code-block">
                   <pre><code>{{ commands.debian }}</code></pre>
@@ -505,7 +513,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   type="success"
                   description="Quá trình cài đặt deb package sẽ tự động hỗ trợ thiết lập Autostart và biến môi trường."
                   :closable="false"
-                  class="mb-4"
+                  class="mb-4 custom-alert"
                 />
                 <div class="code-block">
                   <pre><code>{{ commands.ubuntu }}</code></pre>
@@ -571,7 +579,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   type="warning"
                   description="Chỉ dùng cách này khi distro của bạn gặp lỗi với repository ở trên."
                   :closable="false"
-                  class="mb-4"
+                  class="mb-4 custom-alert-warn"
                 />
                 <p class="instruction">
                   Tải file .deb hoặc .rpm từ
@@ -592,7 +600,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
       </div>
     </section>
 
-    <section id="setup" class="section section-bg-main">
+    <section id="setup" class="section section-bg-base">
       <div class="container">
         <div class="section-title">
           <h2>Thiết lập hệ thống</h2>
@@ -704,6 +712,18 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                     </button>
                   </div>
                 </details>
+                <details class="advanced-details">
+                  <summary>Cấu hình toàn cục /etc/environment</summary>
+                  <div class="code-block mt-2">
+                    <pre><code>{{ commands.envGlobal }}</code></pre>
+                    <button
+                      class="btn-copy"
+                      @click="copyToClipboard(commands.envGlobal)"
+                    >
+                      <el-icon><DocumentCopy /></el-icon>
+                    </button>
+                  </div>
+                </details>
               </div>
 
               <div class="custom-card" v-else-if="setupStep === 2">
@@ -724,12 +744,11 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                     <el-icon><DocumentCopy /></el-icon>
                   </button>
                 </div>
-                <el-alert
-                  title="Quan trọng"
-                  type="warning"
-                  description="Bạn phải thêm fcitx5 (hoặc fcitx5 -d) vào Autostart của Desktop Environment đang dùng."
-                  :closable="false"
-                />
+                <div class="warning-box">
+                  <strong>Quan trọng:</strong> Bạn phải thêm
+                  <code>fcitx5</code> (hoặc <code>fcitx5 -d</code>) vào
+                  Autostart của Desktop Environment đang dùng.
+                </div>
               </div>
 
               <div class="custom-card" v-else-if="setupStep === 3">
@@ -804,6 +823,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               type="success"
               @click="setupStep++"
               v-show="setupStep === 3"
+              class="btn-success"
               >Hoàn tất thiết lập</el-button
             >
             <el-button @click="setupStep = 0" v-show="setupStep === 4"
@@ -814,7 +834,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
       </div>
     </section>
 
-    <section id="usage" class="section section-bg-alt">
+    <section id="usage" class="section section-bg-mantle">
       <div class="container">
         <div class="section-title">
           <h2>Hướng dẫn sử dụng & Tùy chỉnh</h2>
@@ -824,8 +844,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         <div class="usage-grid">
           <div class="custom-card">
             <div class="usage-header">
-              <el-icon class="icon-green"><Setting /></el-icon>
-              <h3>Cài đặt nhanh (Quick Settings)</h3>
+              <el-icon class="icon-title color-green"><Setting /></el-icon>
+              <h3>Cài đặt nhanh (Quick)</h3>
             </div>
             <p class="text-sm instruction mb-3">
               Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
@@ -841,8 +861,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
             </el-table>
 
             <div class="usage-header mt-6">
-              <el-icon class="icon-purple"><Edit /></el-icon>
-              <h3>Cài đặt nâng cao (Advanced)</h3>
+              <el-icon class="icon-title color-mauve"><Edit /></el-icon>
+              <h3>Cài đặt nâng cao</h3>
             </div>
             <p class="text-sm instruction mb-3">
               Mở Fcitx5 Configuration -> Chọn Lotus -> Nhấn biểu tượng Bánh răng
@@ -860,7 +880,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 
           <div class="custom-card">
             <div class="usage-header">
-              <el-icon class="icon-blue"><Cpu /></el-icon>
+              <el-icon class="icon-title color-blue"><Cpu /></el-icon>
               <h3>Menu chuyển chế độ gõ</h3>
             </div>
             <p class="text-sm instruction mb-3">
@@ -891,13 +911,14 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               type="info"
               description="Chỉ cần nhấp chuột hoặc chạm touchpad trong khi đang gõ, bộ gõ sẽ tự động ngắt từ, ngăn chặn hiện tượng dính chữ."
               :closable="false"
+              class="custom-alert-info"
             />
           </div>
         </div>
       </div>
     </section>
 
-    <section id="contributors" class="section section-bg-main">
+    <section id="contributors" class="section section-bg-base">
       <div class="container">
         <div class="section-title">
           <h2>Cộng đồng mã nguồn mở</h2>
@@ -971,17 +992,193 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         </div>
       </div>
       <div class="footer-bottom">
-        © {{ new Date().getFullYear() }} Fcitx5 Lotus Team. Dựa trên mã nguồn
-        của VMK.
+        © {{ new Date().getFullYear() }} Fcitx5 Lotus Team.
       </div>
     </footer>
   </div>
 </template>
 
-<style scoped>
-/* MÁY MÓC TỪ CHỐI COLOR HARDCODING. DÙNG 100% ELEMENT PLUS CSS VARIABLES */
+<style>
+/* ========================================================================== */
+/* 1. CATPPUCCIN COLOR PALETTE - 100% VARIABLES, NO HARDCODING                */
+/* ========================================================================== */
+:root[data-theme='latte'] {
+  --ctp-base: #eff1f5;
+  --ctp-mantle: #e6e9ef;
+  --ctp-crust: #dce0e8;
+  --ctp-surface0: #ccd0da;
+  --ctp-surface1: #bcc0cc;
+  --ctp-surface2: #acb0be;
+  --ctp-text: #4c4f69;
+  --ctp-subtext1: #5c5f77;
+  --ctp-subtext0: #6c6f85;
+  --ctp-overlay2: #7c7f93;
+  --ctp-overlay1: #8c8fa1;
+  --ctp-overlay0: #9ca0b0;
 
-/* Tiện ích không gian */
+  --ctp-green: #40a02b;
+  --ctp-blue: #1e66f5;
+  --ctp-mauve: #8839ef;
+  --ctp-yellow: #df8e1d;
+  --ctp-red: #d20f39;
+  --ctp-peach: #fe640b;
+  --ctp-pink: #ea76cb;
+  --ctp-sky: #04a5e5;
+}
+
+:root[data-theme='frappe'] {
+  --ctp-base: #303446;
+  --ctp-mantle: #292c3c;
+  --ctp-crust: #232634;
+  --ctp-surface0: #414559;
+  --ctp-surface1: #51576d;
+  --ctp-surface2: #626880;
+  --ctp-text: #c6d0f5;
+  --ctp-subtext1: #b5bfe2;
+  --ctp-subtext0: #a5adce;
+  --ctp-overlay2: #949cbb;
+  --ctp-overlay1: #838ba7;
+  --ctp-overlay0: #737994;
+
+  --ctp-green: #a6d189;
+  --ctp-blue: #8caaee;
+  --ctp-mauve: #ca9ee6;
+  --ctp-yellow: #e5c890;
+  --ctp-red: #e78284;
+  --ctp-peach: #ef9f76;
+  --ctp-pink: #f4b8e4;
+  --ctp-sky: #99d1db;
+}
+
+:root[data-theme='macchiato'] {
+  --ctp-base: #24273a;
+  --ctp-mantle: #1e2030;
+  --ctp-crust: #181926;
+  --ctp-surface0: #363a4f;
+  --ctp-surface1: #494d64;
+  --ctp-surface2: #5b6078;
+  --ctp-text: #cad3f5;
+  --ctp-subtext1: #b8c0e0;
+  --ctp-subtext0: #a5adcb;
+  --ctp-overlay2: #939ab7;
+  --ctp-overlay1: #8087a2;
+  --ctp-overlay0: #6e738d;
+
+  --ctp-green: #a6da95;
+  --ctp-blue: #8aadf4;
+  --ctp-mauve: #c6a0f6;
+  --ctp-yellow: #eed49f;
+  --ctp-red: #ed8796;
+  --ctp-peach: #f5a97f;
+  --ctp-pink: #f5bde6;
+  --ctp-sky: #91d7e3;
+}
+
+:root[data-theme='mocha'] {
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
+  --ctp-surface0: #313244;
+  --ctp-surface1: #45475a;
+  --ctp-surface2: #585b70;
+  --ctp-text: #cdd6f4;
+  --ctp-subtext1: #bac2de;
+  --ctp-subtext0: #a6adc8;
+  --ctp-overlay2: #9399b2;
+  --ctp-overlay1: #7f849c;
+  --ctp-overlay0: #6c7086;
+
+  --ctp-green: #a6e3a1;
+  --ctp-blue: #89b4fa;
+  --ctp-mauve: #cba6f7;
+  --ctp-yellow: #f9e2af;
+  --ctp-red: #f38ba8;
+  --ctp-peach: #fab387;
+  --ctp-pink: #f5c2e7;
+  --ctp-sky: #89dceb;
+}
+
+/* ========================================================================== */
+/* 2. ÉP ELEMENT PLUS DÙNG CHUẨN MÀU CATPPUCCIN                               */
+/* ========================================================================== */
+:root {
+  /* Ép Element dùng màu chính là Green của Catppuccin */
+  --el-color-primary: var(--ctp-green);
+  --el-color-success: var(--ctp-green);
+  --el-color-warning: var(--ctp-yellow);
+  --el-color-danger: var(--ctp-red);
+  --el-color-info: var(--ctp-overlay0);
+
+  /* Định nghĩa lại màu Nền & Thẻ Card */
+  --el-bg-color: var(--ctp-base);
+  --el-bg-color-page: var(--ctp-base);
+  --el-bg-color-overlay: var(--ctp-surface0);
+
+  /* Định nghĩa lại màu Chữ */
+  --el-text-color-primary: var(--ctp-text);
+  --el-text-color-regular: var(--ctp-subtext1);
+  --el-text-color-secondary: var(--ctp-subtext0);
+
+  /* Định nghĩa lại màu Viền */
+  --el-border-color: var(--ctp-surface2);
+  --el-border-color-light: var(--ctp-surface1);
+  --el-border-color-lighter: var(--ctp-surface0);
+
+  /* Các màu Fill (Nút, Input, Hover) */
+  --el-fill-color: var(--ctp-surface1);
+  --el-fill-color-light: var(--ctp-surface0);
+  --el-fill-color-lighter: var(--ctp-mantle);
+  --el-fill-color-dark: var(--ctp-surface2);
+  --el-fill-color-darker: var(--ctp-crust);
+
+  /* Tắt shadow mạnh của web mặc định, dùng shadow nhẹ của CTP */
+  --el-box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --max-width: 1200px;
+}
+
+/* Base Body Application */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  background-color: var(--ctp-base);
+  color: var(--ctp-text);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ctp-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ctp-surface2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ctp-green);
+}
+</style>
+
+<style scoped>
+/* ========================================================================== */
+/* 3. CSS CHO TỪNG THÀNH PHẦN (DÙNG BIẾN ELEMENT HOẶC CATPPUCCIN)             */
+/* ========================================================================== */
 .section {
   padding: 80px 0;
 }
@@ -1020,23 +1217,31 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   font-size: 0.875rem;
 }
 
-/* Tiện ích nền (Sử dụng biến ngữ nghĩa Element Plus) */
+/* Nền chung theo chuẩn Catppuccin */
 .section-bg-main {
-  background-color: var(--el-bg-color-page);
-  transition: background-color 0.3s ease;
+  background-color: var(--ctp-base);
+  transition: background-color 0.3s;
+}
+.section-bg-mantle {
+  background-color: var(--ctp-mantle);
+  transition: background-color 0.3s;
+}
+.section-bg-base {
+  background-color: var(--ctp-base);
+  transition: background-color 0.3s;
 }
 .section-bg-alt {
-  background-color: var(--el-fill-color-lighter);
-  transition: background-color 0.3s ease;
+  background-color: var(--ctp-mantle);
+  transition: background-color 0.3s;
 }
 
-/* Tiện ích Text & Border */
+/* Text & Border */
 .instruction {
-  color: var(--el-text-color-regular);
-  transition: color 0.3s ease;
+  color: var(--ctp-subtext1);
+  transition: color 0.3s;
 }
 .text-link {
-  color: var(--el-color-primary);
+  color: var(--ctp-blue);
   text-decoration: none;
   font-weight: 500;
 }
@@ -1044,8 +1249,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   text-decoration: underline;
 }
 .border {
-  border: 1px solid var(--el-border-color-lighter);
-  transition: border-color 0.3s ease;
+  border: 1px solid var(--ctp-surface1);
+  transition: border-color 0.3s;
 }
 .rounded {
   border-radius: 4px;
@@ -1054,10 +1259,28 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   border-radius: 8px;
 }
 
-/* Inline Code & Code Block */
+/* Thẻ Card Tùy chỉnh (Giữ form không bị vỡ màu) */
+.custom-card {
+  background-color: var(--ctp-surface0);
+  border: 1px solid var(--ctp-surface1);
+  color: var(--ctp-text);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: var(--el-box-shadow-light);
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s,
+    transform 0.3s;
+}
+.sub-card {
+  background-color: var(--ctp-mantle);
+}
+
+/* Inline Code & Pre Code */
 .inline-code {
-  background-color: var(--el-fill-color);
-  color: var(--el-text-color-primary);
+  background-color: var(--ctp-surface1);
+  color: var(--ctp-text);
   padding: 2px 6px;
   border-radius: 4px;
   font-family: monospace;
@@ -1068,8 +1291,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 }
 .code-block {
   position: relative;
-  background-color: var(--el-fill-color-darker);
-  border: 1px solid var(--el-border-color-dark);
+  background-color: var(--ctp-crust);
+  border: 1px solid var(--ctp-surface1);
   border-radius: 8px;
   padding: 16px;
   overflow-x: auto;
@@ -1080,7 +1303,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 }
 .code-block pre {
   margin: 0;
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
   font-family: monospace;
   font-size: 0.875rem;
   white-space: pre-wrap;
@@ -1090,9 +1313,9 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: var(--el-fill-color);
-  border: 1px solid var(--el-border-color);
-  color: var(--el-text-color-regular);
+  background: var(--ctp-surface1);
+  border: 1px solid var(--ctp-surface2);
+  color: var(--ctp-subtext1);
   width: 32px;
   height: 32px;
   border-radius: 6px;
@@ -1103,25 +1326,9 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   transition: all 0.2s;
 }
 .btn-copy:hover {
-  background: var(--el-color-primary);
-  color: #fff;
-  border-color: var(--el-color-primary);
-}
-
-/* Card chuẩn dùng màu biến chung */
-.custom-card {
-  background-color: var(--el-bg-color-overlay);
-  border: 1px solid var(--el-border-color-light);
-  color: var(--el-text-color-primary);
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: var(--el-box-shadow-light);
-  transition:
-    background-color 0.3s,
-    border-color 0.3s,
-    box-shadow 0.3s,
-    color 0.3s,
-    transform 0.3s;
+  background: var(--ctp-green);
+  color: var(--ctp-crust);
+  border-color: var(--ctp-green);
 }
 
 /* Navbar */
@@ -1129,7 +1336,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   position: fixed;
   top: 0;
   width: 100%;
-  background-color: rgba(var(--el-bg-color-overlay-rgb), 0.85);
+  background-color: color-mix(in srgb, var(--ctp-base) 85%, transparent);
   backdrop-filter: blur(10px);
   z-index: 1000;
   transition:
@@ -1138,8 +1345,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   border-bottom: 1px solid transparent;
 }
 .navbar.scrolled {
-  border-bottom: 1px solid var(--el-border-color-light);
-  box-shadow: var(--el-box-shadow-lighter);
+  border-bottom: 1px solid var(--ctp-surface1);
 }
 .nav-content {
   display: flex;
@@ -1160,7 +1366,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 .nav-brand .brand-name {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
 }
 .nav-links {
   display: flex;
@@ -1168,17 +1374,17 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   gap: 30px;
 }
 .nav-links a {
-  color: var(--el-text-color-regular);
+  color: var(--ctp-subtext1);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
 .nav-links a:hover {
-  color: var(--el-color-primary);
+  color: var(--ctp-green);
 }
 .mobile-menu {
-  background-color: var(--el-bg-color-overlay);
-  border-top: 1px solid var(--el-border-color-light);
+  background-color: var(--ctp-surface0);
+  border-top: 1px solid var(--ctp-surface1);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -1189,7 +1395,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   box-shadow: var(--el-box-shadow-light);
 }
 .mobile-menu a {
-  color: var(--el-text-color-regular);
+  color: var(--ctp-text);
   text-decoration: none;
   font-weight: 500;
 }
@@ -1198,24 +1404,24 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   align-items: center;
   gap: 10px;
 }
-.desktop-only {
-  display: none;
+.btn-theme {
+  font-weight: bold;
+  border-color: var(--ctp-surface2);
+  color: var(--ctp-text);
+  background: transparent;
 }
-.mobile-menu-btn {
-  display: block;
+
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none;
+  }
 }
 @media (min-width: 768px) {
-  .desktop-only {
-    display: flex;
-  }
-  .mobile-menu-btn {
+  .mobile-controls {
     display: none;
   }
   .mobile-menu {
     display: none !important;
-  }
-  .mobile-controls {
-    display: none;
   }
 }
 
@@ -1226,22 +1432,24 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 }
 .section-title h2 {
   font-size: 2.2rem;
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
   margin-bottom: 10px;
   transition: color 0.3s;
 }
 .section-title p {
   font-size: 1.1rem;
-  color: var(--el-text-color-regular);
+  color: var(--ctp-subtext1);
   max-width: 600px;
   margin: 0 auto;
   transition: color 0.3s;
 }
 
-/* Hero */
+/* Hero Section */
 .hero {
   padding: 160px 0 100px;
+  background-color: var(--ctp-mantle);
   overflow: hidden;
+  transition: background 0.3s;
 }
 .hero-container {
   display: flex;
@@ -1257,59 +1465,48 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background-color: var(--el-color-success-light-9);
-  color: var(--el-color-success);
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
+  color: var(--ctp-green);
   padding: 6px 16px;
   border-radius: 99px;
   font-size: 0.875rem;
   font-weight: 600;
   margin-bottom: 24px;
-  border: 1px solid var(--el-color-success-light-5);
-  box-shadow: var(--el-box-shadow-lighter);
-  transition:
-    background-color 0.3s,
-    color 0.3s,
-    border-color 0.3s;
+  border: 1px solid color-mix(in srgb, var(--ctp-green) 30%, transparent);
+  transition: all 0.3s;
 }
 .badge-dot {
   width: 8px;
   height: 8px;
-  background-color: var(--el-color-success);
+  background-color: var(--ctp-green);
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ctp-green) 70%, transparent);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--ctp-green) 0%, transparent);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 .hero h1 {
   font-size: 2.5rem;
   line-height: 1.2;
   margin-bottom: 20px;
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
   font-weight: 800;
   transition: color 0.3s;
 }
 .text-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--el-color-primary),
-    var(--el-color-primary-light-3)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+  color: var(--ctp-green);
+} /* Bỏ gradient vì catppuccin dùng màu solid đẹp hơn */
 .hero-description {
   font-size: 1.125rem;
-  color: var(--el-text-color-regular);
+  color: var(--ctp-subtext1);
   max-width: 600px;
   margin: 0 auto 30px;
   line-height: 1.6;
@@ -1322,11 +1519,18 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   margin-bottom: 50px;
   flex-wrap: wrap;
 }
+.btn-install,
+.btn-source {
+  padding: 0 24px;
+  height: 50px;
+  font-weight: 600;
+  border-radius: 8px;
+}
 .hero-stats {
   display: flex;
   justify-content: center;
   gap: 40px;
-  border-top: 1px solid var(--el-border-color-lighter);
+  border-top: 1px solid var(--ctp-surface1);
   padding-top: 30px;
   flex-wrap: wrap;
   transition: border-color 0.3s;
@@ -1337,12 +1541,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 .stat-item strong {
   display: block;
   font-size: 2rem;
-  color: var(--el-color-primary);
+  color: var(--ctp-green);
   line-height: 1;
 }
 .stat-item span {
   font-size: 0.875rem;
-  color: var(--el-text-color-secondary);
+  color: var(--ctp-subtext0);
   transition: color 0.3s;
 }
 
@@ -1354,10 +1558,10 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   perspective: 1000px;
 }
 .terminal-mockup {
-  background-color: var(--el-fill-color-darker);
+  background-color: var(--ctp-crust);
   border-radius: 12px;
-  border: 1px solid var(--el-border-color-darker);
-  box-shadow: var(--el-box-shadow-dark);
+  border: 1px solid var(--ctp-surface1);
+  box-shadow: var(--el-box-shadow-light);
   transform: rotateY(-5deg) rotateX(5deg);
   transition:
     transform 0.3s,
@@ -1368,12 +1572,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   transform: rotateY(0) rotateX(0);
 }
 .term-header {
-  background-color: var(--el-fill-color-dark);
+  background-color: var(--ctp-mantle);
   padding: 12px 16px;
   display: flex;
   gap: 8px;
   align-items: center;
-  border-bottom: 1px solid var(--el-border-color-darker);
+  border-bottom: 1px solid var(--ctp-surface0);
   transition: background-color 0.3s;
 }
 .dot {
@@ -1382,18 +1586,18 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   border-radius: 50%;
 }
 .dot-red {
-  background: var(--el-color-error);
+  background-color: var(--ctp-red);
 }
 .dot-yellow {
-  background: var(--el-color-warning);
+  background-color: var(--ctp-yellow);
 }
 .dot-green {
-  background: var(--el-color-success);
+  background-color: var(--ctp-green);
 }
 .term-title {
   flex: 1;
   text-align: center;
-  color: var(--el-text-color-secondary);
+  color: var(--ctp-subtext0);
   font-family: monospace;
   font-size: 0.75rem;
 }
@@ -1401,14 +1605,14 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   padding: 24px;
   font-family: monospace;
   font-size: 0.875rem;
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
   line-height: 1.6;
 }
 .prompt {
-  color: var(--el-color-success);
+  color: var(--ctp-green);
 }
 .info {
-  color: var(--el-text-color-secondary);
+  color: var(--ctp-subtext0);
   margin-bottom: 16px;
 }
 .typing {
@@ -1419,14 +1623,9 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   display: inline-block;
   width: 8px;
   height: 16px;
-  background-color: var(--el-color-success);
+  background-color: var(--ctp-green);
   margin-left: 4px;
   animation: blink 1s step-end infinite;
-}
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
 }
 
 @media (min-width: 992px) {
@@ -1451,20 +1650,35 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   }
 }
 
-/* Tính năng */
+/* Features Grid */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
 }
+.feature-card {
+  background-color: var(--ctp-surface0);
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid var(--ctp-surface1);
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s,
+    border-color 0.3s,
+    background-color 0.3s;
+}
 .feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: var(--el-box-shadow);
-  border-color: var(--el-color-primary);
+  box-shadow: var(--el-box-shadow-light);
+  border-color: var(--ctp-green);
 }
 .highlight-card {
-  border: 2px solid var(--el-color-primary);
-  background-color: var(--el-color-primary-light-9);
+  border: 2px solid var(--ctp-green);
+  background-color: color-mix(
+    in srgb,
+    var(--ctp-green) 5%,
+    var(--ctp-surface0)
+  );
 }
 .icon-wrapper {
   width: 56px;
@@ -1476,46 +1690,39 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   font-size: 24px;
   margin-bottom: 20px;
 }
+
+/* Tách Icon Color của Catppuccin */
 .icon-primary {
-  background-color: var(--el-color-primary);
-  color: white;
-  box-shadow: var(--el-box-shadow-light);
+  background-color: var(--ctp-green);
+  color: var(--ctp-base);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--ctp-green) 30%, transparent);
 }
-.icon-green {
-  background-color: var(--el-color-success-light-9);
-  color: var(--el-color-success);
+.color-green {
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
+  color: var(--ctp-green);
 }
-.icon-blue {
-  background-color: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
+.color-blue {
+  background-color: color-mix(in srgb, var(--ctp-blue) 15%, transparent);
+  color: var(--ctp-blue);
 }
-.icon-purple {
-  background-color: var(--el-color-danger-light-9);
-  color: var(--el-color-danger);
+.color-mauve {
+  background-color: color-mix(in srgb, var(--ctp-mauve) 15%, transparent);
+  color: var(--ctp-mauve);
 }
-.icon-orange {
-  background-color: var(--el-color-warning-light-9);
-  color: var(--el-color-warning);
+.color-peach {
+  background-color: color-mix(in srgb, var(--ctp-peach) 15%, transparent);
+  color: var(--ctp-peach);
 }
-.icon-pink {
-  background-color: var(--el-color-info-light-9);
-  color: var(--el-color-info);
+.color-pink {
+  background-color: color-mix(in srgb, var(--ctp-pink) 15%, transparent);
+  color: var(--ctp-pink);
 }
-.icon-cyan {
-  background-color: var(--el-color-primary-light-8);
-  color: var(--el-color-primary);
-}
-.custom-card h3 {
-  font-size: 1.25rem;
-  margin-bottom: 10px;
-  transition: color 0.3s;
-}
-.custom-card p {
-  line-height: 1.5;
-  margin: 0;
+.color-sky {
+  background-color: color-mix(in srgb, var(--ctp-sky) 15%, transparent);
+  color: var(--ctp-sky);
 }
 
-/* Setup & Layout components */
+/* Setup & Installation Box */
 .setup-wrapper {
   max-width: 900px;
   margin: 0 auto;
@@ -1557,8 +1764,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   justify-content: center;
   width: 36px;
   height: 36px;
-  background-color: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
+  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
+  color: var(--ctp-green);
   border-radius: 50%;
   font-weight: bold;
   font-size: 1.1rem;
@@ -1567,37 +1774,93 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   margin: 0;
   padding-left: 20px;
   line-height: 1.6;
+  color: var(--ctp-subtext1);
 }
 
-/* Advanced Details (Accordions) */
+/* Accordions */
 .advanced-details summary {
   cursor: pointer;
   font-weight: 600;
-  color: var(--el-text-color-primary);
-  background-color: var(--el-fill-color-light);
+  color: var(--ctp-text);
+  background-color: var(--ctp-surface1);
   padding: 10px 15px;
   border-radius: 6px;
-  border: 1px solid var(--el-border-color-lighter);
+  border: 1px solid var(--ctp-surface2);
   transition:
     background-color 0.3s,
     color 0.3s,
     border-color 0.3s;
 }
 .advanced-details summary:hover {
-  background-color: var(--el-fill-color);
+  background-color: var(--ctp-surface2);
 }
 
+/* Alerts */
+.custom-alert {
+  background-color: color-mix(
+    in srgb,
+    var(--ctp-green) 15%,
+    var(--ctp-surface0)
+  );
+  color: var(--ctp-green);
+  border: 1px solid var(--ctp-green);
+}
+.custom-alert-info {
+  background-color: color-mix(
+    in srgb,
+    var(--ctp-blue) 15%,
+    var(--ctp-surface0)
+  );
+  color: var(--ctp-blue);
+  border: 1px solid var(--ctp-blue);
+}
+.custom-alert-warn {
+  background-color: color-mix(
+    in srgb,
+    var(--ctp-yellow) 15%,
+    var(--ctp-surface0)
+  );
+  color: var(--ctp-yellow);
+  border: 1px solid var(--ctp-yellow);
+}
+.warning-box {
+  background-color: color-mix(
+    in srgb,
+    var(--ctp-yellow) 15%,
+    var(--ctp-surface0)
+  );
+  border: 1px solid var(--ctp-yellow);
+  color: var(--ctp-yellow);
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Buttons setup */
 .step-actions {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
   padding: 0 10px;
 }
+.btn-success {
+  background-color: var(--ctp-green);
+  border-color: var(--ctp-green);
+  color: var(--ctp-base);
+}
 
+/* Màn hình Success */
 .success-card {
   text-align: center;
-  border: 2px dashed var(--el-color-primary);
-  background-color: var(--el-color-success-light-9);
+  padding: 40px 20px;
+  border: 2px dashed var(--ctp-green);
+  background-color: color-mix(
+    in srgb,
+    var(--ctp-green) 5%,
+    var(--ctp-surface0)
+  );
 }
 .success-content {
   display: flex;
@@ -1607,16 +1870,18 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 .success-content h3 {
   font-size: 1.5rem;
   margin-bottom: 10px;
+  color: var(--ctp-text);
 }
 .success-content p {
   font-size: 1rem;
   line-height: 1.6;
+  color: var(--ctp-subtext1);
 }
 .icon-circle {
   width: 64px;
   height: 64px;
-  background-color: var(--el-color-primary);
-  color: white;
+  background-color: var(--ctp-green);
+  color: var(--ctp-base);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1625,7 +1890,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   margin-bottom: 20px;
 }
 
-/* Animations */
+/* Hiệu ứng trượt ngang cho Wizard */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition:
@@ -1641,7 +1906,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   transform: translateX(-15px);
 }
 
-/* Usage & Tables */
+/* Usage */
 .usage-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -1656,21 +1921,25 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 .usage-header h3 {
   font-size: 1.35rem;
   margin: 0;
+  color: var(--ctp-text);
+}
+.icon-title {
+  font-size: 24px;
 }
 .kbd-key {
   display: inline-block;
   padding: 3px 8px;
-  background-color: var(--el-fill-color);
-  border: 1px solid var(--el-border-color);
+  background-color: var(--ctp-surface1);
+  border: 1px solid var(--ctp-surface2);
   border-radius: 4px;
   border-bottom-width: 2px;
   font-family: monospace;
   font-size: 0.85rem;
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
   transition: all 0.3s;
 }
 .table-bordered {
-  border: 1px solid var(--el-border-color-lighter);
+  border: 1px solid var(--ctp-surface1);
   border-radius: 6px;
 }
 
@@ -1686,20 +1955,20 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   text-align: center;
 }
 .contributor-avatar {
-  border: 3px solid var(--el-bg-color-overlay);
+  border: 3px solid var(--ctp-surface0);
   box-shadow: var(--el-box-shadow-light);
   margin-bottom: 12px;
   transition: border-color 0.3s;
 }
 .c-name {
   font-weight: 600;
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
   margin-bottom: 4px;
   transition: color 0.3s;
 }
 .c-role {
   font-size: 0.875rem;
-  color: var(--el-text-color-regular);
+  color: var(--ctp-subtext1);
   transition: color 0.3s;
 }
 .contribute-action {
@@ -1713,9 +1982,9 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 
 /* Footer */
 .footer {
-  background-color: var(--el-fill-color-darker);
+  background-color: var(--ctp-crust);
   padding: 60px 0 30px;
-  border-top: 1px solid var(--el-border-color-dark);
+  border-top: 1px solid var(--ctp-mantle);
   transition: background-color 0.3s;
 }
 .footer-grid {
@@ -1736,57 +2005,89 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
   filter: grayscale(1) brightness(1.5);
 }
 .footer-logo span {
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
   font-size: 1.25rem;
   font-weight: bold;
 }
 .footer-brand p {
-  color: var(--el-text-color-regular);
+  color: var(--ctp-subtext1);
 }
 .footer-links h4,
 .footer-license h4 {
-  color: var(--el-text-color-primary);
+  color: var(--ctp-text);
   margin-bottom: 20px;
   font-size: 1rem;
 }
 .footer-links a {
   display: block;
-  color: var(--el-text-color-regular);
+  color: var(--ctp-subtext0);
   text-decoration: none;
   margin-bottom: 10px;
   transition: color 0.2s;
 }
 .footer-links a:hover {
-  color: var(--el-color-primary);
+  color: var(--ctp-green);
 }
 .footer-license p {
   line-height: 1.6;
   font-size: 0.875rem;
-  color: var(--el-text-color-regular);
+  color: var(--ctp-subtext0);
 }
 .footer-bottom {
-  border-top: 1px solid var(--el-border-color-dark);
+  border-top: 1px solid var(--ctp-surface0);
   padding-top: 20px;
   text-align: center;
   font-size: 0.875rem;
-  color: var(--el-text-color-secondary);
+  color: var(--ctp-subtext0);
 }
 
-/* Ghi đè Element Plus Table Header/Row Backgrounds để đồng nhất màu lật */
-:deep(.el-table),
-:deep(.el-table__expanded-cell) {
-  background-color: transparent !important;
+/* ÉP Element Plus Table Theo Màu Catppuccin */
+:deep(.el-tabs__item) {
+  font-size: 15px;
+  height: 48px;
+  line-height: 48px;
+  color: var(--ctp-subtext1);
+  transition: color 0.3s;
+}
+:deep(.el-tabs__item.is-active) {
+  font-weight: bold;
+  color: var(--ctp-green);
+}
+:deep(.el-table) {
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--ctp-surface0);
+  color: var(--ctp-text);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 :deep(.el-table th.el-table__cell) {
-  background-color: var(--el-fill-color-light) !important;
-  color: var(--el-text-color-primary);
+  background-color: var(--ctp-surface1) !important;
+  color: var(--ctp-text);
+  border-bottom: 1px solid var(--ctp-surface2);
 }
 :deep(.el-table tr) {
-  background-color: var(--el-bg-color-overlay) !important;
+  background-color: var(--ctp-surface0) !important;
+  transition: background-color 0.3s;
+}
+:deep(.el-table td.el-table__cell),
+:deep(.el-table th.el-table__cell.is-leaf) {
+  border-bottom-color: var(--ctp-surface1);
+  transition: border-color 0.3s;
 }
 :deep(
   .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell
 ) {
-  background-color: var(--el-fill-color-lighter) !important;
+  background-color: var(--ctp-mantle) !important;
+  transition: background-color 0.3s;
+}
+:deep(.el-button--primary) {
+  background-color: var(--ctp-green) !important;
+  border-color: var(--ctp-green) !important;
+  color: var(--ctp-base) !important;
+}
+:deep(.el-button--primary:hover) {
+  opacity: 0.9;
 }
 </style>
