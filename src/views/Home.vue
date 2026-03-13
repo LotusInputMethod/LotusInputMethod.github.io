@@ -2,7 +2,6 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import {
-  Link,
   Menu,
   Download,
   Lightning,
@@ -225,7 +224,7 @@ const contributors: Contributor[] = [
 
 // --- COMMANDS ---
 const commands: Record<string, string> = {
-  arch: '# Dùng yay\nyay -S fcitx5-lotus\n\n# Hoặc dùng paru\nparu -S fcitx5-lotus',
+  arch: '# Dùng yay\nyay -S fcitx5-lotus-bin\n\n# Hoặc dùng paru\nparu -S fcitx5-lotus-bin',
   debian: `CODENAME=$(grep '^VERSION_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho "deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus`,
   ubuntu: `CODENAME=$(grep '^UBUNTU_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho "deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus`,
   fedora: `RELEASEVER=$(grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2)\nsudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo dnf config-manager addrepo --from-repofile=https://fcitx5-lotus.pages.dev/rpm/fedora/fcitx5-lotus-$RELEASEVER.repo\nsudo dnf install fcitx5-lotus`,
@@ -842,8 +841,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                       <pre><code>{{ commands.hyprland }}</code></pre>
                     </div>
                     <p class="mt-4 mb-2 instruction">
-                      <strong>Chromium/Brave:</strong> Chạy ứng dụng kèm các cờ
-                      sau
+                      <strong>Chromium/Electron:</strong> Chạy ứng dụng kèm các
+                      flag sau
                     </p>
                     <div class="code-block my-2">
                       <pre><code>{{ commands.chromium }}</code></pre>
@@ -1038,7 +1037,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           <a href="https://github.com/LotusInputMethod/fcitx5-lotus/releases"
             >Releases</a
           >
-          <a href="https://github.com/LotusInputMethod/fcitx5-lotus/issues"
+          <a
+            href="https://github.com/LotusInputMethod/fcitx5-lotus/issues/new?template=bug_report.yml"
             >Báo lỗi (Issues)</a
           >
         </div>
@@ -1059,8 +1059,16 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         </div>
       </div>
       <div class="footer-bottom">
-        © {{ new Date().getFullYear() }} Fcitx5 Lotus Team. Dựa trên mã nguồn
-        của VMK.
+        <div>© {{ new Date().getFullYear() }} Fcitx5 Lotus Team.</div>
+        <div class="mt-2">
+          Trang web này là mã nguồn mở,
+          <a
+            href="https://github.com/LotusInputMethod/LotusInputMethod.github.io"
+            target="_blank"
+            class="text-link"
+            >xem mã nguồn tại đây</a
+          >.
+        </div>
       </div>
     </footer>
   </div>
@@ -1277,6 +1285,9 @@ body {
 .section {
   padding: 80px 0;
 }
+.mr-2 {
+  margin-right: 8px;
+}
 .mb-2 {
   margin-bottom: 8px;
 }
@@ -1436,13 +1447,12 @@ body {
 }
 .btn-github:hover {
   border-color: var(--ctp-green) !important;
-  color: var(--ctp-green) !important;
+  color: var(--ctp-surface2) !important;
 }
 .btn-source {
   background-color: var(--ctp-surface0) !important;
   border: 1px solid var(--ctp-surface2) !important;
   color: var(--ctp-text) !important;
-  height: 50px;
   padding: 0 24px;
   font-weight: 600;
   border-radius: 8px;
