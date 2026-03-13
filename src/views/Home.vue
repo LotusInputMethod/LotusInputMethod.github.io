@@ -5,13 +5,11 @@ import {
   Link,
   Menu,
   Download,
-  View,
   Lightning,
   Edit,
   MagicStick,
   Check,
   ChatLineRound,
-  Monitor,
   DocumentCopy,
   Setting,
   Cpu,
@@ -27,19 +25,22 @@ const setupStep = ref<number>(0);
 const isScrolled = ref<boolean>(false);
 
 // --- CATPPUCCIN THEME LOGIC ---
-const catppuccinThemes = ['latte', 'frappe', 'macchiato', 'mocha'];
-const currentTheme = ref<string>('mocha');
+const catppuccinThemes = ['latte', 'frappe', 'macchiato', 'mocha'] as const;
+type CatppuccinTheme = (typeof catppuccinThemes)[number];
+
+const currentTheme = ref<CatppuccinTheme>('mocha');
 
 const cycleTheme = (): void => {
   const currentIndex = catppuccinThemes.indexOf(currentTheme.value);
   const nextIndex = (currentIndex + 1) % catppuccinThemes.length;
-  currentTheme.value = catppuccinThemes[nextIndex]!;
+  const nextTheme = catppuccinThemes[nextIndex] as CatppuccinTheme;
 
-  document.documentElement.setAttribute('data-theme', currentTheme.value);
-  localStorage.setItem('catppuccin-theme', currentTheme.value);
+  currentTheme.value = nextTheme;
+  document.documentElement.setAttribute('data-theme', nextTheme);
+  localStorage.setItem('catppuccin-theme', nextTheme);
 };
 
-// Hàm định dạng tên theme để hiển thị đẹp hơn
+// Hàm định dạng tên theme
 const formatThemeName = (name: string) =>
   name.charAt(0).toUpperCase() + name.slice(1);
 
@@ -49,15 +50,14 @@ const handleScroll = (): void => {
 };
 
 onMounted(() => {
-  // Lấy theme Catppuccin đã lưu, mặc định là Mocha nếu chưa có
   const savedTheme = localStorage.getItem('catppuccin-theme');
-  if (savedTheme && catppuccinThemes.includes(savedTheme)) {
-    currentTheme.value = savedTheme;
+  if (savedTheme && catppuccinThemes.includes(savedTheme as CatppuccinTheme)) {
+    currentTheme.value = savedTheme as CatppuccinTheme;
   } else if (
     window.matchMedia &&
     window.matchMedia('(prefers-color-scheme: light)').matches
   ) {
-    currentTheme.value = 'latte'; // Tự động nhận diện hệ thống
+    currentTheme.value = 'latte';
   } else {
     currentTheme.value = 'mocha';
   }
@@ -68,7 +68,7 @@ onMounted(() => {
 
 onUnmounted(() => window.removeEventListener('scroll', handleScroll));
 
-// --- INTERFACES & DATA ---
+// --- DATA ---
 interface PackageInfo {
   package: string;
   description: string;
@@ -280,7 +280,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
             class="btn-github"
             @click="goToGitHub"
           >
-            <el-icon><Link /></el-icon> GitHub
+            <v-icon name="si-github" class="mr-2" /> GitHub
           </el-button>
         </div>
 
@@ -304,7 +304,9 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         <a href="#setup" @click="mobileMenuOpen = false">Thiết lập</a>
         <a href="#usage" @click="mobileMenuOpen = false">Hướng dẫn</a>
         <a href="#contributors" @click="mobileMenuOpen = false">Đóng góp</a>
-        <el-button type="primary" @click="goToGitHub">GitHub</el-button>
+        <el-button type="primary" @click="goToGitHub">
+          <v-icon name="si-github" class="mr-2" /> GitHub
+        </el-button>
       </div>
     </nav>
 
@@ -333,19 +335,27 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               class="btn-install"
               @click="scrollToInstall"
             >
-              <el-icon><Download /></el-icon> Cài đặt ngay
+              <el-icon class="mr-2"><Download /></el-icon> Cài đặt ngay
             </el-button>
             <el-button size="large" class="btn-source" @click="goToGitHub">
-              <el-icon><View /></el-icon> Xem trên GitHub
+              <v-icon name="si-github" class="mr-2" scale="1.1" /> Xem trên
+              GitHub
             </el-button>
           </div>
           <div class="hero-stats">
-            <div class="stat-item"><strong>160+</strong><span>Stars</span></div>
             <div class="stat-item">
-              <strong>6+</strong><span>Distros hỗ trợ</span>
+              <strong>160+</strong>
+              <span>Stars</span>
             </div>
             <div class="stat-item">
-              <strong>5</strong><span>Người đóng góp</span>
+              <strong>
+                <v-icon name="si-linux" scale="1.8" class="align-bottom" /> 6+
+              </strong>
+              <span>Distros hỗ trợ</span>
+            </div>
+            <div class="stat-item">
+              <strong>5</strong>
+              <span>Người đóng góp</span>
             </div>
           </div>
         </div>
@@ -437,9 +447,9 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           </div>
           <div class="custom-card">
             <div class="icon-wrapper color-sky">
-              <el-icon><Monitor /></el-icon>
+              <v-icon name="si-linux" scale="1.5" />
             </div>
-            <h3>Wayland & Ứng dụng khó nhằn</h3>
+            <h3>Chuẩn bài Linux</h3>
             <p>
               Hoạt động ổn định trên X11/Wayland, tương thích ngược với Wine và
               hỗ trợ tối đa cho trình duyệt nhân Chromium.
@@ -460,7 +470,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 
         <div class="custom-card setup-wrapper">
           <el-tabs v-model="activeOS">
-            <el-tab-pane label="Arch Linux" name="arch">
+            <el-tab-pane name="arch">
+              <template #label
+                ><div class="tab-label">
+                  <v-icon name="si-archlinux" /> Arch Linux
+                </div></template
+              >
               <div class="tab-content">
                 <p class="instruction">AUR cung cấp 3 gói cài đặt:</p>
                 <el-table :data="archPackages" stripe class="pkg-table mb-4">
@@ -485,7 +500,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="Debian" name="debian">
+            <el-tab-pane name="debian">
+              <template #label
+                ><div class="tab-label">
+                  <v-icon name="si-debian" /> Debian
+                </div></template
+              >
               <div class="tab-content">
                 <el-alert
                   title="Mẹo nhỏ"
@@ -506,7 +526,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="Ubuntu" name="ubuntu">
+            <el-tab-pane name="ubuntu">
+              <template #label
+                ><div class="tab-label">
+                  <v-icon name="si-ubuntu" /> Ubuntu
+                </div></template
+              >
               <div class="tab-content">
                 <el-alert
                   title="Mẹo nhỏ"
@@ -527,7 +552,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="Fedora" name="fedora">
+            <el-tab-pane name="fedora">
+              <template #label
+                ><div class="tab-label">
+                  <v-icon name="si-fedora" /> Fedora
+                </div></template
+              >
               <div class="tab-content">
                 <div class="code-block">
                   <pre><code>{{ commands.fedora }}</code></pre>
@@ -541,7 +571,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="openSUSE" name="opensuse">
+            <el-tab-pane name="opensuse">
+              <template #label
+                ><div class="tab-label">
+                  <v-icon name="si-opensuse" /> openSUSE
+                </div></template
+              >
               <div class="tab-content">
                 <div class="code-block">
                   <pre><code>{{ commands.opensuse }}</code></pre>
@@ -555,7 +590,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="NixOS" name="nixos">
+            <el-tab-pane name="nixos">
+              <template #label
+                ><div class="tab-label">
+                  <v-icon name="si-nixos" /> NixOS
+                </div></template
+              >
               <div class="tab-content">
                 <p class="instruction">
                   Thêm input vào <code>flake.nix</code>:
@@ -572,7 +612,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane label="GitHub Releases" name="github">
+            <el-tab-pane name="github">
+              <template #label
+                ><div class="tab-label">
+                  <v-icon name="si-github" /> Releases
+                </div></template
+              >
               <div class="tab-content">
                 <el-alert
                   title="Khuyến cáo"
@@ -947,7 +992,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               )
             "
           >
-            <el-icon><Plus /></el-icon> Tham gia đóng góp ngay
+            <el-icon class="mr-2"><Plus /></el-icon> Tham gia đóng góp ngay
           </el-button>
         </div>
       </div>
@@ -967,7 +1012,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         </div>
         <div class="footer-links">
           <h4>Liên kết</h4>
-          <a href="https://github.com/LotusInputMethod/fcitx5-lotus">GitHub</a>
+          <a
+            href="https://github.com/LotusInputMethod/fcitx5-lotus"
+            class="flex items-center gap-2"
+          >
+            <v-icon name="si-github" /> GitHub
+          </a>
           <a href="https://github.com/LotusInputMethod/fcitx5-lotus/releases"
             >Releases</a
           >
@@ -992,7 +1042,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         </div>
       </div>
       <div class="footer-bottom">
-        © {{ new Date().getFullYear() }} Fcitx5 Lotus Team.
+        © {{ new Date().getFullYear() }} Fcitx5 Lotus Team. Dựa trên mã nguồn
+        của VMK.
       </div>
     </footer>
   </div>
@@ -1102,41 +1153,34 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 /* 2. ÉP ELEMENT PLUS DÙNG CHUẨN MÀU CATPPUCCIN                               */
 /* ========================================================================== */
 :root {
-  /* Ép Element dùng màu chính là Green của Catppuccin */
   --el-color-primary: var(--ctp-green);
   --el-color-success: var(--ctp-green);
   --el-color-warning: var(--ctp-yellow);
   --el-color-danger: var(--ctp-red);
   --el-color-info: var(--ctp-overlay0);
 
-  /* Định nghĩa lại màu Nền & Thẻ Card */
   --el-bg-color: var(--ctp-base);
   --el-bg-color-page: var(--ctp-base);
   --el-bg-color-overlay: var(--ctp-surface0);
 
-  /* Định nghĩa lại màu Chữ */
   --el-text-color-primary: var(--ctp-text);
   --el-text-color-regular: var(--ctp-subtext1);
   --el-text-color-secondary: var(--ctp-subtext0);
 
-  /* Định nghĩa lại màu Viền */
   --el-border-color: var(--ctp-surface2);
   --el-border-color-light: var(--ctp-surface1);
   --el-border-color-lighter: var(--ctp-surface0);
 
-  /* Các màu Fill (Nút, Input, Hover) */
   --el-fill-color: var(--ctp-surface1);
   --el-fill-color-light: var(--ctp-surface0);
   --el-fill-color-lighter: var(--ctp-mantle);
   --el-fill-color-dark: var(--ctp-surface2);
   --el-fill-color-darker: var(--ctp-crust);
 
-  /* Tắt shadow mạnh của web mặc định, dùng shadow nhẹ của CTP */
   --el-box-shadow-light: 0 4px 12px rgba(0, 0, 0, 0.1);
   --max-width: 1200px;
 }
 
-/* Base Body Application */
 html,
 body {
   margin: 0;
@@ -1158,7 +1202,6 @@ body {
   box-sizing: inherit;
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -1173,11 +1216,18 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--ctp-green);
 }
+
+/* Điều chỉnh ov-icon (oh-vue-icons) để nó ăn màu Catppuccin chuẩn */
+.ov-icon {
+  fill: currentColor;
+  vertical-align: middle;
+  transition: fill 0.3s ease;
+}
 </style>
 
 <style scoped>
 /* ========================================================================== */
-/* 3. CSS CHO TỪNG THÀNH PHẦN (DÙNG BIẾN ELEMENT HOẶC CATPPUCCIN)             */
+/* 3. CSS CHO TỪNG THÀNH PHẦN                                                 */
 /* ========================================================================== */
 .section {
   padding: 80px 0;
@@ -1216,8 +1266,10 @@ body {
 .text-sm {
   font-size: 0.875rem;
 }
+.align-bottom {
+  vertical-align: text-bottom;
+}
 
-/* Nền chung theo chuẩn Catppuccin */
 .section-bg-main {
   background-color: var(--ctp-base);
   transition: background-color 0.3s;
@@ -1230,12 +1282,7 @@ body {
   background-color: var(--ctp-base);
   transition: background-color 0.3s;
 }
-.section-bg-alt {
-  background-color: var(--ctp-mantle);
-  transition: background-color 0.3s;
-}
 
-/* Text & Border */
 .instruction {
   color: var(--ctp-subtext1);
   transition: color 0.3s;
@@ -1259,7 +1306,6 @@ body {
   border-radius: 8px;
 }
 
-/* Thẻ Card Tùy chỉnh (Giữ form không bị vỡ màu) */
 .custom-card {
   background-color: var(--ctp-surface0);
   border: 1px solid var(--ctp-surface1);
@@ -1277,7 +1323,6 @@ body {
   background-color: var(--ctp-mantle);
 }
 
-/* Inline Code & Pre Code */
 .inline-code {
   background-color: var(--ctp-surface1);
   color: var(--ctp-text);
@@ -1331,6 +1376,39 @@ body {
   border-color: var(--ctp-green);
 }
 
+/* Buttons Custom cho theme Catppuccin */
+.btn-theme {
+  font-weight: bold;
+  border-color: var(--ctp-surface2) !important;
+  color: var(--ctp-text) !important;
+  background: transparent !important;
+}
+.btn-github {
+  background-color: var(--ctp-surface1) !important;
+  border: 1px solid var(--ctp-surface2) !important;
+  color: var(--ctp-text) !important;
+  transition: all 0.3s ease;
+}
+.btn-github:hover {
+  border-color: var(--ctp-green) !important;
+  color: var(--ctp-green) !important;
+}
+.btn-source {
+  background-color: var(--ctp-surface0) !important;
+  border: 1px solid var(--ctp-surface2) !important;
+  color: var(--ctp-text) !important;
+  height: 50px;
+  padding: 0 24px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+.btn-source:hover {
+  background-color: var(--ctp-surface1) !important;
+  border-color: var(--ctp-green) !important;
+  color: var(--ctp-green) !important;
+}
+
 /* Navbar */
 .navbar {
   position: fixed;
@@ -1371,7 +1449,7 @@ body {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
 }
 .nav-links a {
   color: var(--ctp-subtext1);
@@ -1404,19 +1482,13 @@ body {
   align-items: center;
   gap: 10px;
 }
-.btn-theme {
-  font-weight: bold;
-  border-color: var(--ctp-surface2);
-  color: var(--ctp-text);
-  background: transparent;
-}
 
-@media (max-width: 767px) {
+@media (max-width: 900px) {
   .desktop-only {
     display: none;
   }
 }
-@media (min-width: 768px) {
+@media (min-width: 901px) {
   .mobile-controls {
     display: none;
   }
@@ -1503,7 +1575,7 @@ body {
 }
 .text-gradient {
   color: var(--ctp-green);
-} /* Bỏ gradient vì catppuccin dùng màu solid đẹp hơn */
+}
 .hero-description {
   font-size: 1.125rem;
   color: var(--ctp-subtext1);
@@ -1518,13 +1590,6 @@ body {
   justify-content: center;
   margin-bottom: 50px;
   flex-wrap: wrap;
-}
-.btn-install,
-.btn-source {
-  padding: 0 24px;
-  height: 50px;
-  font-weight: 600;
-  border-radius: 8px;
 }
 .hero-stats {
   display: flex;
@@ -1691,7 +1756,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* Tách Icon Color của Catppuccin */
 .icon-primary {
   background-color: var(--ctp-green);
   color: var(--ctp-base);
@@ -1777,6 +1841,13 @@ body {
   color: var(--ctp-subtext1);
 }
 
+/* Tabs Layout with Icons */
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Accordions */
 .advanced-details summary {
   cursor: pointer;
@@ -1846,9 +1917,9 @@ body {
   padding: 0 10px;
 }
 .btn-success {
-  background-color: var(--ctp-green);
-  border-color: var(--ctp-green);
-  color: var(--ctp-base);
+  background-color: var(--ctp-green) !important;
+  border-color: var(--ctp-green) !important;
+  color: var(--ctp-base) !important;
 }
 
 /* Màn hình Success */
@@ -1890,7 +1961,7 @@ body {
   margin-bottom: 20px;
 }
 
-/* Hiệu ứng trượt ngang cho Wizard */
+/* Hiệu ứng trượt ngang */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition:
@@ -2019,7 +2090,9 @@ body {
   font-size: 1rem;
 }
 .footer-links a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--ctp-subtext0);
   text-decoration: none;
   margin-bottom: 10px;
