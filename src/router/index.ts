@@ -3,7 +3,7 @@ import {
   createWebHistory,
   type RouteRecordRaw,
 } from 'vue-router';
-import Home from '../views/Home.vue';
+const Home = () => import('../views/Home.vue');
 
 const routes: Array<RouteRecordRaw> = [
   {
