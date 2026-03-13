@@ -271,6 +271,7 @@ const commands: Record<string, string> = {
   serverFish:
     'sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; or begin\n    sudo systemd-sysusers; and sudo systemctl enable --now fcitx5-lotus-server@(whoami).service\nend',
   envBash: `cat <<EOF >> ~/.bash_profile\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx\nexport SDL_IM_MODULE=fcitx\nexport GLFW_IM_MODULE=ibus\nEOF`,
+  envZsh: `cat <<EOF >> ~/.zprofile\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx\nexport SDL_IM_MODULE=fcitx\nexport GLFW_IM_MODULE=ibus\nEOF`,
   envFish: `echo 'if status is-login\n    set -Ux GTK_IM_MODULE fcitx\n    set -Ux QT_IM_MODULE fcitx\n    set -Ux XMODIFIERS "@im=fcitx"\n    set -gx SDL_IM_MODULE fcitx\n    set -gx GLFW_IM_MODULE ibus\nend' >> ~/.config/fish/config.fish`,
   envGlobal: `cat <<EOF | sudo tee -a /etc/environment\nGTK_IM_MODULE=fcitx\nQT_IM_MODULE=fcitx\nXMODIFIERS=@im=fcitx\nSDL_IM_MODULE=fcitx\nGLFW_IM_MODULE=ibus\nEOF`,
   killIbus: 'killall ibus-daemon || ibus exit',
@@ -784,12 +785,24 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   <strong>Cần Log out và Log in lại sau khi chạy lệnh</strong>.
                 </p>
                 <details class="advanced-details mb-3" open>
-                  <summary>Cấu hình cho Bash / Zsh</summary>
+                  <summary>Cấu hình cho Bash</summary>
                   <div class="code-block mt-2">
                     <pre><code>{{ commands.envBash }}</code></pre>
                     <button
                       class="btn-copy"
                       @click="copyToClipboard(commands.envBash)"
+                    >
+                      <el-icon><DocumentCopy /></el-icon>
+                    </button>
+                  </div>
+                </details>
+                <details class="advanced-details mb-3">
+                  <summary>Cấu hình cho Zsh</summary>
+                  <div class="code-block mt-2">
+                    <pre><code>{{ commands.envZsh }}</code></pre>
+                    <button
+                      class="btn-copy"
+                      @click="copyToClipboard(commands.envZsh)"
                     >
                       <el-icon><DocumentCopy /></el-icon>
                     </button>
@@ -868,6 +881,10 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                 <details class="advanced-details mt-4">
                   <summary>Cấu hình bổ sung cho Wayland</summary>
                   <div class="p-3 border rounded-lg mt-2 text-sm sub-card">
+                    <p class="mb-2 instruction">
+                      <strong>KDE:</strong> System Settings → Keyboard → Virtual
+                      Keyboard → Chọn Fcitx 5.
+                    </p>
                     <p class="mb-2 instruction">
                       <strong>Hyprland:</strong> Thêm dòng sau vào file config
                     </p>
