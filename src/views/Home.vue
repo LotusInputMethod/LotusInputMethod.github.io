@@ -22,6 +22,7 @@ const mobileMenuOpen = ref<boolean>(false);
 const activeOS = ref<string>('arch');
 const setupStep = ref<number>(0);
 const isScrolled = ref<boolean>(false);
+const starCount = ref<string>('160+');
 
 // --- CATPPUCCIN THEME LOGIC ---
 const catppuccinThemes = ['latte', 'frappe', 'macchiato', 'mocha'] as const;
@@ -66,6 +67,38 @@ const startTyping = () => {
   }, typingSpeed);
 };
 
+const fetchGithubStars = async () => {
+  const REPO = 'LotusInputMethod/fcitx5-lotus';
+  const CACHE_KEY = 'lotus_stars_cache';
+  const CACHE_TIME_KEY = 'lotus_stars_timestamp';
+  const TWO_HOURS = 2 * 60 * 60 * 1000;
+
+  try {
+    const cachedStars = localStorage.getItem(CACHE_KEY);
+    const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
+    const now = Date.now();
+
+    if (cachedStars && lastFetch && now - parseInt(lastFetch) < TWO_HOURS) {
+      starCount.value = cachedStars;
+      return;
+    }
+
+    const response = await fetch(`https://api.github.com/repos/${REPO}`);
+    if (!response.ok) throw new Error('GitHub API rate limit or error');
+
+    const data = await response.json();
+    const count = data.stargazers_count.toLocaleString();
+
+    starCount.value = count;
+    localStorage.setItem(CACHE_KEY, count);
+    localStorage.setItem(CACHE_TIME_KEY, now.toString());
+  } catch (error) {
+    console.error('Lỗi khi lấy star từ GitHub:', error);
+    const oldCache = localStorage.getItem(CACHE_KEY);
+    if (oldCache) starCount.value = oldCache;
+  }
+};
+
 onMounted(() => {
   const savedTheme = localStorage.getItem('catppuccin-theme');
   if (savedTheme && catppuccinThemes.includes(savedTheme as CatppuccinTheme)) {
@@ -82,6 +115,7 @@ onMounted(() => {
   document.documentElement.setAttribute('data-theme', currentTheme.value);
   window.addEventListener('scroll', handleScroll);
   startTyping();
+  fetchGithubStars();
 });
 
 onUnmounted(() => window.removeEventListener('scroll', handleScroll));
@@ -362,7 +396,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           </div>
           <div class="hero-stats">
             <div class="stat-item">
-              <strong>160+</strong>
+              <strong>{{ starCount }}</strong>
               <span>Stars</span>
             </div>
             <div class="stat-item">
