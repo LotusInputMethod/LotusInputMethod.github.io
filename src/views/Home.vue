@@ -1905,14 +1905,27 @@ body {
   color: var(--ctp-green);
   border: 1px solid var(--ctp-green);
 }
+.custom-alert-info :deep(.el-alert__description) {
+  color: var(--ctp-text) !important;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-top: 5px;
+}
+
+.custom-alert-info :deep(.el-alert__title) {
+  color: var(--ctp-blue) !important;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
 .custom-alert-info {
   background-color: color-mix(
     in srgb,
-    var(--ctp-blue) 15%,
+    var(--ctp-blue) 10%,
     var(--ctp-surface0)
-  );
-  color: var(--ctp-blue);
-  border: 1px solid var(--ctp-blue);
+  ) !important;
+  border: 1px solid var(--ctp-blue) !important;
+  padding: 15px;
 }
 .custom-alert-warn {
   background-color: color-mix(
@@ -1944,6 +1957,27 @@ body {
   justify-content: space-between;
   margin-top: 20px;
   padding: 0 10px;
+}
+.step-actions .el-button:not(.el-button--primary):not(.btn-success) {
+  background-color: var(--ctp-surface0) !important;
+  border: 1px solid var(--ctp-surface2) !important;
+  color: var(--ctp-text) !important;
+  transition: all 0.3s ease;
+}
+
+.step-actions
+  .el-button:not(.el-button--primary):not(.btn-success):hover:not(:disabled) {
+  background-color: var(--ctp-surface1) !important;
+  border-color: var(--ctp-overlay0) !important;
+  color: var(--ctp-text) !important;
+}
+
+.step-actions .el-button:disabled {
+  background-color: var(--ctp-mantle) !important;
+  border-color: var(--ctp-surface0) !important;
+  color: var(--ctp-overlay0) !important;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 .btn-success {
   background-color: var(--ctp-green) !important;
