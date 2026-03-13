@@ -1234,11 +1234,39 @@ body {
   background: var(--ctp-green);
 }
 
-/* Điều chỉnh ov-icon (oh-vue-icons) để nó ăn màu Catppuccin chuẩn */
 .ov-icon {
   fill: currentColor;
   vertical-align: middle;
   transition: fill 0.3s ease;
+}
+
+.el-message {
+  background-color: var(--ctp-surface0) !important;
+  border-color: var(--ctp-surface1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+.el-message__content {
+  color: var(--ctp-text) !important;
+  font-weight: 500;
+}
+
+.el-message--success .el-message__content {
+  color: var(--ctp-green) !important;
+}
+.el-message--success .el-icon {
+  color: var(--ctp-green) !important;
+}
+
+.el-message--error .el-message__content {
+  color: var(--ctp-red) !important;
+}
+.el-message--error .el-icon {
+  color: var(--ctp-red) !important;
+}
+
+.el-message--info .el-message__content {
+  color: var(--ctp-blue) !important;
 }
 </style>
 
@@ -1457,6 +1485,10 @@ body {
 .nav-brand .logo {
   width: 36px;
   height: 36px;
+  transition: transform 0.3s ease;
+}
+.nav-brand .logo:hover {
+  transform: scale(1.1);
 }
 .nav-brand .brand-name {
   font-size: 1.25rem;
@@ -2136,7 +2168,11 @@ body {
 .footer-logo img {
   width: 40px;
   height: 40px;
-  filter: grayscale(1) brightness(1.5);
+  transition: transform 0.3s ease;
+}
+
+.footer-logo img:hover {
+  transform: scale(1.1);
 }
 .footer-logo span {
   color: var(--ctp-text);
