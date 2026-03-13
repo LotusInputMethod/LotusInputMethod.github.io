@@ -49,6 +49,24 @@ const handleScroll = (): void => {
   isScrolled.value = window.scrollY > 20;
 };
 
+const fullText = 'Gõ không gạch chân cực mượt';
+const displayText = ref<string>('');
+const typingSpeed = 100;
+
+const startTyping = () => {
+  let i = 0;
+  displayText.value = '';
+  const timer = setInterval(() => {
+    if (i < fullText.length) {
+      displayText.value += fullText.charAt(i);
+      i++;
+    } else {
+      clearInterval(timer);
+      setTimeout(startTyping, 3000);
+    }
+  }, typingSpeed);
+};
+
 onMounted(() => {
   const savedTheme = localStorage.getItem('catppuccin-theme');
   if (savedTheme && catppuccinThemes.includes(savedTheme as CatppuccinTheme)) {
@@ -64,6 +82,7 @@ onMounted(() => {
 
   document.documentElement.setAttribute('data-theme', currentTheme.value);
   window.addEventListener('scroll', handleScroll);
+  startTyping();
 });
 
 onUnmounted(() => window.removeEventListener('scroll', handleScroll));
@@ -366,16 +385,14 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               <span class="dot dot-red"></span>
               <span class="dot dot-yellow"></span>
               <span class="dot dot-green"></span>
-              <span class="term-title">user@linux:~</span>
+              <span class="term-title">khoga@detem:~</span>
             </div>
             <div class="term-body">
-              <p><span class="prompt">❯</span> fcitx5-lotus --status</p>
+              <p><span class="prompt">🪷 ❯</span> fcitx5-lotus --status</p>
               <p class="info">[INFO] Lotus Server is running (PID: 1337)</p>
-              <p>
-                <span class="prompt">❯</span> echo "Gõ không gạch chân cực mượt"
-              </p>
+              <p><span class="prompt">🪷 ❯</span> echo "{{ fullText }}"</p>
               <p class="typing">
-                Gõ không gạch chân cực mượt<span class="cursor"></span>
+                {{ displayText }}<span class="cursor"></span>
               </p>
             </div>
           </div>
@@ -1683,11 +1700,23 @@ body {
 .typing {
   display: flex;
   align-items: center;
+  min-height: 1.2em;
+  color: var(--ctp-text);
+  font-family: monospace;
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 .cursor {
   display: inline-block;
-  width: 8px;
-  height: 16px;
+  width: 10px;
+  height: 1.2em;
   background-color: var(--ctp-green);
   margin-left: 4px;
   animation: blink 1s step-end infinite;
