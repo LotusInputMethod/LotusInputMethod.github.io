@@ -561,7 +561,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                 <el-alert
                   title="Mẹo nhỏ"
                   type="success"
-                  description="Sau khi cài đặt bằng script này, post-install sẽ tự động hỏi bạn để thiết lập môi trường. Bạn chỉ cần nhấn Y để đồng ý!"
+                  description="Sau khi cài đặt bằng script này, post-install sẽ tự động bật dịch vụ fcitx5-lotus-serve và tự thiết lập biến môi trường cho bạn."
                   :closable="false"
                   class="mb-4 custom-alert"
                 />
@@ -587,7 +587,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                 <el-alert
                   title="Mẹo nhỏ"
                   type="success"
-                  description="Quá trình cài đặt deb package sẽ tự động hỗ trợ thiết lập Autostart và biến môi trường."
+                  description="Sau khi cài đặt bằng script này, post-install sẽ tự động bật dịch vụ fcitx5-lotus-serve và tự thiết lập biến môi trường cho bạn."
                   :closable="false"
                   class="mb-4 custom-alert"
                 />
