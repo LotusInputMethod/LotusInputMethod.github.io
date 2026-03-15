@@ -52,17 +52,19 @@ const handleScroll = (): void => {
 const fullText = 'Gõ không gạch chân cực mượt';
 const displayText = ref<string>('');
 const typingSpeed = 100;
+let typingTimer: ReturnType<typeof setInterval>;
+let resetTimer: ReturnType<typeof setTimeout>;
 
 const startTyping = () => {
   let i = 0;
   displayText.value = '';
-  const timer = setInterval(() => {
+  typingTimer = setInterval(() => {
     if (i < fullText.length) {
       displayText.value += fullText.charAt(i);
       i++;
     } else {
-      clearInterval(timer);
-      setTimeout(startTyping, 3000);
+      clearInterval(typingTimer);
+      resetTimer = setTimeout(startTyping, 3000);
     }
   }, typingSpeed);
 };
@@ -118,7 +120,11 @@ onMounted(() => {
   fetchGithubStars();
 });
 
-onUnmounted(() => window.removeEventListener('scroll', handleScroll));
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+  clearInterval(typingTimer);
+  clearTimeout(resetTimer);
+});
 
 // --- DATA ---
 interface PackageInfo {
@@ -521,7 +527,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 
         <div class="custom-card setup-wrapper">
           <el-tabs v-model="activeOS">
-            <el-tab-pane name="arch">
+            <el-tab-pane lazy name="arch">
               <template #label
                 ><div class="tab-label">
                   <v-icon name="si-archlinux" /> Arch Linux
@@ -551,7 +557,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane name="debian">
+            <el-tab-pane lazy name="debian">
               <template #label
                 ><div class="tab-label">
                   <v-icon name="si-debian" /> Debian
@@ -577,7 +583,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane name="ubuntu">
+            <el-tab-pane lazy name="ubuntu">
               <template #label
                 ><div class="tab-label">
                   <v-icon name="si-ubuntu" /> Ubuntu
@@ -603,7 +609,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane name="fedora">
+            <el-tab-pane lazy name="fedora">
               <template #label
                 ><div class="tab-label">
                   <v-icon name="si-fedora" /> Fedora
@@ -622,7 +628,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane name="opensuse">
+            <el-tab-pane lazy name="opensuse">
               <template #label
                 ><div class="tab-label">
                   <v-icon name="si-opensuse" /> openSUSE
@@ -641,7 +647,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane name="nixos">
+            <el-tab-pane lazy name="nixos">
               <template #label
                 ><div class="tab-label">
                   <v-icon name="si-nixos" /> NixOS
@@ -663,7 +669,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               </div>
             </el-tab-pane>
 
-            <el-tab-pane name="github">
+            <el-tab-pane lazy name="github">
               <template #label
                 ><div class="tab-label">
                   <v-icon name="si-github" /> Releases
