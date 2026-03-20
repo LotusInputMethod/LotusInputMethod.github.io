@@ -2,134 +2,22 @@
 import { ref, computed } from 'vue';
 import { DocumentCopy } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-
-const distros = [
-  { name: "Arch Linux", icon: "si-archlinux" },
-  { name: "Debian", icon: "si-debian" },
-  { name: "Ubuntu", icon: "si-ubuntu" },
-  { name: "Fedora", icon: "si-fedora" },
-  { name: "openSUSE", icon: "si-opensuse" },
-  { name: "NixOS", icon: "si-nixos" }
-];
-const methods = ["Package Manager", "Binary", "Source"];
-const shells = ["Bash", "Zsh", "Fish"];
-const deWms = ["GNOME", "KDE Plasma", "Xfce", "Cinnamon", "MATE", "Pantheon", "Budgie", "LXQt", "COSMIC", "i3", "Sway", "Hyprland"];
-const environments = ["X11", "Wayland"];
+import { 
+  distros, 
+  methods, 
+  shells, 
+  deWms, 
+  environments, 
+  logic, 
+  fcitx5Config, 
+  kanataConfig 
+} from '@/data/installer';
 
 const selectedDistro = ref(distros[0].name);
 const selectedMethod = ref(methods[0]);
 const selectedShell = ref(shells[0]);
 const selectedDe = ref(deWms[0]);
-const selectedEnv = ref(environments[0]);
-
-const logic = {
-  "steps": {
-    "install": {
-      "Arch Linux": {
-        "Package Manager": "yay -S fcitx5-lotus",
-        "Binary": "sudo pacman -U fcitx5-lotus-*.pkg.tar.zst",
-        "Source": "git clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install"
-      },
-      "Debian": {
-        "Package Manager": "CODENAME=$(grep '^VERSION_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho \"deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main\" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus",
-        "Binary": "sudo dpkg -i fcitx5-lotus_*.deb",
-        "Source": "sudo apt-get install cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev libfcitx5-qt6-dev qt6-base-dev fcitx5-modules-dev\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install"
-      },
-      "Ubuntu": {
-        "Package Manager": "CODENAME=$(grep '^UBUNTU_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho \"deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main\" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus",
-        "Binary": "sudo dpkg -i fcitx5-lotus_*.deb",
-        "Source": "sudo apt-get install cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev libfcitx5-qt6-dev qt6-base-dev fcitx5-modules-dev\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install"
-      },
-      "Fedora": {
-        "Package Manager": "RELEASEVER=$(grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2)\nsudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo dnf config-manager addrepo --from-repofile=https://fcitx5-lotus.pages.dev/rpm/fedora/fcitx5-lotus-$RELEASEVER.repo\nsudo dnf install fcitx5-lotus",
-        "Binary": "sudo rpm -i fcitx5-lotus-*.rpm",
-        "Source": "sudo dnf install cmake extra-cmake-modules fcitx5-devel libinput-devel libudev-devel gcc-c++ golang hicolor-icon-theme systemd-devel libX11-devel fcitx5-qt-devel\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install"
-      },
-      "openSUSE": {
-        "Package Manager": "sudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo zypper addrepo https://fcitx5-lotus.pages.dev/rpm/opensuse/fcitx5-lotus-tumbleweed.repo\nsudo zypper refresh\nsudo zypper install fcitx5-lotus",
-        "Binary": "sudo rpm -i fcitx5-lotus-*.rpm",
-        "Source": "sudo zypper install cmake extra-cmake-modules fcitx5-devel libinput-devel systemd-devel gcc-c++ go hicolor-icon-theme systemd-devel libX11-devel udev fcitx5-qt-devel\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install"
-      },
-      "NixOS": {
-        "Package Manager": "inputs.fcitx5-lotus = {\n  url = \"github:LotusInputMethod/fcitx5-lotus\";\n  inputs.nixpkgs.follows = \"nixpkgs\";\n};\n\n# In configuration.nix:\nservices.fcitx5-lotus = {\n  enable = true;\n  user = \"your_username\";\n};",
-        "Binary": "NixOS prefers flake/module configuration.",
-        "Source": "NixOS prefers nix-shell or custom derivations."
-      }
-    },
-    "server": {
-      "Other": {
-        "Bash": "sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service || (sudo systemd-sysusers && sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service)",
-        "Zsh": "sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service || (sudo systemd-sysusers && sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service)",
-        "Fish": "sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; or begin; sudo systemd-sysusers; and sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; end"
-      }
-    },
-    "environment": {
-      "Bash": "cat <<EOF >> ~/.bash_profile\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx\nexport SDL_IM_MODULE=fcitx\nexport GLFW_IM_MODULE=ibus\nEOF",
-      "Zsh": "cat <<EOF >> ~/.zprofile\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx\nexport SDL_IM_MODULE=fcitx\nexport GLFW_IM_MODULE=ibus\nEOF",
-      "Fish": "echo 'if status is-login\n    set -Ux GTK_IM_MODULE fcitx\n    set -Ux QT_IM_MODULE fcitx\n    set -Ux XMODIFIERS \"@im=fcitx\"\n    set -gx SDL_IM_MODULE fcitx\n    set -gx GLFW_IM_MODULE ibus\nend' >> ~/.config/fish/config.fish"
-    },
-    "autostart": {
-      "GNOME": "GNOME Tweaks → Startup Applications → Add → Fcitx 5",
-      "KDE Plasma": "System Settings → Autostart → Add... → Add Application... → Fcitx 5",
-      "Xfce": "Settings → Session and Startup → Application Autostart → Add → Fcitx 5",
-      "Cinnamon": "System Settings → Startup Applications → + → Choose application → Fcitx 5",
-      "MATE": "Control Center → Startup Applications → Add (Name: Fcitx 5, Command: fcitx5)",
-      "Pantheon": "System Settings → Applications → Startup → Add Startup App... → Fcitx 5",
-      "Budgie": "Budgie Desktop Settings → Autostart → + → Add application → Fcitx 5",
-      "LXQt": "LXQt Configuration Center → Session Settings → Autostart → LXQt Autostart → Add (Name: Fcitx 5, Command: fcitx5)",
-      "COSMIC": "COSMIC Settings → Applications → Startup Applications → Add app → Fcitx 5",
-      "i3": "Add `exec --no-startup-id fcitx5 -d` to ~/.config/i3/config",
-      "Sway": "Add `exec --no-startup-id fcitx5 -d` to ~/.config/sway/config",
-      "Hyprland": "Add `exec-once = fcitx5 -d` to ~/.config/hypr/hyprland.conf"
-    },
-    "wayland_extras": {
-      "General": {
-        "title": "Khuyến nghị Xwayland",
-        "description": "Ngay cả khi bạn chỉ dùng ứng dụng Wayland native, bật Xwayland vẫn được khuyến nghị. Nếu bảng gõ client-side không hoạt động, Fcitx sẽ chuyển sang cửa sổ X11 để đảm bảo vị trí hiển thị chính xác thay vì một cửa sổ Wayland ngẫu nhiên."
-      },
-      "KDE Plasma": {
-        "best_setup": [
-          "Sử dụng KDE Plasma 5.27 trở lên.",
-          "Biến môi trường: `XMODIFIERS=@im=fcitx` cho ứng dụng XWayland.",
-          "Vào **System Settings** -> **Virtual Keyboard** -> Chọn **Fcitx 5**.",
-          "Không đặt `GTK_IM_MODULE` & `QT_IM_MODULE` toàn cục.",
-          "Tham số trình duyệt: `--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime`"
-        ],
-        "support_info": "Hỗ trợ text-input-v1/v2/v3 và zwp_input_method_v1.",
-        "caveats": "Một số ứng dụng Gtk/Qt cũ chỉ chạy X11 vẫn có thể cần đặt module riêng lẻ. Tránh đặt toàn cục để tránh lỗi nhấp nháy cửa sổ ứng viên."
-      },
-      "GNOME": {
-        "best_setup": [
-          "Biến môi trường: `XMODIFIERS=@im=fcitx` cho XWayland.",
-          "Qt5: `QT_IM_MODULE=fcitx`.",
-          "Qt >= 6.8.2: `QT_IM_MODULES=\"wayland;fcitx\"`.",
-          "Chrome: Chạy qua XWayland với `GTK_IM_MODULE=fcitx`."
-        ],
-        "support_info": "Sử dụng text-input-v3 và giao thức ibus dbus.",
-        "caveats": "Gnome-shell UI không hiển thị được popup ứng viên. Giải pháp duy nhất là sử dụng extension Kimpanel."
-      },
-      "Sway": {
-        "best_setup": [
-          "Yêu cầu Sway 1.10 trở lên.",
-          "Biến môi trường: `XMODIFIERS=@im=fcitx` (XWayland).",
-          "Qt5: `QT_IM_MODULE=fcitx`.",
-          "Qt >= 6.8.2: `QT_IM_MODULES=\"wayland;fcitx\"`."
-        ],
-        "support_info": "Hỗ trợ text-input-v3 và zwp_input_method_v2 (từ bản 1.10+).",
-        "caveats": "Qt < 6.8.2 cần `QT_IM_MODULE=fcitx` do Sway chưa hỗ trợ text-input-v2."
-      },
-      "Weston": {
-        "best_setup": [
-          "Đặt `GTK_IM_MODULE=fcitx` và `QT_IM_MODULE=fcitx`.",
-          "Cấu hình `~/.config/weston.ini`:",
-          "[core]\nxwayland=true\n\n[input-method]\npath=/usr/bin/fcitx5"
-        ],
-        "support_info": "Sử dụng text-input-v1 và zwp_input_method_v1.",
-        "caveats": "Do thiếu text-input-v3, IM module là giải pháp duy nhất cho Gtk/Qt."
-      }
-    }
-  }
-};
+const selectedEnv = ref(environments[1]);
 
 const activateServerCode = computed(() => {
   if (selectedDistro.value === 'NixOS') return '# Bước này đã được cấu hình trong flake.nix ở trên.';
@@ -153,7 +41,16 @@ const serverCmd = computed(() => {
 });
 
 const envCmd = computed(() => {
-  let vars = [];
+  // Default for X11 and other Wayland DEs
+  const defaultVars = [
+    "export GTK_IM_MODULE=fcitx",
+    "export QT_IM_MODULE=fcitx",
+    "export XMODIFIERS=@im=fcitx",
+    "export SDL_IM_MODULE=fcitx",
+    "export GLFW_IM_MODULE=ibus"
+  ];
+
+  let vars;
 
   if (selectedEnv.value === 'Wayland') {
     if (selectedDe.value === 'KDE Plasma') {
@@ -169,24 +66,10 @@ const envCmd = computed(() => {
         "export GLFW_IM_MODULE=ibus"
       ];
     } else {
-      // Weston & others default
-      vars = [
-        "export GTK_IM_MODULE=fcitx",
-        "export QT_IM_MODULE=fcitx",
-        "export XMODIFIERS=@im=fcitx",
-        "export SDL_IM_MODULE=fcitx",
-        "export GLFW_IM_MODULE=ibus"
-      ];
+      vars = defaultVars;
     }
   } else {
-    // X11
-    vars = [
-      "export GTK_IM_MODULE=fcitx",
-      "export QT_IM_MODULE=fcitx",
-      "export XMODIFIERS=@im=fcitx",
-      "export SDL_IM_MODULE=fcitx",
-      "export GLFW_IM_MODULE=ibus"
-    ];
+    vars = defaultVars;
   }
 
   if (selectedShell.value === 'Bash') {
@@ -219,54 +102,26 @@ const copyToClipboard = async (text: string) => {
 };
 
 const installStepCode = computed(() => {
-  return logic.steps.install[selectedDistro.value][selectedMethod.value];
+  const distroInfo = logic.steps.install[selectedDistro.value as keyof typeof logic.steps.install];
+  if (!distroInfo) return 'Cấu hình chưa sẵn sàng.';
+  return (distroInfo as any)[selectedMethod.value] || 'Phương thức chưa sẵn sàng.';
 });
 
-const autostartText = computed(() => logic.steps.autostart[selectedDe.value]);
+const autostartText = computed(() => logic.steps.autostart[selectedDe.value as keyof typeof logic.steps.autostart]);
 
-const waylandExtras = computed(() => {
-  if (selectedEnv.value !== 'Wayland') return [];
-  const compositor = selectedDe.value;
-  const extras: any[] = [];
-
-  if (compositor === 'KDE Plasma') {
-    extras.push({
-      title: "KDE Plasma (Virtual Keyboard)",
-      desc: "Kích hoạt giao thức text-input:",
-      instruction: "System Settings → Keyboard → Virtual Keyboard → Chọn Fcitx 5"
-    });
-  } else if (compositor === 'Hyprland') {
-    extras.push({
-      title: "Hyprland Support",
-      desc: "Thêm quyền hạn cho bộ gõ:",
-      code: "permission = fcitx5-lotus-server, keyboard, allow"
-    });
-  }
-
-  // Common for Chrome/Electron on Wayland
-  extras.push({
-    title: "Chromium / Electron",
-    desc: "Bật hỗ trợ bộ gõ Wayland:",
-    code: "--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3"
-  });
-
-  return extras;
+// Wayland Logic
+const waylandGeneral = computed(() => {
+  if (selectedEnv.value !== 'Wayland') return null;
+  return logic.steps.wayland_extras.General;
 });
 
-const fcitx5Config = {
-  steps: [
-    'Mở <b>Fcitx5 Configuration</b> (tìm trong menu hoặc chạy <code>fcitx5-configtool</code>).',
-    'Tìm <b>Lotus</b> ở cột bên phải.',
-    'Nhấn mũi tên <b>&lt;</b> để thêm nó sang cột bên trái.',
-    'Bấm <b>Apply</b> để lưu thay đổi.'
-  ]
-};
+const waylandDeSpecific = computed(() => {
+  if (selectedEnv.value !== 'Wayland') return null;
+  return (logic.steps.wayland_extras as any)[selectedDe.value] || null;
+});
 
-const kanataConfig = {
-  title: "Cấu hình Kanata",
-  desc: "Nếu dùng Kanata, hãy loại bỏ Uinput Server khỏi danh sách quét:",
-  code: "(defcfg\n  ...\n  linux-dev-names-exclude (\"Lotus-Uinput-Server\")\n  ...\n)"
-};
+const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3";
+
 </script>
 
 <template>
@@ -389,7 +244,6 @@ const kanataConfig = {
               <pre><code>{{ shellConfigCode }}</code></pre>
               <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(shellConfigCode)" />
             </div>
-            <el-alert title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực." type="info" :closable="false" />
           </div>
         </div>
 
@@ -408,6 +262,7 @@ const kanataConfig = {
             <p class="instruction mt-2" style="font-size: 0.85rem">
               * Lưu ý: Hãy tắt autostart của IBus (thường là ibus-daemon hoặc ibus). Tốt nhất là gỡ cài đặt IBus nếu không sử dụng.
             </p>
+            <el-alert title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực." type="info" :closable="false" class="mt-4" />
           </div>
         </div>
 
@@ -453,14 +308,50 @@ const kanataConfig = {
             
             <!-- Wayland Extras -->
             <div v-if="selectedEnv === 'Wayland'">
-              <div v-for="(item, idx) in waylandExtras" :key="idx" class="extra-item mb-4">
-                <p class="instruction"><b>{{ item.title }}:</b> {{ item.desc }}</p>
-                <div v-if="item.code" class="code-container mini">
-                  <pre><code>{{ item.code }}</code></pre>
-                  <el-button class="copy-float" circle :icon="DocumentCopy" size="small" @click="copyToClipboard(item.code)" />
+              <!-- General Recommendation -->
+              <div v-if="waylandGeneral" class="extra-item mb-4">
+                <el-alert 
+                  :title="waylandGeneral.title" 
+                  type="info" 
+                  :closable="false"
+                  show-icon
+                >
+                  <p style="margin: 0; line-height: 1.5;">{{ waylandGeneral.description }}</p>
+                </el-alert>
+              </div>
+
+              <!-- DE Specific Setup -->
+              <div v-if="waylandDeSpecific" class="wayland-setup-section mb-6">
+                <h5 class="mb-2">{{ selectedDe }} Wayland Configuration</h5>
+                
+                <div class="wayland-details p-4">
+                  <p class="instruction mb-2"><b>Thành phần hỗ trợ:</b> {{ waylandDeSpecific.support_info }}</p>
+                  
+                  <div v-if="waylandDeSpecific.best_setup && waylandDeSpecific.best_setup.length > 0">
+                    <p class="instruction"><b>Hướng dẫn cài đặt tốt nhất:</b></p>
+                    <ul class="setup-list-mini">
+                      <li v-for="(point, idx) in waylandDeSpecific.best_setup" :key="idx">{{ point }}</li>
+                    </ul>
+                  </div>
+
+                  <el-alert 
+                    v-if="waylandDeSpecific.caveats" 
+                    title="Lưu ý" 
+                    type="warning" 
+                    :closable="false"
+                    class="mt-2"
+                  >
+                    <p style="margin: 0; line-height: 1.4; font-size: 0.85rem;">{{ waylandDeSpecific.caveats }}</p>
+                  </el-alert>
                 </div>
-                <div v-else class="ui-nav-container">
-                  {{ item.instruction }}
+              </div>
+
+              <!-- Chromium Flags (Common) -->
+              <div class="extra-item mb-4">
+                <p class="instruction"><b>Chromium / Electron:</b> Bật hỗ trợ bộ gõ Wayland:</p>
+                <div class="code-container mini">
+                  <pre><code>{{ chromiumWaylandFlags }}</code></pre>
+                  <el-button class="copy-float" circle :icon="DocumentCopy" size="small" @click="copyToClipboard(chromiumWaylandFlags)" />
                 </div>
               </div>
             </div>
@@ -619,7 +510,7 @@ const kanataConfig = {
   font-weight: 700;
 }
 
-.distro-card v-icon {
+.distro-card svg {
   flex-shrink: 0;
 }
 
@@ -771,7 +662,15 @@ code {
   font-weight: 600;
 }
 
-.mb-4 { margin-bottom: 1.5rem; }
+:deep(.el-alert__description) {
+  color: var(--ctp-text) !important;
+}
+
+/* Utility Classes */
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
 .mt-2 { margin-top: 0.5rem; }
 
 .wayland-setup-section {
@@ -821,7 +720,6 @@ code {
 .info-item strong {
   color: var(--ctp-text);
 }
-.mb-4 { margin-bottom: 1rem; }
 
 .ui-nav-container {
   background-color: var(--ctp-mantle);
