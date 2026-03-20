@@ -236,20 +236,6 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
         <div class="step-card">
           <div class="step-badge">3</div>
           <div class="step-content">
-            <h4>Thiết lập biến môi trường (Shell)</h4>
-            <div v-if="isAutoHandled" class="mb-3">
-              <el-alert title="Gói .deb sẽ tự động thiết lập biến môi trường. Bạn có thể bỏ qua bước này." type="success" :closable="false" />
-            </div>
-            <div class="code-container">
-              <pre><code>{{ shellConfigCode }}</code></pre>
-              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(shellConfigCode)" />
-            </div>
-          </div>
-        </div>
-
-        <div class="step-card">
-          <div class="step-badge">4</div>
-          <div class="step-content">
             <h4>Tắt bộ gõ cũ (IBus)</h4>
             <div v-if="isAutoHandled" class="mb-3">
               <el-alert title="Gói .deb sẽ tự động tắt IBus. Bước này chỉ dùng để kiểm tra lại." type="success" :closable="false" />
@@ -262,7 +248,18 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
             <p class="instruction mt-2" style="font-size: 0.85rem">
               * Lưu ý: Hãy tắt autostart của IBus (thường là ibus-daemon hoặc ibus). Tốt nhất là gỡ cài đặt IBus nếu không sử dụng.
             </p>
-            <el-alert title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực." type="info" :closable="false" class="mt-4" />
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-badge">4</div>
+          <div class="step-content">
+            <h4>Thiết lập biến môi trường (Shell)</h4>
+            <div class="code-container">
+              <pre><code>{{ shellConfigCode }}</code></pre>
+              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(shellConfigCode)" />
+            </div>
+            <el-alert title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực." type="info" :closable="false" />
           </div>
         </div>
 
