@@ -16,6 +16,7 @@ import {
   Aim,
   Brush,
 } from '@element-plus/icons-vue';
+import InteractiveInstaller from '../components/InteractiveInstaller.vue';
 
 // --- STATE ---
 const mobileMenuOpen = ref<boolean>(false);
@@ -126,19 +127,6 @@ onUnmounted(() => {
   clearTimeout(resetTimer);
 });
 
-// --- DATA ---
-interface PackageInfo {
-  package: string;
-  description: string;
-}
-const archPackages: PackageInfo[] = [
-  { package: 'fcitx5-lotus', description: 'Build từ mã nguồn release ổn định' },
-  { package: 'fcitx5-lotus-bin', description: 'Dùng binary đã build sẵn' },
-  {
-    package: 'fcitx5-lotus-git',
-    description: 'Build từ danh sách commit mới nhất',
-  },
-];
 
 interface SettingInfo {
   option: string;
@@ -323,8 +311,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 
         <div class="nav-links desktop-only">
           <a href="#features">Tính năng</a>
-          <a href="#installation">Cài đặt</a>
-          <a href="#setup">Thiết lập</a>
+          <a href="#installation">Cài đặt & Thiết lập</a>
           <a href="#usage">Hướng dẫn</a>
           <a href="#contributors">Đóng góp</a>
 
@@ -359,8 +346,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 
       <div class="mobile-menu" v-show="mobileMenuOpen">
         <a href="#features" @click="mobileMenuOpen = false">Tính năng</a>
-        <a href="#installation" @click="mobileMenuOpen = false">Cài đặt</a>
-        <a href="#setup" @click="mobileMenuOpen = false">Thiết lập</a>
+        <a href="#installation" @click="mobileMenuOpen = false">Cài đặt & Thiết lập</a>
         <a href="#usage" @click="mobileMenuOpen = false">Hướng dẫn</a>
         <a href="#contributors" @click="mobileMenuOpen = false">Đóng góp</a>
         <el-button type="primary" @click="goToGitHub">
@@ -519,435 +505,13 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
     <section id="installation" class="section section-bg-mantle">
       <div class="container">
         <div class="section-title">
-          <h2>Cài đặt dễ dàng</h2>
+          <h2>Cài đặt & Thiết lập</h2>
           <p>
-            Kho lưu trữ Cloudflare Pages đảm bảo tốc độ tải và cập nhật tự động.
+            Chọn cấu hình hệ thống của bạn để nhận hướng dẫn cài đặt tối ưu nhất.
           </p>
         </div>
-
-        <div class="custom-card setup-wrapper">
-          <el-tabs v-model="activeOS">
-            <el-tab-pane lazy name="arch">
-              <template #label
-                ><div class="tab-label">
-                  <v-icon name="si-archlinux" /> Arch Linux
-                </div></template
-              >
-              <div class="tab-content">
-                <p class="instruction">AUR cung cấp 3 gói cài đặt:</p>
-                <el-table :data="archPackages" stripe class="pkg-table mb-4">
-                  <el-table-column prop="package" label="Gói">
-                    <template #default="{ row }"
-                      ><code class="inline-code">{{
-                        row.package
-                      }}</code></template
-                    >
-                  </el-table-column>
-                  <el-table-column prop="description" label="Mô tả" />
-                </el-table>
-                <div class="code-block">
-                  <pre><code>{{ commands.arch }}</code></pre>
-                  <button
-                    class="btn-copy"
-                    @click="copyToClipboard(commands.arch)"
-                  >
-                    <el-icon><DocumentCopy /></el-icon>
-                  </button>
-                </div>
-              </div>
-            </el-tab-pane>
-
-            <el-tab-pane lazy name="debian">
-              <template #label
-                ><div class="tab-label">
-                  <v-icon name="si-debian" /> Debian
-                </div></template
-              >
-              <div class="tab-content">
-                <el-alert
-                  title="Mẹo nhỏ"
-                  type="success"
-                  description="Sau khi cài đặt bằng script này, post-install sẽ tự động bật dịch vụ fcitx5-lotus-serve và tự thiết lập biến môi trường cho bạn."
-                  :closable="false"
-                  class="mb-4 custom-alert"
-                />
-                <div class="code-block">
-                  <pre><code>{{ commands.debian }}</code></pre>
-                  <button
-                    class="btn-copy"
-                    @click="copyToClipboard(commands.debian)"
-                  >
-                    <el-icon><DocumentCopy /></el-icon>
-                  </button>
-                </div>
-              </div>
-            </el-tab-pane>
-
-            <el-tab-pane lazy name="ubuntu">
-              <template #label
-                ><div class="tab-label">
-                  <v-icon name="si-ubuntu" /> Ubuntu
-                </div></template
-              >
-              <div class="tab-content">
-                <el-alert
-                  title="Mẹo nhỏ"
-                  type="success"
-                  description="Sau khi cài đặt bằng script này, post-install sẽ tự động bật dịch vụ fcitx5-lotus-serve và tự thiết lập biến môi trường cho bạn."
-                  :closable="false"
-                  class="mb-4 custom-alert"
-                />
-                <div class="code-block">
-                  <pre><code>{{ commands.ubuntu }}</code></pre>
-                  <button
-                    class="btn-copy"
-                    @click="copyToClipboard(commands.ubuntu)"
-                  >
-                    <el-icon><DocumentCopy /></el-icon>
-                  </button>
-                </div>
-              </div>
-            </el-tab-pane>
-
-            <el-tab-pane lazy name="fedora">
-              <template #label
-                ><div class="tab-label">
-                  <v-icon name="si-fedora" /> Fedora
-                </div></template
-              >
-              <div class="tab-content">
-                <div class="code-block">
-                  <pre><code>{{ commands.fedora }}</code></pre>
-                  <button
-                    class="btn-copy"
-                    @click="copyToClipboard(commands.fedora)"
-                  >
-                    <el-icon><DocumentCopy /></el-icon>
-                  </button>
-                </div>
-              </div>
-            </el-tab-pane>
-
-            <el-tab-pane lazy name="opensuse">
-              <template #label
-                ><div class="tab-label">
-                  <v-icon name="si-opensuse" /> openSUSE
-                </div></template
-              >
-              <div class="tab-content">
-                <div class="code-block">
-                  <pre><code>{{ commands.opensuse }}</code></pre>
-                  <button
-                    class="btn-copy"
-                    @click="copyToClipboard(commands.opensuse)"
-                  >
-                    <el-icon><DocumentCopy /></el-icon>
-                  </button>
-                </div>
-              </div>
-            </el-tab-pane>
-
-            <el-tab-pane lazy name="nixos">
-              <template #label
-                ><div class="tab-label">
-                  <v-icon name="si-nixos" /> NixOS
-                </div></template
-              >
-              <div class="tab-content">
-                <p class="instruction">
-                  Thêm input vào <code>flake.nix</code>:
-                </p>
-                <div class="code-block mb-4">
-                  <pre><code>{{ commands.nixosInput }}</code></pre>
-                </div>
-                <p class="instruction">
-                  Bật service trong <code>configuration.nix</code>:
-                </p>
-                <div class="code-block">
-                  <pre><code>{{ commands.nixosService }}</code></pre>
-                </div>
-              </div>
-            </el-tab-pane>
-
-            <el-tab-pane lazy name="github">
-              <template #label
-                ><div class="tab-label">
-                  <v-icon name="si-github" /> Releases
-                </div></template
-              >
-              <div class="tab-content">
-                <el-alert
-                  title="Khuyến cáo"
-                  type="warning"
-                  description="Chỉ dùng cách này khi distro của bạn gặp lỗi với repository ở trên."
-                  :closable="false"
-                  class="mb-4 custom-alert-warn"
-                />
-                <p class="instruction">
-                  Tải file .deb hoặc .rpm từ
-                  <a
-                    href="https://github.com/LotusInputMethod/fcitx5-lotus/releases/latest"
-                    target="_blank"
-                    class="text-link"
-                    >GitHub Releases</a
-                  >
-                </p>
-                <div class="code-block">
-                  <pre><code>{{ commands.github }}</code></pre>
-                </div>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-      </div>
-    </section>
-
-    <section id="setup" class="section section-bg-base">
-      <div class="container">
-        <div class="section-title">
-          <h2>Thiết lập hệ thống</h2>
-          <p>Làm theo từng bước sau để đảm bảo bộ gõ tương tác hoàn hảo</p>
-        </div>
-
-        <div class="steps-wrapper">
-          <el-steps
-            :active="setupStep"
-            finish-status="success"
-            align-center
-            class="custom-steps"
-          >
-            <el-step
-              title="Bật Lotus Server"
-              description="Kích hoạt service"
-              @click="setupStep = 0"
-              class="clickable-step"
-            />
-            <el-step
-              title="Biến môi trường"
-              description="Cấu hình IM module"
-              @click="setupStep = 1"
-              class="clickable-step"
-            />
-            <el-step
-              title="Autostart & IBus"
-              description="Tránh xung đột"
-              @click="setupStep = 2"
-              class="clickable-step"
-            />
-            <el-step
-              title="Hoàn thiện Fcitx5"
-              description="Thêm Lotus"
-              @click="setupStep = 3"
-              class="clickable-step"
-            />
-          </el-steps>
-        </div>
-
-        <div class="setup-cards">
-          <transition name="fade-slide" mode="out-in">
-            <div :key="setupStep">
-              <div class="custom-card" v-if="setupStep === 0">
-                <div class="step-header">
-                  <span class="step-num">1</span>
-                  <h3>Bật Lotus Server</h3>
-                </div>
-                <p class="instruction">
-                  Server giúp bộ gõ gửi phím xóa và sửa lỗi mượt mà hơn. Chọn
-                  lệnh tương ứng với shell của bạn:
-                </p>
-                <details class="advanced-details mb-3" open>
-                  <summary>Dành cho Bash / Zsh</summary>
-                  <div class="code-block mt-2">
-                    <pre><code>{{ commands.serverBash }}</code></pre>
-                    <button
-                      class="btn-copy"
-                      @click="copyToClipboard(commands.serverBash)"
-                    >
-                      <el-icon><DocumentCopy /></el-icon>
-                    </button>
-                  </div>
-                </details>
-                <details class="advanced-details">
-                  <summary>Dành cho Fish shell</summary>
-                  <div class="code-block mt-2">
-                    <pre><code>{{ commands.serverFish }}</code></pre>
-                    <button
-                      class="btn-copy"
-                      @click="copyToClipboard(commands.serverFish)"
-                    >
-                      <el-icon><DocumentCopy /></el-icon>
-                    </button>
-                  </div>
-                </details>
-              </div>
-
-              <div class="custom-card" v-else-if="setupStep === 1">
-                <div class="step-header">
-                  <span class="step-num">2</span>
-                  <h3>Thiết lập biến môi trường</h3>
-                </div>
-                <p class="instruction">
-                  Bộ gõ sẽ không thể hoạt động nếu thiếu bước này.
-                  <strong>Cần Log out và Log in lại sau khi chạy lệnh</strong>.
-                </p>
-                <details class="advanced-details mb-3" open>
-                  <summary>Cấu hình cho Bash</summary>
-                  <div class="code-block mt-2">
-                    <pre><code>{{ commands.envBash }}</code></pre>
-                    <button
-                      class="btn-copy"
-                      @click="copyToClipboard(commands.envBash)"
-                    >
-                      <el-icon><DocumentCopy /></el-icon>
-                    </button>
-                  </div>
-                </details>
-                <details class="advanced-details mb-3">
-                  <summary>Cấu hình cho Zsh</summary>
-                  <div class="code-block mt-2">
-                    <pre><code>{{ commands.envZsh }}</code></pre>
-                    <button
-                      class="btn-copy"
-                      @click="copyToClipboard(commands.envZsh)"
-                    >
-                      <el-icon><DocumentCopy /></el-icon>
-                    </button>
-                  </div>
-                </details>
-                <details class="advanced-details mb-3">
-                  <summary>Cấu hình cho Fish shell</summary>
-                  <div class="code-block mt-2">
-                    <pre><code>{{ commands.envFish }}</code></pre>
-                    <button
-                      class="btn-copy"
-                      @click="copyToClipboard(commands.envFish)"
-                    >
-                      <el-icon><DocumentCopy /></el-icon>
-                    </button>
-                  </div>
-                </details>
-                <details class="advanced-details">
-                  <summary>Cấu hình toàn cục /etc/environment</summary>
-                  <div class="code-block mt-2">
-                    <pre><code>{{ commands.envGlobal }}</code></pre>
-                    <button
-                      class="btn-copy"
-                      @click="copyToClipboard(commands.envGlobal)"
-                    >
-                      <el-icon><DocumentCopy /></el-icon>
-                    </button>
-                  </div>
-                </details>
-              </div>
-
-              <div class="custom-card" v-else-if="setupStep === 2">
-                <div class="step-header">
-                  <span class="step-num">3</span>
-                  <h3>Tắt IBus và cấu hình Autostart</h3>
-                </div>
-                <p class="instruction">
-                  Xung đột IBus là nguyên nhân số 1 gây lỗi không gõ được. Chạy
-                  lệnh sau để tắt IBus:
-                </p>
-                <div class="code-block mb-4">
-                  <pre><code>{{ commands.killIbus }}</code></pre>
-                  <button
-                    class="btn-copy"
-                    @click="copyToClipboard(commands.killIbus)"
-                  >
-                    <el-icon><DocumentCopy /></el-icon>
-                  </button>
-                </div>
-                <div class="warning-box">
-                  <strong>Quan trọng:</strong> Bạn phải thêm
-                  <code>fcitx5</code> (hoặc <code>fcitx5 -d</code>) vào
-                  Autostart của Desktop Environment đang dùng.
-                </div>
-              </div>
-
-              <div class="custom-card" v-else-if="setupStep === 3">
-                <div class="step-header">
-                  <span class="step-num">4</span>
-                  <h3>Cấu hình Fcitx5 & Wayland</h3>
-                </div>
-                <p class="instruction">
-                  Bước cuối cùng, thêm Lotus vào Fcitx5:
-                </p>
-                <ol class="step-list mb-4 instruction">
-                  <li>
-                    Mở <strong>Fcitx5 Configuration</strong> từ menu ứng dụng.
-                  </li>
-                  <li>Tìm <strong>Lotus</strong> ở cột bên phải.</li>
-                  <li>
-                    Nhấn nút mũi tên trái để thêm sang cột bên trái và nhấn
-                    Apply.
-                  </li>
-                </ol>
-
-                <details class="advanced-details mt-4">
-                  <summary>Cấu hình bổ sung cho Wayland</summary>
-                  <div class="p-3 border rounded-lg mt-2 text-sm sub-card">
-                    <p class="mb-2 instruction">
-                      <strong>KDE:</strong> System Settings → Keyboard → Virtual
-                      Keyboard → Chọn Fcitx 5.
-                    </p>
-                    <p class="mb-2 instruction">
-                      <strong>Hyprland:</strong> Thêm dòng sau vào file config
-                    </p>
-                    <div class="code-block my-2">
-                      <pre><code>{{ commands.hyprland }}</code></pre>
-                    </div>
-                    <p class="mt-4 mb-2 instruction">
-                      <strong>Chromium/Electron:</strong> Chạy ứng dụng kèm các
-                      flag sau
-                    </p>
-                    <div class="code-block my-2">
-                      <pre><code>{{ commands.chromium }}</code></pre>
-                    </div>
-                  </div>
-                </details>
-              </div>
-
-              <div class="custom-card success-card" v-else-if="setupStep === 4">
-                <div class="success-content">
-                  <div class="icon-circle">
-                    <el-icon><Check /></el-icon>
-                  </div>
-                  <h3>Tuyệt vời! Bạn đã sẵn sàng.</h3>
-                  <p class="instruction">
-                    Bộ gõ Fcitx5 Lotus đã được thiết lập thành công. Hãy tận
-                    hưởng sự mượt mà của chế độ Non-preedit!
-                  </p>
-                </div>
-              </div>
-            </div>
-          </transition>
-
-          <div class="step-actions">
-            <el-button
-              @click="setupStep--"
-              :disabled="setupStep === 0"
-              v-show="setupStep < 4"
-              >Quay lại</el-button
-            >
-            <div style="flex-grow: 1"></div>
-            <el-button
-              type="primary"
-              @click="setupStep++"
-              v-show="setupStep < 3"
-              >Bước tiếp theo</el-button
-            >
-            <el-button
-              type="success"
-              @click="setupStep++"
-              v-show="setupStep === 3"
-              class="btn-success"
-              >Hoàn tất thiết lập</el-button
-            >
-            <el-button @click="setupStep = 0" v-show="setupStep === 4"
-              >Xem lại hướng dẫn</el-button
-            >
-          </div>
+        <div class="installer-wrapper">
+          <InteractiveInstaller />
         </div>
       </div>
     </section>
@@ -1101,7 +665,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         </div>
         <div class="footer-links">
           <h4>Tài liệu</h4>
-          <a href="#installation">Cài đặt</a>
+          <a href="#installation">Cài đặt & Thiết lập</a>
           <a href="#usage">Hướng dẫn</a>
           <a
             href="https://github.com/LotusInputMethod/fcitx5-lotus/blob/main/CONTRIBUTING.md"
