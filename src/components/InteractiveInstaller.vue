@@ -368,19 +368,14 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
 <style scoped>
 .installer-component {
   padding: 0;
+  width: 100%;
 }
 
 .installer-grid {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 2.5rem;
-}
-
-@media (max-width: 1024px) {
-  .installer-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
+  align-items: start;
 }
 
 /* Sidebar Styling */
@@ -395,8 +390,8 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   height: fit-content;
   position: sticky;
   top: 100px;
-  box-shadow: var(--el-box-shadow-light);
   transition: background-color 0.3s, border-color 0.3s;
+  z-index: 10;
 }
 
 .control-item {
@@ -408,33 +403,20 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
 .control-item label {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--ctp-subtext1);
+  color: var(--ctp-text);
   letter-spacing: 0.02em;
 }
 
-/* Specific Select/Radio adjustments */
+/* Specific Select/Input adjustments */
 :deep(.el-select .el-input__wrapper),
 :deep(.el-input__wrapper) {
-  background-color: var(--ctp-mantle) !important;
+  background-color: var(--ctp-surface1) !important;
   box-shadow: 0 0 0 1px var(--ctp-surface2) inset !important;
   border: none !important;
 }
 
 :deep(.el-input__inner) {
   color: var(--ctp-text) !important;
-}
-
-/* Fix for Select Box white background (not used anymore but keeping just in case) */
-:deep(.el-input__wrapper) {
-  background-color: var(--ctp-mantle) !important;
-  box-shadow: 0 0 0 1px var(--ctp-surface1) inset !important;
-  border-radius: 12px !important;
-  padding: 8px 16px !important;
-}
-
-:deep(.el-input__inner) {
-  color: var(--ctp-text) !important;
-  font-weight: 500;
 }
 
 /* Grids styling */
@@ -444,15 +426,11 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
 }
 
 .distro-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .de-grid {
-  display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
 }
 
 .option-grid {
@@ -461,14 +439,9 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   gap: 10px;
 }
 
-@media (max-width: 480px) {
-  .distro-grid, .de-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* Cards */
 .distro-card, .de-card, .option-card {
-  background: var(--ctp-mantle);
+  background-color: var(--ctp-mantle);
   border: 1px solid var(--ctp-surface1);
   border-radius: 8px;
   padding: 8px;
@@ -476,14 +449,13 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  color: var(--ctp-subtext1);
+  transition: all 0.2s ease;
+  color: var(--ctp-subtext0);
   text-align: center;
 }
 
 .option-card {
   padding: 6px 12px;
-  border-radius: 8px;
 }
 
 .distro-card {
@@ -492,15 +464,16 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
 }
 
 .distro-card:hover, .de-card:hover, .option-card:hover {
-  border-color: var(--ctp-green);
-  transform: translateY(-1px);
+  background-color: var(--ctp-surface0);
+  border-color: var(--ctp-surface2);
+  color: var(--ctp-text);
 }
 
+/* Trạng thái Active - Chỉ đổi viền và chữ để không bị lóa mảng màu lớn */
 .distro-card.active, .de-card.active, .option-card.active {
-  background: color-mix(in srgb, var(--ctp-green) 15%, var(--ctp-surface1));
+  background-color: var(--ctp-surface1);
   border-color: var(--ctp-green);
   color: var(--ctp-green);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--ctp-green) 30%, transparent);
   font-weight: 700;
 }
 
@@ -522,7 +495,9 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
 }
+
 .step-card {
   background-color: var(--ctp-surface0);
   border: 1px solid var(--ctp-surface1);
@@ -531,31 +506,32 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   display: flex;
   gap: 1.5rem;
   position: relative;
-  box-shadow: var(--el-box-shadow-light);
-  transition: transform 0.3s, border-color 0.3s;
+  transition: border-color 0.3s;
+  overflow: hidden;
 }
 
 .step-card:hover {
-  border-color: var(--ctp-green);
+  border-color: var(--ctp-surface2);
 }
 
 .step-badge {
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  background-color: color-mix(in srgb, var(--ctp-green) 15%, transparent);
-  color: var(--ctp-green);
+  background-color: var(--ctp-surface1);
+  color: var(--ctp-text);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 1.1rem;
-  border: 1px solid color-mix(in srgb, var(--ctp-green) 30%, transparent);
+  border: 1px solid var(--ctp-surface2);
 }
 
 .step-content {
   flex: 1;
+  min-width: 0;
 }
 
 .step-content h4 {
@@ -572,6 +548,8 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   position: relative;
   border: 1px solid var(--ctp-surface1);
   margin-bottom: 1rem;
+  width: 100%;
+  overflow-x: auto;
 }
 
 .code-container.mini {
@@ -602,13 +580,12 @@ code {
   border: 1px solid var(--ctp-surface2) !important;
   color: var(--ctp-text) !important;
   transition: all 0.2s;
-  opacity: 0.6;
+  z-index: 2;
 }
 
 .copy-float:hover {
-  opacity: 1;
-  background-color: var(--ctp-green) !important;
-  color: var(--ctp-base) !important;
+  background-color: var(--ctp-surface2) !important;
+  color: var(--ctp-green) !important;
   border-color: var(--ctp-green) !important;
 }
 
@@ -626,51 +603,34 @@ code {
 .extra-item h5 {
   margin: 0 0 0.5rem 0;
   font-size: 1rem;
-  color: var(--ctp-subtext1);
+  color: var(--ctp-text);
   font-weight: 600;
 }
 
-.wayland-card {
-  border: 2px solid var(--ctp-peach);
-  background-color: color-mix(in srgb, var(--ctp-peach) 5%, var(--ctp-surface0));
-}
-
-.wayland-card .step-badge {
-  background-color: color-mix(in srgb, var(--ctp-peach) 15%, transparent);
-  color: var(--ctp-peach);
-  border-color: color-mix(in srgb, var(--ctp-peach) 30%, transparent);
-}
-
-.wayland-card h4 {
-  color: var(--ctp-peach);
-}
-
+/* Reset lại El-Alert cho chuẩn màu Theme */
 :deep(.el-alert) {
-  background-color: color-mix(in srgb, var(--ctp-blue) 10%, var(--ctp-surface0)) !important;
-  border: 1px solid var(--ctp-blue) !important;
+  background-color: var(--ctp-surface1) !important;
+  border: 1px solid var(--ctp-surface2) !important;
   border-radius: 8px;
 }
 
 :deep(.el-alert__title) {
-  color: var(--ctp-blue) !important;
+  color: var(--ctp-text) !important;
   font-weight: 600;
 }
 
 :deep(.el-alert__description) {
-  color: var(--ctp-text) !important;
+  color: var(--ctp-subtext0) !important;
 }
 
-/* Utility Classes */
+/* Utilities */
 .mb-2 { margin-bottom: 0.5rem; }
 .mb-3 { margin-bottom: 0.75rem; }
 .mb-4 { margin-bottom: 1rem; }
 .mb-6 { margin-bottom: 1.5rem; }
 .mt-2 { margin-top: 0.5rem; }
 
-.wayland-setup-section {
-  margin-bottom: 1.5rem;
-}
-
+.wayland-setup-section { margin-bottom: 1.5rem; }
 .setup-list-mini {
   padding-left: 1.25rem;
   margin: 0.75rem 0;
@@ -678,10 +638,7 @@ code {
   font-size: 0.95rem;
   line-height: 1.6;
 }
-
-.setup-list-mini li {
-  margin-bottom: 0.5rem;
-}
+.setup-list-mini li { margin-bottom: 0.5rem; }
 
 .wayland-details {
   background-color: var(--ctp-mantle);
@@ -689,30 +646,23 @@ code {
   border: 1px solid var(--ctp-surface1);
   overflow: hidden;
 }
-
 .wayland-details summary {
   padding: 0.75rem 1rem;
   font-weight: 700;
-  color: var(--ctp-peach);
+  color: var(--ctp-text);
   cursor: pointer;
   transition: background-color 0.2s;
   user-select: none;
 }
-
 .wayland-details summary:hover {
-  background-color: var(--ctp-surface1);
+  background-color: var(--ctp-surface0);
 }
-
 .details-content {
   padding: 1rem;
   border-top: 1px solid var(--ctp-surface1);
   font-size: 0.9rem;
   color: var(--ctp-subtext1);
   line-height: 1.5;
-}
-
-.info-item strong {
-  color: var(--ctp-text);
 }
 
 .ui-nav-container {
@@ -726,12 +676,70 @@ code {
   margin-top: 0.5rem;
 }
 
-.code-container.mini {
-  margin-top: 0.5rem;
+/* === RESPONSIVE MEDIA QUERIES === */
+
+/* Tablet & Smaller Desktop */
+@media (max-width: 1024px) {
+  .installer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .controls-card {
+    position: relative;
+    top: 0;
+    padding: 1.5rem;
+  }
 }
 
-.code-container.mini pre {
-  padding: 0.75rem 1rem;
-  font-size: 0.85rem;
+/* Mobile & Small Tablet */
+@media (max-width: 768px) {
+  .de-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .step-card {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .step-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .step-content h4 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .output-area {
+    gap: 1.5rem;
+  }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 480px) {
+  .distro-grid, .de-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .step-card {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .controls-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .code-container {
+    padding: 1rem 0.75rem;
+  }
+
+  .code-container pre {
+    font-size: 0.85rem;
+  }
 }
 </style>
