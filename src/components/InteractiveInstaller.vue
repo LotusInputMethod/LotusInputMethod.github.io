@@ -372,6 +372,7 @@ const kanataConfig = {
               <pre><code>{{ installStepCode }}</code></pre>
               <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(installStepCode)" />
             </div>
+            <el-alert v-if="isAutoHandled" title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này." type="info" :closable="false" class="mt-4" />
           </div>
         </div>
 
