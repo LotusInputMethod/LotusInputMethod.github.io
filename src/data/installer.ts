@@ -16,9 +16,9 @@ export const logic = {
   "steps": {
     "install": {
       "Arch Linux": {
-        "Package Manager": "yay -S fcitx5-lotus",
-        "Binary": "sudo pacman -U fcitx5-lotus-*.pkg.tar.zst",
-        "Source": "git clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install"
+        "Package Manager": "yay -S fcitx5-lotus-bin",
+        "Binary": "Arch khuyến khích sử dụng AUR để cài đặt",
+        "Source": "yay -S fcitx5-lotus-git"
       },
       "Debian": {
         "Package Manager": "CODENAME=$(grep '^VERSION_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho \"deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main\" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus",
@@ -42,8 +42,8 @@ export const logic = {
       },
       "NixOS": {
         "Package Manager": "inputs.fcitx5-lotus = {\n  url = \"github:LotusInputMethod/fcitx5-lotus\";\n  inputs.nixpkgs.follows = \"nixpkgs\";\n};\n\n# In configuration.nix:\nservices.fcitx5-lotus = {\n  enable = true;\n  user = \"your_username\";\n};",
-        "Binary": "NixOS prefers flake/module configuration.",
-        "Source": "NixOS prefers nix-shell or custom derivations."
+        "Binary": "NixOS ưu tiên cấu hình thông qua flake hoặc module.",
+        "Source": "NixOS ưu tiên sử dụng nix-shell."
       }
     },
     "server": {

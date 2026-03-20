@@ -13,11 +13,11 @@ import {
   kanataConfig 
 } from '@/data/installer';
 
-const selectedDistro = ref(distros[0].name);
-const selectedMethod = ref(methods[0]);
-const selectedShell = ref(shells[0]);
-const selectedDe = ref(deWms[0]);
-const selectedEnv = ref(environments[1]);
+const selectedDistro = ref(distros[0]?.name || '');
+const selectedMethod = ref<string>(methods[0] || '');
+const selectedShell = ref<string>(shells[0] || '');
+const selectedDe = ref<string>(deWms[0] || '');
+const selectedEnv = ref<string>(environments[1] || '');
 
 const activateServerCode = computed(() => {
   if (selectedDistro.value === 'NixOS') return '# Bước này đã được cấu hình trong flake.nix ở trên.';
@@ -29,9 +29,6 @@ const activateServerCode = computed(() => {
 
 const shellConfigCode = computed(() => {
   if (selectedDistro.value === 'NixOS') return '# Bước này đã được cấu hình trong flake.nix ở trên.';
-  if (isAutoHandled.value) {
-    return '# Gói .deb sẽ tự động thiết lập biến môi trường.\n' + envCmd.value;
-  }
   return envCmd.value;
 });
 
@@ -79,9 +76,9 @@ const envCmd = computed(() => {
   } else {
     // Fish
     const fishVars = vars.map(v => {
-      const parts = v.split('=');
-      const name = parts[0].replace('export ', '');
-      const val = parts[1];
+      const idxEq = v.indexOf('=');
+      const name = v.slice(0, idxEq).replace('export ', '');
+      const val = v.slice(idxEq + 1);
       return `    set -Ux ${name} ${val}`;
     });
     return `echo 'if status is-login\n${fishVars.join('\n')}\nend' >> ~/.config/fish/config.fish`;
