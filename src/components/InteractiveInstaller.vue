@@ -131,13 +131,20 @@ const logic = {
   }
 };
 
-const configStepCode = computed(() => {
+const activateServerCode = computed(() => {
   if (selectedDistro.value === 'NixOS') return '# Bước này đã được cấu hình trong flake.nix ở trên.';
-  if (['Debian', 'Ubuntu'].includes(selectedDistro.value) && selectedMethod.value === 'Package Manager') {
-    return '# Gói .deb sẽ tự động thực hiện bước này qua post-install script.\n# Bạn có thể bỏ qua hoặc chạy lại nếu cần:\n' + serverCmd.value;
+  if (isAutoHandled.value) {
+    return '# Gói .deb sẽ tự động thực hiện bước này.\n' + serverCmd.value;
   }
-  
-  return `${serverCmd.value}\n\n# Thiết lập biến môi trường\n${envCmd.value}`;
+  return serverCmd.value;
+});
+
+const shellConfigCode = computed(() => {
+  if (selectedDistro.value === 'NixOS') return '# Bước này đã được cấu hình trong flake.nix ở trên.';
+  if (isAutoHandled.value) {
+    return '# Gói .deb sẽ tự động thiết lập biến môi trường.\n' + envCmd.value;
+  }
+  return envCmd.value;
 });
 
 const serverCmd = computed(() => {
@@ -201,24 +208,6 @@ const envCmd = computed(() => {
 const isAutoHandled = computed(() => {
   return ['Debian', 'Ubuntu'].includes(selectedDistro.value) && selectedMethod.value === 'Package Manager';
 });
-
-const getStepNumber = (stepKey: string) => {
-  let num = 1; // Step 1 is always visible
-  if (stepKey === 'install') return 1;
-  
-  if (!isAutoHandled.value) {
-    if (stepKey === 'activate') return 2;
-    if (stepKey === 'ibus') return 3;
-    num = 3;
-  } else {
-    num = 1;
-  }
-  
-  if (stepKey === 'autostart') return num + 1;
-  if (stepKey === 'config') return num + 2;
-  if (stepKey === 'extras') return num + 3;
-  return 0;
-};
 
 const copyToClipboard = async (text: string) => {
   try {
@@ -372,26 +361,45 @@ const kanataConfig = {
               <pre><code>{{ installStepCode }}</code></pre>
               <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(installStepCode)" />
             </div>
-            <el-alert v-if="isAutoHandled" title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này." type="info" :closable="false" class="mt-4" />
           </div>
         </div>
 
-        <div v-if="!isAutoHandled" class="step-card">
-          <div class="step-badge">{{ getStepNumber('activate') }}</div>
+        <div class="step-card">
+          <div class="step-badge">2</div>
           <div class="step-content">
-            <h4>Kích hoạt Server & Cấu hình Shell</h4>
-            <div class="code-container">
-              <pre><code>{{ configStepCode }}</code></pre>
-              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(configStepCode)" />
+            <h4>Kích hoạt Server</h4>
+            <div v-if="isAutoHandled" class="mb-3">
+              <el-alert title="Gói .deb sẽ tự động kích hoạt server qua post-install script. Bạn có thể bỏ qua bước này." type="success" :closable="false" />
             </div>
-            <el-alert title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này." type="info" :closable="false" />
+            <div class="code-container">
+              <pre><code>{{ activateServerCode }}</code></pre>
+              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(activateServerCode)" />
+            </div>
           </div>
         </div>
 
-        <div v-if="!isAutoHandled" class="step-card">
-          <div class="step-badge">{{ getStepNumber('ibus') }}</div>
+        <div class="step-card">
+          <div class="step-badge">3</div>
+          <div class="step-content">
+            <h4>Thiết lập biến môi trường (Shell)</h4>
+            <div v-if="isAutoHandled" class="mb-3">
+              <el-alert title="Gói .deb sẽ tự động thiết lập biến môi trường. Bạn có thể bỏ qua bước này." type="success" :closable="false" />
+            </div>
+            <div class="code-container">
+              <pre><code>{{ shellConfigCode }}</code></pre>
+              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(shellConfigCode)" />
+            </div>
+            <el-alert title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực." type="info" :closable="false" />
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-badge">4</div>
           <div class="step-content">
             <h4>Tắt bộ gõ cũ (IBus)</h4>
+            <div v-if="isAutoHandled" class="mb-3">
+              <el-alert title="Gói .deb sẽ tự động tắt IBus. Bước này chỉ dùng để kiểm tra lại." type="success" :closable="false" />
+            </div>
             <p class="instruction">Nếu máy bạn đang dùng IBus, hãy tắt nó đi trước khi chuyển sang Fcitx5 để tránh xung đột.</p>
             <div class="code-container mini">
               <pre><code>killall ibus-daemon || ibus exit</code></pre>
@@ -404,7 +412,7 @@ const kanataConfig = {
         </div>
 
         <div class="step-card">
-          <div class="step-badge">{{ getStepNumber('autostart') }}</div>
+          <div class="step-badge">5</div>
           <div class="step-content">
             <h4>Tự động khởi chạy (Autostart)</h4>
             <div class="ui-nav-container">
@@ -414,7 +422,7 @@ const kanataConfig = {
         </div>
 
         <div class="step-card">
-          <div class="step-badge">{{ getStepNumber('config') }}</div>
+          <div class="step-badge">6</div>
           <div class="step-content">
             <h4>Cấu hình bộ gõ Fcitx5</h4>
             <p class="instruction">Sau khi đã Log out và Log in lại:</p>
@@ -425,7 +433,7 @@ const kanataConfig = {
         </div>
 
         <div class="step-card additional-card">
-          <div class="step-badge">{{ getStepNumber('extras') }}</div>
+          <div class="step-badge">7</div>
           <div class="step-content">
             <h4>Cấu hình bổ sung</h4>
 
