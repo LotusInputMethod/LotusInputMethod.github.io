@@ -319,15 +319,15 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
 
               <!-- DE Specific Setup -->
               <div v-if="waylandDeSpecific" class="wayland-setup-section mb-6">
-                <h5 class="mb-2">{{ selectedDe }} Wayland Configuration</h5>
+                <h5 v-if="selectedDe !== 'KDE Plasma'" class="mb-2">{{ selectedDe }} Wayland Configuration</h5>
                 
                 <div class="wayland-details p-4">
-                  <p class="instruction mb-2"><b>Thành phần hỗ trợ:</b> {{ waylandDeSpecific.support_info }}</p>
+                  <p v-if="waylandDeSpecific.support_info" class="instruction mb-2"><b>Thành phần hỗ trợ:</b> {{ waylandDeSpecific.support_info }}</p>
                   
                   <div v-if="waylandDeSpecific.best_setup && waylandDeSpecific.best_setup.length > 0">
-                    <p class="instruction"><b>Hướng dẫn cài đặt tốt nhất:</b></p>
+                    <p v-if="selectedDe !== 'KDE Plasma'" class="instruction"><b>Hướng dẫn cài đặt tốt nhất:</b></p>
                     <ul class="setup-list-mini">
-                      <li v-for="(point, idx) in waylandDeSpecific.best_setup" :key="idx">{{ point }}</li>
+                      <li v-for="(point, idx) in waylandDeSpecific.best_setup" :key="idx" v-html="point"></li>
                     </ul>
                   </div>
 

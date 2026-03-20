@@ -79,14 +79,8 @@ export const logic = {
       },
       "KDE Plasma": {
         "best_setup": [
-          "Sử dụng KDE Plasma 5.27 trở lên.",
-          "Biến môi trường: `XMODIFIERS=@im=fcitx` cho ứng dụng XWayland.",
-          "Vào **System Settings** -> **Virtual Keyboard** -> Chọn **Fcitx 5**.",
-          "Không đặt `GTK_IM_MODULE` & `QT_IM_MODULE` toàn cục.",
-          "Tham số trình duyệt: `--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime`"
-        ],
-        "support_info": "Hỗ trợ text-input-v1/v2/v3 và zwp_input_method_v1.",
-        "caveats": "Một số ứng dụng Gtk/Qt cũ chỉ chạy X11 vẫn có thể cần đặt module riêng lẻ. Tránh đặt toàn cục để tránh lỗi nhấp nháy cửa sổ ứng viên."
+          "Vào <b>System Settings</b> → <b>Keyboard</b> → <b>Virtual Keyboard</b> → Chọn <b>Fcitx 5</b>."
+        ]
       },
       "Sway": {
         "support_info": "Hỗ trợ text-input-v3 và zwp_input_method_v2 (từ bản 1.10+).",
