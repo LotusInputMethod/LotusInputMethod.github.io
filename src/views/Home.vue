@@ -127,7 +127,6 @@ onUnmounted(() => {
   clearTimeout(resetTimer);
 });
 
-
 interface SettingInfo {
   option: string;
   description: string;
@@ -147,33 +146,75 @@ const quickSettings: SettingInfo[] = [
     description: 'Tự động khôi phục với từ không phải tiếng Việt',
     default: 'Bật',
   },
-];
-
-const advancedSettings: SettingInfo[] = [
   {
-    option: 'Use oà, uý',
-    description: 'Bật/tắt kiểu đặt dấu thanh hiện đại (thay vì òa, úy)',
-    default: 'Bật',
-  },
-  {
-    option: 'Allow Freedom Type',
-    description: 'Cho phép bỏ dấu tự do ở bất kỳ đâu',
-    default: 'Bật',
-  },
-  {
-    option: 'Allow dd to đ',
-    description: 'Cho phép "dd" tạo "đ" khi dùng Auto restore',
-    default: 'Bật',
-  },
-  {
-    option: 'Fix Uinput with Ack',
-    description: 'Khuyên dùng cho ứng dụng Chromium (Chrome, Edge...)',
+    option: 'Custom Dictionary',
+    description: 'Từ điển tuỳ chỉnh',
     default: 'Tắt',
   },
+];
+
+interface AdvancedSettingInfo {
+  page: string;
+  option: string;
+  feature: string;
+}
+
+const advancedSettings: AdvancedSettingInfo[] = [
   {
-    option: 'Custom Keymap',
-    description: 'Tự định nghĩa phím gõ (chọn kiểu gõ Custom để áp dụng)',
-    default: 'Trống',
+    page: 'General',
+    option: 'Mode Menu Hotkey',
+    feature: 'Phím tắt menu chế độ gõ',
+  },
+  {
+    page: 'General',
+    option: 'Input Method',
+    feature:
+      'Kiểu gõ. Mặc định Telex. Nếu bạn muốn gõ w -> ư, sử dụng Telex 2 hoặc Telex W',
+  },
+  {
+    page: 'Typing',
+    option: 'Allow dd to produce đ',
+    feature: 'Cho phép dd->đ là tiếng việt, hay dùng cho gõ tắt',
+  },
+  {
+    page: 'Typing',
+    option: 'Use oà, uý instead of òa, úy',
+    feature: 'Bỏ dấu vị trí chuẩn tiếng việt thay vì bỏ theo thẩm mỹ',
+  },
+  {
+    page: 'Typing',
+    option: 'Fix uinput with ack',
+    feature: 'Sửa lỗi khi dùng chromium-based trên X11',
+  },
+  {
+    page: 'Typing',
+    option: 'Double space to period',
+    feature: 'Gõ dấu cách 2 lần để chấm câu, thử nghiệm',
+  },
+  {
+    page: 'Typing',
+    option: 'Auto capitalize',
+    feature: 'Tự viết hoa sau dấu câu, thử nghiệm',
+  },
+  {
+    page: 'Applications',
+    option: '',
+    feature: 'Quản lý chế độ mặc định của các ứng dụng',
+  },
+  {
+    page: 'Macros',
+    option: '',
+    feature: 'Quản lý các từ gõ tắt',
+  },
+  {
+    page: 'Dictionary',
+    option: '',
+    feature: 'Quản lý từ điển tuỳ chỉnh',
+  },
+  {
+    page: 'Keymap',
+    option: '',
+    feature: 'Quản lý keymap tuỳ chỉnh',
   },
 ];
 
@@ -186,12 +227,14 @@ const typingModes: TypingMode[] = [
   {
     mode: 'Uinput (Smooth)',
     shortcut: '1',
-    description: 'Chế độ mặc định, phản hồi nhanh. Tối ưu ứng dụng tốc độ cao.',
+    description:
+      'Chế độ mặc định, phản hồi nhanh. Tối ưu ứng dụng tốc độ cao và máy cấu hình tốt.',
   },
   {
     mode: 'Uinput (Slow)',
     shortcut: '2',
-    description: 'Tốc độ gửi phím chậm hơn. Tối ưu Libre Office.',
+    description:
+      'Tốc độ gửi phím chậm hơn. Tối ưu các ứng dụng xử lý phím chậm, hoặc máy có cấu hình yếu.',
   },
   {
     mode: 'Uinput (Hardcore)',
@@ -346,7 +389,9 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 
       <div class="mobile-menu" v-show="mobileMenuOpen">
         <a href="#features" @click="mobileMenuOpen = false">Tính năng</a>
-        <a href="#installation" @click="mobileMenuOpen = false">Cài đặt & Thiết lập</a>
+        <a href="#installation" @click="mobileMenuOpen = false"
+          >Cài đặt & Thiết lập</a
+        >
         <a href="#usage" @click="mobileMenuOpen = false">Hướng dẫn</a>
         <a href="#contributors" @click="mobileMenuOpen = false">Đóng góp</a>
         <el-button type="primary" @click="goToGitHub">
@@ -507,7 +552,8 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         <div class="section-title">
           <h2>Cài đặt & Thiết lập</h2>
           <p>
-            Chọn cấu hình hệ thống của bạn để nhận hướng dẫn cài đặt tối ưu nhất.
+            Chọn cấu hình hệ thống của bạn để nhận hướng dẫn cài đặt tối ưu
+            nhất.
           </p>
         </div>
         <div class="installer-wrapper">
@@ -527,7 +573,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           <div class="custom-card">
             <div class="usage-header">
               <el-icon class="icon-title color-green"><Setting /></el-icon>
-              <h3>Cài đặt nhanh (Quick)</h3>
+              <h3>Cài đặt nhanh</h3>
             </div>
             <p class="text-sm instruction mb-3">
               Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
@@ -540,6 +586,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
             >
               <el-table-column prop="option" label="Tùy chọn" width="140" />
               <el-table-column prop="description" label="Chức năng" />
+              <el-table-column prop="default" label="Mặc định" />
             </el-table>
 
             <div class="usage-header mt-6">
@@ -547,16 +594,17 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               <h3>Cài đặt nâng cao</h3>
             </div>
             <p class="text-sm instruction mb-3">
-              Mở Fcitx5 Configuration -> Chọn Lotus -> Nhấn biểu tượng Bánh răng
-              (Configure):
+              Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
+              Tray) -> Settings
             </p>
             <el-table
               :data="advancedSettings"
               size="small"
               class="table-bordered"
             >
-              <el-table-column prop="option" label="Tùy chọn" width="140" />
-              <el-table-column prop="description" label="Chức năng" />
+              <el-table-column prop="page" label="Trang" width="140" />
+              <el-table-column prop="option" label="Tuỳ chọn" />
+              <el-table-column prop="feature" label="Tính năng" />
             </el-table>
           </div>
 
@@ -592,6 +640,14 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               title="Reset trạng thái đang gõ"
               type="info"
               description="Chỉ cần nhấp chuột hoặc chạm touchpad trong khi đang gõ, bộ gõ sẽ tự động ngắt từ, ngăn chặn hiện tượng dính chữ."
+              :closable="false"
+              class="custom-alert-info mb-4"
+            />
+
+            <el-alert
+              title="Về phím tắt của menu chế độ gõ"
+              type="info"
+              description="Phím tắt của menu chế độ gõ có thể tuỳ chỉnh được trong cài đặt của lotus, bạn nên chỉnh nếu bạn có nhu cầu gõ phím này nhiều."
               :closable="false"
               class="custom-alert-info"
             />

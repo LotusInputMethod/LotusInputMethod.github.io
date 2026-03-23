@@ -2,15 +2,16 @@
 import { ref, computed } from 'vue';
 import { DocumentCopy } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import { 
-  distros, 
-  methods, 
-  shells, 
-  deWms, 
-  environments, 
-  logic, 
-  fcitx5Config, 
-  kanataConfig 
+import {
+  distros,
+  methods,
+  shells,
+  deWms,
+  environments,
+  initSystems,
+  logic,
+  fcitx5Config,
+  kanataConfig,
 } from '@/data/installer';
 
 const selectedDistro = ref(distros[0]?.name || '');
@@ -18,49 +19,52 @@ const selectedMethod = ref<string>(methods[0] || '');
 const selectedShell = ref<string>(shells[0] || '');
 const selectedDe = ref<string>(deWms[0] || '');
 const selectedEnv = ref<string>(environments[1] || '');
+const selectedInit = ref<string>(initSystems[0] || 'systemd');
 
 const activateServerCode = computed(() => {
-  if (selectedDistro.value === 'NixOS') return '# Bước này đã được cấu hình trong flake.nix ở trên.';
-  if (isAutoHandled.value) {
+  if (selectedDistro.value === 'NixOS')
+    return '# Bước này đã được cấu hình trong flake.nix ở trên.';
+  if (isAutoHandled.value && selectedInit.value !== 'OpenRC') {
     return '# Gói .deb sẽ tự động thực hiện bước này.\n' + serverCmd.value;
   }
   return serverCmd.value;
 });
 
 const shellConfigCode = computed(() => {
-  if (selectedDistro.value === 'NixOS') return '# Bước này đã được cấu hình trong flake.nix ở trên.';
+  if (selectedDistro.value === 'NixOS')
+    return '# Bước này đã được cấu hình trong flake.nix ở trên.';
   return envCmd.value;
 });
 
 const serverCmd = computed(() => {
-  if (selectedShell.value === 'Fish') return "sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; or begin; sudo systemd-sysusers; and sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; end";
-  return "sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service || (sudo systemd-sysusers && sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service)";
+  if (selectedInit.value === 'OpenRC') {
+    return 'sudo rc-update add fcitx5-lotus\nsudo ln -s /etc/init.d/fcitx5-lotus /etc/init.d/fcitx5-lotus.$(whoami)\nsudo rc-service fcitx5-lotus.$(whoami) restart';
+  }
+  if (selectedShell.value === 'Fish')
+    return 'sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; or begin; sudo systemd-sysusers; and sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; end';
+  return 'sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service || (sudo systemd-sysusers && sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service)';
 });
 
 const envCmd = computed(() => {
-  // Default for X11 and other Wayland DEs
   const defaultVars = [
-    "export GTK_IM_MODULE=fcitx",
-    "export QT_IM_MODULE=fcitx",
-    "export XMODIFIERS=@im=fcitx",
-    "export SDL_IM_MODULE=fcitx",
-    "export GLFW_IM_MODULE=ibus"
+    'export GTK_IM_MODULE=fcitx',
+    'export QT_IM_MODULE=fcitx',
+    'export XMODIFIERS=@im=fcitx',
+    'export SDL_IM_MODULE=fcitx',
+    'export GLFW_IM_MODULE=ibus',
   ];
 
   let vars;
 
   if (selectedEnv.value === 'Wayland') {
     if (selectedDe.value === 'KDE Plasma') {
-      vars = [
-        "export XMODIFIERS=@im=fcitx",
-        "export GLFW_IM_MODULE=ibus"
-      ];
+      vars = ['export XMODIFIERS=@im=fcitx', 'export GLFW_IM_MODULE=ibus'];
     } else if (selectedDe.value === 'GNOME' || selectedDe.value === 'Sway') {
       vars = [
-        "export XMODIFIERS=@im=fcitx",
-        "export QT_IM_MODULE=fcitx",
-        "export QT_IM_MODULES=\"wayland;fcitx\"",
-        "export GLFW_IM_MODULE=ibus"
+        'export XMODIFIERS=@im=fcitx',
+        'export QT_IM_MODULE=fcitx',
+        'export QT_IM_MODULES="wayland;fcitx"',
+        'export GLFW_IM_MODULE=ibus',
       ];
     } else {
       vars = defaultVars;
@@ -75,7 +79,7 @@ const envCmd = computed(() => {
     return `cat <<EOF >> ~/.zprofile\n${vars.join('\n')}\nEOF`;
   } else {
     // Fish
-    const fishVars = vars.map(v => {
+    const fishVars = vars.map((v) => {
       const idxEq = v.indexOf('=');
       const name = v.slice(0, idxEq).replace('export ', '');
       const val = v.slice(idxEq + 1);
@@ -86,7 +90,10 @@ const envCmd = computed(() => {
 });
 
 const isAutoHandled = computed(() => {
-  return ['Debian', 'Ubuntu'].includes(selectedDistro.value) && selectedMethod.value === 'Package Manager';
+  return (
+    ['Debian', 'Ubuntu'].includes(selectedDistro.value) &&
+    selectedMethod.value === 'Package Manager'
+  );
 });
 
 const copyToClipboard = async (text: string) => {
@@ -99,12 +106,22 @@ const copyToClipboard = async (text: string) => {
 };
 
 const installStepCode = computed(() => {
-  const distroInfo = logic.steps.install[selectedDistro.value as keyof typeof logic.steps.install];
+  const distroInfo =
+    logic.steps.install[
+      selectedDistro.value as keyof typeof logic.steps.install
+    ];
   if (!distroInfo) return 'Cấu hình chưa sẵn sàng.';
-  return (distroInfo as any)[selectedMethod.value] || 'Phương thức chưa sẵn sàng.';
+  return (
+    (distroInfo as any)[selectedMethod.value] || 'Phương thức chưa sẵn sàng.'
+  );
 });
 
-const autostartText = computed(() => logic.steps.autostart[selectedDe.value as keyof typeof logic.steps.autostart]);
+const autostartText = computed(
+  () =>
+    logic.steps.autostart[
+      selectedDe.value as keyof typeof logic.steps.autostart
+    ],
+);
 
 // Wayland Logic
 const waylandGeneral = computed(() => {
@@ -117,21 +134,20 @@ const waylandDeSpecific = computed(() => {
   return (logic.steps.wayland_extras as any)[selectedDe.value] || null;
 });
 
-const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3";
-
+const chromiumWaylandFlags =
+  '--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3';
 </script>
 
 <template>
   <div class="installer-component">
     <div class="installer-grid">
-      <!-- Controls -->
       <div class="controls-card">
         <div class="control-item">
           <label>Distro</label>
           <div class="distro-grid">
-            <div 
-              v-for="d in distros" 
-              :key="d.name" 
+            <div
+              v-for="d in distros"
+              :key="d.name"
               class="distro-card"
               :class="{ active: selectedDistro === d.name }"
               @click="selectedDistro = d.name"
@@ -145,9 +161,9 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
         <div class="control-item">
           <label>Desktop Environment / WM</label>
           <div class="de-grid">
-            <div 
-              v-for="de in deWms" 
-              :key="de" 
+            <div
+              v-for="de in deWms"
+              :key="de"
               class="de-card"
               :class="{ active: selectedDe === de }"
               @click="selectedDe = de"
@@ -160,9 +176,9 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
         <div class="control-item">
           <label>Môi trường</label>
           <div class="option-grid">
-            <div 
-              v-for="e in environments" 
-              :key="e" 
+            <div
+              v-for="e in environments"
+              :key="e"
               class="option-card"
               :class="{ active: selectedEnv === e }"
               @click="selectedEnv = e"
@@ -173,11 +189,26 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
         </div>
 
         <div class="control-item">
+          <label>Init System</label>
+          <div class="option-grid">
+            <div
+              v-for="i in initSystems"
+              :key="i"
+              class="option-card"
+              :class="{ active: selectedInit === i }"
+              @click="selectedInit = i"
+            >
+              <span>{{ i }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="control-item">
           <label>Phương thức cài đặt</label>
           <div class="option-grid">
-            <div 
-              v-for="m in methods" 
-              :key="m" 
+            <div
+              v-for="m in methods"
+              :key="m"
               class="option-card"
               :class="{ active: selectedMethod === m }"
               @click="selectedMethod = m"
@@ -190,9 +221,9 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
         <div class="control-item">
           <label>Shell đang dùng</label>
           <div class="option-grid">
-            <div 
-              v-for="s in shells" 
-              :key="s" 
+            <div
+              v-for="s in shells"
+              :key="s"
               class="option-card"
               :class="{ active: selectedShell === s }"
               @click="selectedShell = s"
@@ -203,7 +234,6 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
         </div>
       </div>
 
-      <!-- Output -->
       <div class="output-area">
         <div class="step-card">
           <div class="step-badge">1</div>
@@ -211,7 +241,12 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
             <h4>Cài đặt gói</h4>
             <div class="code-container">
               <pre><code>{{ installStepCode }}</code></pre>
-              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(installStepCode)" />
+              <el-button
+                class="copy-float"
+                circle
+                :icon="DocumentCopy"
+                @click="copyToClipboard(installStepCode)"
+              />
             </div>
           </div>
         </div>
@@ -220,12 +255,21 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
           <div class="step-badge">2</div>
           <div class="step-content">
             <h4>Kích hoạt Server</h4>
-            <div v-if="isAutoHandled" class="mb-3">
-              <el-alert title="Gói .deb sẽ tự động kích hoạt server qua post-install script. Bạn có thể bỏ qua bước này." type="success" :closable="false" />
+            <div v-if="isAutoHandled && selectedInit !== 'OpenRC'" class="mb-3">
+              <el-alert
+                title="Gói .deb sẽ tự động kích hoạt server qua post-install script. Bạn có thể bỏ qua bước này."
+                type="success"
+                :closable="false"
+              />
             </div>
             <div class="code-container">
               <pre><code>{{ activateServerCode }}</code></pre>
-              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(activateServerCode)" />
+              <el-button
+                class="copy-float"
+                circle
+                :icon="DocumentCopy"
+                @click="copyToClipboard(activateServerCode)"
+              />
             </div>
           </div>
         </div>
@@ -235,15 +279,29 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
           <div class="step-content">
             <h4>Tắt bộ gõ cũ (IBus)</h4>
             <div v-if="isAutoHandled" class="mb-3">
-              <el-alert title="Gói .deb sẽ tự động tắt IBus. Bước này chỉ dùng để kiểm tra lại." type="success" :closable="false" />
+              <el-alert
+                title="Gói .deb sẽ tự động tắt IBus. Bước này chỉ dùng để kiểm tra lại."
+                type="success"
+                :closable="false"
+              />
             </div>
-            <p class="instruction">Nếu máy bạn đang dùng IBus, hãy tắt nó đi trước khi chuyển sang Fcitx5 để tránh xung đột.</p>
+            <p class="instruction">
+              Nếu máy bạn đang dùng IBus, hãy tắt nó đi trước khi chuyển sang
+              Fcitx5 để tránh xung đột.
+            </p>
             <div class="code-container mini">
               <pre><code>killall ibus-daemon || ibus exit</code></pre>
-              <el-button class="copy-float" circle :icon="DocumentCopy" size="small" @click="copyToClipboard('killall ibus-daemon || ibus exit')" />
+              <el-button
+                class="copy-float"
+                circle
+                :icon="DocumentCopy"
+                size="small"
+                @click="copyToClipboard('killall ibus-daemon || ibus exit')"
+              />
             </div>
             <p class="instruction mt-2" style="font-size: 0.85rem">
-              * Lưu ý: Hãy tắt autostart của IBus (thường là ibus-daemon hoặc ibus). Tốt nhất là gỡ cài đặt IBus nếu không sử dụng.
+              * Lưu ý: Hãy tắt autostart của IBus (thường là ibus-daemon hoặc
+              ibus). Tốt nhất là gỡ cài đặt IBus nếu không sử dụng.
             </p>
           </div>
         </div>
@@ -254,9 +312,18 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
             <h4>Thiết lập biến môi trường (Shell)</h4>
             <div class="code-container">
               <pre><code>{{ shellConfigCode }}</code></pre>
-              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(shellConfigCode)" />
+              <el-button
+                class="copy-float"
+                circle
+                :icon="DocumentCopy"
+                @click="copyToClipboard(shellConfigCode)"
+              />
             </div>
-            <el-alert title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực." type="info" :closable="false" />
+            <el-alert
+              title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực."
+              type="info"
+              :closable="false"
+            />
           </div>
         </div>
 
@@ -276,7 +343,11 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
             <h4>Cấu hình bộ gõ Fcitx5</h4>
             <p class="instruction">Sau khi đã Log out và Log in lại:</p>
             <ul class="setup-list-mini">
-              <li v-for="(step, idx) in fcitx5Config.steps" :key="idx" v-html="step"></li>
+              <li
+                v-for="(step, idx) in fcitx5Config.steps"
+                :key="idx"
+                v-html="step"
+              ></li>
             </ul>
           </div>
         </div>
@@ -286,76 +357,118 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
           <div class="step-content">
             <h4>Cấu hình bổ sung</h4>
 
-            <!-- GNOME Note (Alert) -->
-            <div v-if="selectedDe === 'GNOME'" class="mb-4">
-              <el-alert 
-                title="Lưu ý quan trọng cho GNOME" 
-                type="warning" 
-                show-icon 
-                :closable="false"
-              >
-                <p style="margin: 0; line-height: 1.5;">
-                  Ưu tiên sử dụng extension <b>AppIndicator and KStatusNotifierItem Support</b> để hiển thị đúng biểu tượng Lotus trên systray. <b>Tránh sử dụng Kimpanel</b> vì có thể gây lỗi hiển thị.
-                </p>
-              </el-alert>
-            </div>
-            
-            <!-- Wayland Extras -->
             <div v-if="selectedEnv === 'Wayland'">
-              <!-- General Recommendation -->
               <div v-if="waylandGeneral" class="extra-item mb-4">
-                <el-alert 
-                  :title="waylandGeneral.title" 
-                  type="info" 
+                <el-alert
+                  :title="waylandGeneral.title"
+                  type="info"
                   :closable="false"
                   show-icon
                 >
-                  <p style="margin: 0; line-height: 1.5;">{{ waylandGeneral.description }}</p>
+                  <p style="margin: 0; line-height: 1.5">
+                    {{ waylandGeneral.description }}
+                  </p>
                 </el-alert>
               </div>
 
-              <!-- DE Specific Setup -->
               <div v-if="waylandDeSpecific" class="wayland-setup-section mb-6">
-                <h5 v-if="selectedDe !== 'KDE Plasma'" class="mb-2">{{ selectedDe }} Wayland Configuration</h5>
-                
+                <h5 v-if="selectedDe !== 'KDE Plasma'" class="mb-2">
+                  {{ selectedDe }} Wayland Configuration
+                </h5>
+
                 <div class="wayland-details p-4">
-                  <p v-if="waylandDeSpecific.support_info" class="instruction mb-2"><b>Thành phần hỗ trợ:</b> {{ waylandDeSpecific.support_info }}</p>
-                  
-                  <div v-if="waylandDeSpecific.best_setup && waylandDeSpecific.best_setup.length > 0">
-                    <p v-if="selectedDe !== 'KDE Plasma'" class="instruction"><b>Hướng dẫn cài đặt tốt nhất:</b></p>
+                  <p
+                    v-if="waylandDeSpecific.support_info"
+                    class="instruction mb-2"
+                  >
+                    <b>Thành phần hỗ trợ:</b>
+                    {{ waylandDeSpecific.support_info }}
+                  </p>
+
+                  <div
+                    v-if="
+                      waylandDeSpecific.best_setup &&
+                      waylandDeSpecific.best_setup.length > 0
+                    "
+                  >
+                    <p v-if="selectedDe !== 'KDE Plasma'" class="instruction">
+                      <b>Hướng dẫn cài đặt tốt nhất:</b>
+                    </p>
                     <ul class="setup-list-mini">
-                      <li v-for="(point, idx) in waylandDeSpecific.best_setup" :key="idx" v-html="point"></li>
+                      <li
+                        v-for="(point, idx) in waylandDeSpecific.best_setup"
+                        :key="idx"
+                        v-html="point"
+                      ></li>
                     </ul>
                   </div>
 
-                  <el-alert 
-                    v-if="waylandDeSpecific.caveats" 
-                    title="Lưu ý" 
-                    type="warning" 
+                  <el-alert
+                    v-if="waylandDeSpecific.caveats"
+                    title="Lưu ý"
+                    type="warning"
                     :closable="false"
                     class="mt-2"
                   >
-                    <p style="margin: 0; line-height: 1.4; font-size: 0.85rem;">{{ waylandDeSpecific.caveats }}</p>
+                    <p style="margin: 0; line-height: 1.4; font-size: 0.85rem">
+                      {{ waylandDeSpecific.caveats }}
+                    </p>
                   </el-alert>
                 </div>
               </div>
 
-              <!-- Chromium Flags (Common) -->
+              <div v-if="selectedInit === 'OpenRC'" class="extra-item mb-4">
+                <p class="instruction">
+                  <b>Lưu ý cho OpenRC:</b> Thêm biến sau vào cấu hình môi trường
+                  (ví dụ <code>/etc/environment</code> hoặc config của DE/WM) để
+                  fix lỗi không gõ được trên các ứng dụng X11/XCB:
+                </p>
+                <div class="code-container mini">
+                  <pre><code>DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus</code></pre>
+                  <el-button
+                    class="copy-float"
+                    circle
+                    :icon="DocumentCopy"
+                    size="small"
+                    @click="
+                      copyToClipboard(
+                        'DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus',
+                      )
+                    "
+                  />
+                </div>
+              </div>
+
               <div class="extra-item mb-4">
-                <p class="instruction"><b>Chromium / Electron:</b> Bật hỗ trợ bộ gõ Wayland:</p>
+                <p class="instruction">
+                  <b>Chromium / Electron:</b> Bật hỗ trợ bộ gõ Wayland:
+                </p>
                 <div class="code-container mini">
                   <pre><code>{{ chromiumWaylandFlags }}</code></pre>
-                  <el-button class="copy-float" circle :icon="DocumentCopy" size="small" @click="copyToClipboard(chromiumWaylandFlags)" />
+                  <el-button
+                    class="copy-float"
+                    circle
+                    :icon="DocumentCopy"
+                    size="small"
+                    @click="copyToClipboard(chromiumWaylandFlags)"
+                  />
                 </div>
               </div>
             </div>
 
-            <!-- Kanata -->
             <div class="extra-item">
-              <p class="instruction"><b>{{ kanataConfig.title }}:</b> {{ kanataConfig.desc }}</p>
+              <p class="instruction">
+                <b>{{ kanataConfig.title }}:</b> {{ kanataConfig.desc }}
+              </p>
               <div class="code-container mini">
                 <pre><code>{{ kanataConfig.code }}</code></pre>
-                <el-button class="copy-float" circle :icon="DocumentCopy" size="small" @click="copyToClipboard(kanataConfig.code)" />
+                <el-button
+                  class="copy-float"
+                  circle
+                  :icon="DocumentCopy"
+                  size="small"
+                  @click="copyToClipboard(kanataConfig.code)"
+                />
               </div>
             </div>
           </div>
@@ -390,7 +503,9 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   height: fit-content;
   position: sticky;
   top: 100px;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
   z-index: 10;
 }
 
@@ -420,7 +535,9 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
 }
 
 /* Grids styling */
-.distro-grid, .de-grid, .option-grid {
+.distro-grid,
+.de-grid,
+.option-grid {
   display: grid;
   gap: 12px;
 }
@@ -440,7 +557,9 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
 }
 
 /* Cards */
-.distro-card, .de-card, .option-card {
+.distro-card,
+.de-card,
+.option-card {
   background-color: var(--ctp-mantle);
   border: 1px solid var(--ctp-surface1);
   border-radius: 8px;
@@ -463,14 +582,18 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   gap: 10px;
 }
 
-.distro-card:hover, .de-card:hover, .option-card:hover {
+.distro-card:hover,
+.de-card:hover,
+.option-card:hover {
   background-color: var(--ctp-surface0);
   border-color: var(--ctp-surface2);
   color: var(--ctp-text);
 }
 
 /* Trạng thái Active - Chỉ đổi viền và chữ để không bị lóa mảng màu lớn */
-.distro-card.active, .de-card.active, .option-card.active {
+.distro-card.active,
+.de-card.active,
+.option-card.active {
   background-color: var(--ctp-surface1);
   border-color: var(--ctp-green);
   color: var(--ctp-green);
@@ -481,7 +604,8 @@ const chromiumWaylandFlags = "--enable-features=UseOzonePlatform --ozone-platfor
   flex-shrink: 0;
 }
 
-.distro-card span, .option-card span {
+.distro-card span,
+.option-card span {
   font-size: 0.85rem;
 }
 
@@ -624,13 +748,25 @@ code {
 }
 
 /* Utilities */
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 0.75rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mb-6 { margin-bottom: 1.5rem; }
-.mt-2 { margin-top: 0.5rem; }
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
 
-.wayland-setup-section { margin-bottom: 1.5rem; }
+.wayland-setup-section {
+  margin-bottom: 1.5rem;
+}
 .setup-list-mini {
   padding-left: 1.25rem;
   margin: 0.75rem 0;
@@ -638,7 +774,9 @@ code {
   font-size: 0.95rem;
   line-height: 1.6;
 }
-.setup-list-mini li { margin-bottom: 0.5rem; }
+.setup-list-mini li {
+  margin-bottom: 0.5rem;
+}
 
 .wayland-details {
   background-color: var(--ctp-mantle);
@@ -721,7 +859,8 @@ code {
 
 /* Extra Small Mobile */
 @media (max-width: 480px) {
-  .distro-grid, .de-grid {
+  .distro-grid,
+  .de-grid {
     grid-template-columns: 1fr;
   }
 
