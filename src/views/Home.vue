@@ -168,8 +168,7 @@ const advancedSettings: AdvancedSettingInfo[] = [
   {
     page: 'General',
     option: 'Input Method',
-    feature:
-      'Kiểu gõ. Mặc định Telex. Nếu bạn muốn gõ w -> ư, sử dụng Telex 2 hoặc Telex W',
+    feature: 'Kiểu gõ. Mặc định Telex.',
   },
   {
     page: 'Typing',
@@ -180,6 +179,12 @@ const advancedSettings: AdvancedSettingInfo[] = [
     page: 'Typing',
     option: 'Use oà, uý instead of òa, úy',
     feature: 'Bỏ dấu vị trí chuẩn tiếng việt thay vì bỏ theo thẩm mỹ',
+  },
+  {
+    page: 'Typing',
+    option: 'Type w to produce ư',
+    feature:
+      'Gõ w ra ư, dùng ở kiểu gõ telex nếu có nhu cầu này vì Telex mặc định không có.',
   },
   {
     page: 'Typing',
