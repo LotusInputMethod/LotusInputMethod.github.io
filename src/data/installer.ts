@@ -64,7 +64,7 @@ export const logic = {
       },
       NixOS: {
         'Package Manager':
-          'inputs.fcitx5-lotus = {\n  url = "github:LotusInputMethod/fcitx5-lotus";\n  inputs.nixpkgs.follows = "nixpkgs";\n};\n\n# In configuration.nix:\nservices.fcitx5-lotus = {\n  enable = true;\n  user = "your_username";\n};',
+          '# Thêm input của fcitx5-lotus vào flake.nix:\n{\n  inputs = {\n    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";\n\n    fcitx5-lotus = {\n      url = "github:LotusInputMethod/fcitx5-lotus";\n      inputs.nixpkgs.follows = "nixpkgs";\n    };\n  };\n\n  outputs = {\n    self,\n  ...\n}\n\n# Bật fcitx5-lotus service trong configuration.nix:\n\n{\n  inputs,\n  ...\n}: {\n  imports = [\n    inputs.fcitx5-lotus.nixosModules.fcitx5-lotus\n  ];\n\n  services.fcitx5-lotus = {\n    enable = true;\n    user = "your_username"; # Sửa thành tên user của bạn\n  };\n}\n\n# Rebuild lại system để cài đặt.',
         Binary: 'NixOS ưu tiên cấu hình thông qua flake hoặc module.',
         Source: 'NixOS ưu tiên sử dụng nix-shell.',
       },
