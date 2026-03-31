@@ -23,8 +23,8 @@ const mobileMenuOpen = ref<boolean>(false);
 const activeOS = ref<string>('arch');
 const setupStep = ref<number>(0);
 const isScrolled = ref<boolean>(false);
-const starCount = ref<string>('160+');
-const contributorCount = ref<number>(5);
+const starCount = ref<string>('0');
+const contributorCount = ref<number>(0);
 const REPO = 'LotusInputMethod/fcitx5-lotus';
 
 // --- CATPPUCCIN THEME LOGIC ---
@@ -108,8 +108,8 @@ const fetchContributors = async () => {
   const CACHE_TIME_KEY = 'lotus_contributors_timestamp_v2';
   const TWO_HOURS = 2 * 60 * 60 * 1000;
 
-  const specialRoles: Record<string, string> = {
-    nhktmdzhg: 'Founder',
+  const specialRoles: Record<number, string> = {
+    57983253: 'Founder', // nhktmdzhg
   };
 
   const blacklist = ['thanhpy2009', 'loccun'];
@@ -121,7 +121,6 @@ const fetchContributors = async () => {
 
     if (cachedData && lastFetch && now - parseInt(lastFetch) < TWO_HOURS) {
       const parsed = JSON.parse(cachedData);
-      // Filter again in case the blacklist was updated and we have stale cache
       const filtered = parsed.filter(
         (c: any) => !blacklist.includes(c.name) && !c.name.includes('[bot]'),
       );
@@ -135,10 +134,16 @@ const fetchContributors = async () => {
 
     const data = await response.json();
     const fetchedContributors: Contributor[] = data
-      .filter((item: any) => !blacklist.includes(item.login) && item.type !== 'Bot')
+      .filter(
+        (item: any) =>
+          !blacklist.includes(item.login) &&
+          item.type !== 'Bot' &&
+          !item.login.includes('[bot]'),
+      )
       .map((item: any) => ({
+        id: item.id,
         name: item.login,
-        role: specialRoles[item.login] || 'Contributor',
+        role: specialRoles[item.id] || 'Contributor',
         avatar: item.avatar_url,
         githubUrl: item.html_url,
       }));
@@ -322,43 +327,13 @@ const typingModes: TypingMode[] = [
 ];
 
 interface Contributor {
+  id: number;
   name: string;
   role: string;
   avatar: string;
   githubUrl: string;
 }
-const contributors = ref<Contributor[]>([
-  {
-    name: 'Nguyen Hoang Ky',
-    role: 'Founder',
-    avatar: 'https://avatars.githubusercontent.com/u/57983253?v=4',
-    githubUrl: 'https://github.com/khog9',
-  },
-  {
-    name: 'Huỳnh Thiện Lộc',
-    role: 'Contributor',
-    avatar: 'https://avatars.githubusercontent.com/u/148019203?v=4',
-    githubUrl: 'https://github.com/hthienloc',
-  },
-  {
-    name: 'Nguyễn Hồng Hiệp',
-    role: 'Contributor',
-    avatar: 'https://avatars.githubusercontent.com/u/57614330?v=4',
-    githubUrl: 'https://github.com/Hiep-N',
-  },
-  {
-    name: 'Đặng Quang Hiển',
-    role: 'Contributor',
-    avatar: 'https://avatars.githubusercontent.com/u/83270073?v=4',
-    githubUrl: 'https://github.com/dqhien',
-  },
-  {
-    name: 'Zebra2711',
-    role: 'Contributor',
-    avatar: 'https://avatars.githubusercontent.com/u/89755535?v=4',
-    githubUrl: 'https://github.com/Zebra2711',
-  },
-]);
+const contributors = ref<Contributor[]>([]);
 
 // --- COMMANDS ---
 const commands: Record<string, string> = {
