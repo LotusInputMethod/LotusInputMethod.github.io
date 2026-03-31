@@ -24,6 +24,8 @@ const activeOS = ref<string>('arch');
 const setupStep = ref<number>(0);
 const isScrolled = ref<boolean>(false);
 const starCount = ref<string>('160+');
+const contributorCount = ref<number>(5);
+const REPO = 'LotusInputMethod/fcitx5-lotus';
 
 // --- CATPPUCCIN THEME LOGIC ---
 const catppuccinThemes = ['latte', 'frappe', 'macchiato', 'mocha'] as const;
@@ -71,7 +73,6 @@ const startTyping = () => {
 };
 
 const fetchGithubStars = async () => {
-  const REPO = 'LotusInputMethod/fcitx5-lotus';
   const CACHE_KEY = 'lotus_stars_cache';
   const CACHE_TIME_KEY = 'lotus_stars_timestamp';
   const TWO_HOURS = 2 * 60 * 60 * 1000;
@@ -102,6 +103,60 @@ const fetchGithubStars = async () => {
   }
 };
 
+const fetchContributors = async () => {
+  const CACHE_KEY = 'lotus_contributors_cache_v2';
+  const CACHE_TIME_KEY = 'lotus_contributors_timestamp_v2';
+  const TWO_HOURS = 2 * 60 * 60 * 1000;
+
+  const specialRoles: Record<string, string> = {
+    nhktmdzhg: 'Founder',
+  };
+
+  const blacklist = ['thanhpy2009', 'loccun'];
+
+  try {
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
+    const now = Date.now();
+
+    if (cachedData && lastFetch && now - parseInt(lastFetch) < TWO_HOURS) {
+      const parsed = JSON.parse(cachedData);
+      // Filter again in case the blacklist was updated and we have stale cache
+      const filtered = parsed.filter(
+        (c: any) => !blacklist.includes(c.name) && !c.name.includes('[bot]'),
+      );
+      contributors.value = filtered;
+      contributorCount.value = filtered.length;
+      return;
+    }
+
+    const response = await fetch(`https://api.github.com/repos/${REPO}/contributors`);
+    if (!response.ok) throw new Error('GitHub API error');
+
+    const data = await response.json();
+    const fetchedContributors: Contributor[] = data
+      .filter((item: any) => !blacklist.includes(item.login) && item.type !== 'Bot')
+      .map((item: any) => ({
+        name: item.login,
+        role: specialRoles[item.login] || 'Contributor',
+        avatar: item.avatar_url,
+        githubUrl: item.html_url,
+      }));
+
+    contributors.value = fetchedContributors;
+    contributorCount.value = fetchedContributors.length;
+    localStorage.setItem(CACHE_KEY, JSON.stringify(fetchedContributors));
+    localStorage.setItem(CACHE_TIME_KEY, now.toString());
+  } catch (error) {
+    console.error('Lỗi khi lấy contributor từ GitHub:', error);
+    const oldCache = localStorage.getItem(CACHE_KEY);
+    if (oldCache) {
+      contributors.value = JSON.parse(oldCache);
+      contributorCount.value = contributors.value.length;
+    }
+  }
+};
+
 onMounted(() => {
   const savedTheme = localStorage.getItem('catppuccin-theme');
   if (savedTheme && catppuccinThemes.includes(savedTheme as CatppuccinTheme)) {
@@ -119,6 +174,7 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll);
   startTyping();
   fetchGithubStars();
+  fetchContributors();
 });
 
 onUnmounted(() => {
@@ -269,34 +325,40 @@ interface Contributor {
   name: string;
   role: string;
   avatar: string;
+  githubUrl: string;
 }
-const contributors: Contributor[] = [
+const contributors = ref<Contributor[]>([
   {
     name: 'Nguyen Hoang Ky',
     role: 'Founder',
     avatar: 'https://avatars.githubusercontent.com/u/57983253?v=4',
+    githubUrl: 'https://github.com/khog9',
   },
   {
     name: 'Huỳnh Thiện Lộc',
     role: 'Contributor',
     avatar: 'https://avatars.githubusercontent.com/u/148019203?v=4',
+    githubUrl: 'https://github.com/hthienloc',
   },
   {
     name: 'Nguyễn Hồng Hiệp',
     role: 'Contributor',
     avatar: 'https://avatars.githubusercontent.com/u/57614330?v=4',
+    githubUrl: 'https://github.com/Hiep-N',
   },
   {
     name: 'Đặng Quang Hiển',
     role: 'Contributor',
     avatar: 'https://avatars.githubusercontent.com/u/83270073?v=4',
+    githubUrl: 'https://github.com/dqhien',
   },
   {
     name: 'Zebra2711',
     role: 'Contributor',
     avatar: 'https://avatars.githubusercontent.com/u/89755535?v=4',
+    githubUrl: 'https://github.com/Zebra2711',
   },
-];
+]);
 
 // --- COMMANDS ---
 const commands: Record<string, string> = {
@@ -449,7 +511,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               <span>Distros hỗ trợ</span>
             </div>
             <div class="stat-item">
-              <strong>5</strong>
+              <strong>{{ contributorCount }}</strong>
               <span>Người đóng góp</span>
             </div>
           </div>
@@ -669,7 +731,12 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         </div>
 
         <div class="contributors-flex">
-          <div v-for="c in contributors" :key="c.name" class="contributor-item">
+          <div
+            v-for="c in contributors"
+            :key="c.name"
+            class="contributor-item"
+            @click="openLink(c.githubUrl)"
+          >
             <el-avatar :size="80" :src="c.avatar" class="contributor-avatar" />
             <div class="c-name">{{ c.name }}</div>
             <div class="c-role">{{ c.role }}</div>
