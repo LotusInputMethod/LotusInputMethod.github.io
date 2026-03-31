@@ -104,8 +104,8 @@ const fetchGithubStars = async () => {
 };
 
 const fetchContributors = async () => {
-  const CACHE_KEY = 'lotus_contributors_cache_v2';
-  const CACHE_TIME_KEY = 'lotus_contributors_timestamp_v2';
+  const CACHE_KEY = 'lotus_contributors_cache';
+  const CACHE_TIME_KEY = 'lotus_contributors_timestamp';
   const TWO_HOURS = 2 * 60 * 60 * 1000;
 
   const specialRoles: Record<number, string> = {
@@ -129,7 +129,9 @@ const fetchContributors = async () => {
       return;
     }
 
-    const response = await fetch(`https://api.github.com/repos/${REPO}/contributors`);
+    const response = await fetch(
+      `https://api.github.com/repos/${REPO}/contributors`,
+    );
     if (!response.ok) throw new Error('GitHub API error');
 
     const data = await response.json();
