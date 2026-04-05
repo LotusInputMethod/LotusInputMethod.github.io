@@ -12,6 +12,9 @@ import {
   SiFedora,
   SiOpensuse,
   SiNixos,
+  HiStar,
+  HiUsers,
+  HiTag,
 } from 'oh-vue-icons/icons';
 
 addIcons(
@@ -23,6 +26,9 @@ addIcons(
   SiFedora,
   SiOpensuse,
   SiNixos,
+  HiStar,
+  HiUsers,
+  HiTag,
 );
 
 const app = createApp(App);
