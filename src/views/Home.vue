@@ -107,12 +107,13 @@ const fetchGithubStars = async () => {
 
 const fetchLatestRelease = async () => {
   const CACHE_KEY = 'lotus_latest_version_cache';
+  const CACHE_URL_KEY = 'lotus_latest_url_cache';
   const CACHE_TIME_KEY = 'lotus_latest_version_timestamp';
   const TWO_HOURS = 2 * 60 * 60 * 1000;
 
   try {
     const cachedVersion = localStorage.getItem(CACHE_KEY);
-    const cachedUrl = localStorage.getItem('lotus_latest_url_cache');
+    const cachedUrl = localStorage.getItem(CACHE_URL_KEY);
     const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
     const now = Date.now();
 
@@ -129,13 +130,21 @@ const fetchLatestRelease = async () => {
     const version = data.tag_name;
     const url = data.html_url;
 
-    latestVersion.value = version;
-    latestReleaseUrl.value = url;
-    localStorage.setItem(CACHE_KEY, version);
-    localStorage.setItem('lotus_latest_url_cache', url);
-    localStorage.setItem(CACHE_TIME_KEY, now.toString());
+    if (version && url) {
+      latestVersion.value = version;
+      latestReleaseUrl.value = url;
+      localStorage.setItem(CACHE_KEY, version);
+      localStorage.setItem(CACHE_URL_KEY, url);
+      localStorage.setItem(CACHE_TIME_KEY, now.toString());
+    }
   } catch (error) {
     console.error('Lỗi khi lấy version từ GitHub:', error);
+    const oldVersion = localStorage.getItem(CACHE_KEY);
+    const oldUrl = localStorage.getItem(CACHE_URL_KEY);
+    if (oldVersion && oldUrl) {
+      latestVersion.value = oldVersion;
+      latestReleaseUrl.value = oldUrl;
+    }
   }
 };
 
