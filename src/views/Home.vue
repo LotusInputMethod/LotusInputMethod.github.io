@@ -25,6 +25,8 @@ const setupStep = ref<number>(0);
 const isScrolled = ref<boolean>(false);
 const starCount = ref<string>('0');
 const contributorCount = ref<number>(0);
+const latestVersion = ref<string>('');
+const latestReleaseUrl = ref<string>('');
 const REPO = 'LotusInputMethod/fcitx5-lotus';
 
 // --- CATPPUCCIN THEME LOGIC ---
@@ -103,6 +105,40 @@ const fetchGithubStars = async () => {
   }
 };
 
+const fetchLatestRelease = async () => {
+  const CACHE_KEY = 'lotus_latest_version_cache';
+  const CACHE_TIME_KEY = 'lotus_latest_version_timestamp';
+  const TWO_HOURS = 2 * 60 * 60 * 1000;
+
+  try {
+    const cachedVersion = localStorage.getItem(CACHE_KEY);
+    const cachedUrl = localStorage.getItem('lotus_latest_url_cache');
+    const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
+    const now = Date.now();
+
+    if (cachedVersion && cachedUrl && lastFetch && now - parseInt(lastFetch) < TWO_HOURS) {
+      latestVersion.value = cachedVersion;
+      latestReleaseUrl.value = cachedUrl;
+      return;
+    }
+
+    const response = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
+    if (!response.ok) throw new Error('GitHub API error');
+
+    const data = await response.json();
+    const version = data.tag_name;
+    const url = data.html_url;
+
+    latestVersion.value = version;
+    latestReleaseUrl.value = url;
+    localStorage.setItem(CACHE_KEY, version);
+    localStorage.setItem('lotus_latest_url_cache', url);
+    localStorage.setItem(CACHE_TIME_KEY, now.toString());
+  } catch (error) {
+    console.error('Lỗi khi lấy version từ GitHub:', error);
+  }
+};
+
 const fetchContributors = async () => {
   const CACHE_KEY = 'lotus_contributors_cache';
   const CACHE_TIME_KEY = 'lotus_contributors_timestamp';
@@ -178,10 +214,11 @@ onMounted(() => {
   }
 
   document.documentElement.setAttribute('data-theme', currentTheme.value);
-  window.addEventListener('scroll', handleScroll);
   startTyping();
   fetchGithubStars();
   fetchContributors();
+  fetchLatestRelease();
+  window.addEventListener('scroll', handleScroll);
 });
 
 onUnmounted(() => {
@@ -400,6 +437,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           <a href="#features">Tính năng</a>
           <a href="#installation">Cài đặt & Thiết lập</a>
           <a href="#usage">Hướng dẫn</a>
+          <a href="#uninstall">Gỡ cài đặt</a>
           <a href="#contributors">Đóng góp</a>
 
           <el-button round class="btn-theme" @click="cycleTheme">
@@ -437,6 +475,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           >Cài đặt & Thiết lập</a
         >
         <a href="#usage" @click="mobileMenuOpen = false">Hướng dẫn</a>
+        <a href="#uninstall" @click="mobileMenuOpen = false">Gỡ cài đặt</a>
         <a href="#contributors" @click="mobileMenuOpen = false">Đóng góp</a>
         <el-button type="primary" @click="goToGitHub">
           <v-icon name="si-github" class="mr-2" /> GitHub
@@ -478,18 +517,40 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           </div>
           <div class="hero-stats">
             <div class="stat-item">
-              <strong>{{ starCount }}</strong>
+              <strong>
+                <v-icon name="hi-star" scale="1.8" class="align-bottom mr-1" />
+                {{ starCount }}
+              </strong>
               <span>Stars</span>
             </div>
             <div class="stat-item">
               <strong>
-                <v-icon name="si-linux" scale="1.8" class="align-bottom" /> 6+
+                <v-icon name="si-linux" scale="1.8" class="align-bottom mr-1" />
+                6+
               </strong>
               <span>Distros hỗ trợ</span>
             </div>
             <div class="stat-item">
-              <strong>{{ contributorCount }}</strong>
+              <strong>
+                <v-icon name="hi-users" scale="1.8" class="align-bottom mr-1" />
+                {{ contributorCount }}
+              </strong>
               <span>Người đóng góp</span>
+            </div>
+            <div class="stat-item">
+              <strong>
+                <v-icon name="hi-tag" scale="1.8" class="align-bottom mr-1" />
+                <a
+                  v-if="latestVersion"
+                  :href="latestReleaseUrl"
+                  target="_blank"
+                  class="release-link"
+                >
+                  {{ latestVersion }}
+                </a>
+                <span v-else>...</span>
+              </strong>
+              <span>Phiên bản</span>
             </div>
           </div>
         </div>
@@ -700,6 +761,183 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
       </div>
     </section>
 
+    <section id="uninstall" class="section section-bg-mantle">
+      <div class="container">
+        <details class="uninstall-master-details">
+          <summary class="uninstall-master-summary">
+            <div class="section-title mb-0 text-center">
+              <h2 class="mb-0">Gỡ cài đặt</h2>
+            </div>
+          </summary>
+          
+          <div class="uninstall-expanded-content mt-6">
+            <div class="section-title text-left mb-6">
+              <p>
+                Rất tiếc khi thấy bạn phải gỡ cài đặt Lotus. Nếu bạn gặp vấn đề gì,
+                hãy mở <a href="https://github.com/LotusInputMethod/fcitx5-lotus/issues/new" target="_blank" class="text-link">issue trên GitHub</a> để team có thể hỗ trợ bạn sớm nhất nhé!
+              </p>
+            </div>
+
+            <div class="custom-card uninstall-card">
+              <details class="uninstall-details">
+                <summary>
+                  <div class="distro-label">
+                    <v-icon name="si-archlinux" scale="1.4" class="mr-3" />
+                    <span>Arch Linux</span>
+                  </div>
+                </summary>
+                <div class="details-content">
+                  <p class="instruction mb-3">Bạn có thể dùng <code>pacman</code> (khuyên dùng), <code>yay</code> hoặc <code>paru</code> để gỡ cài đặt:</p>
+                  <div class="code-container">
+                    <pre><code>sudo pacman -Rns fcitx5-lotus</code></pre>
+                  </div>
+                  <div class="code-container">
+                    <pre><code>yay -Rns fcitx5-lotus</code></pre>
+                  </div>
+                  <div class="code-container">
+                    <pre><code>paru -Rns fcitx5-lotus</code></pre>
+                  </div>
+                  <el-alert
+                    title="Lưu ý"
+                    type="info"
+                    description="Các file config ở $HOME sẽ được giữ lại."
+                    :closable="false"
+                    class="custom-alert-info mt-2"
+                  />
+                </div>
+              </details>
+
+              <details class="uninstall-details">
+                <summary>
+                  <div class="distro-label">
+                    <v-icon name="si-debian" scale="1.4" class="mr-3" />
+                    <span>Debian</span>
+                  </div>
+                </summary>
+                <div class="details-content">
+                  <div class="code-container">
+                    <pre><code>sudo apt remove fcitx5-lotus
+sudo rm /etc/apt/sources.list.d/fcitx5-lotus.list
+sudo rm /etc/apt/keyrings/fcitx5-lotus.gpg
+sudo apt update</code></pre>
+                  </div>
+                </div>
+              </details>
+
+              <details class="uninstall-details">
+                <summary>
+                  <div class="distro-label">
+                    <v-icon name="si-ubuntu" scale="1.4" class="mr-3" />
+                    <span>Ubuntu</span>
+                  </div>
+                </summary>
+                <div class="details-content">
+                  <div class="code-container">
+                    <pre><code>sudo apt remove fcitx5-lotus
+sudo rm /etc/apt/sources.list.d/fcitx5-lotus.list
+sudo rm /etc/apt/keyrings/fcitx5-lotus.gpg
+sudo apt update</code></pre>
+                  </div>
+                </div>
+              </details>
+
+              <details class="uninstall-details">
+                <summary>
+                  <div class="distro-label">
+                    <v-icon name="si-fedora" scale="1.4" class="mr-3" />
+                    <span>Fedora</span>
+                  </div>
+                </summary>
+                <div class="details-content">
+                  <div class="code-container">
+                    <pre><code>sudo dnf remove fcitx5-lotus
+sudo rm /etc/yum.repos.d/fcitx5-lotus-*.repo</code></pre>
+                  </div>
+                </div>
+              </details>
+
+              <details class="uninstall-details">
+                <summary>
+                  <div class="distro-label">
+                    <v-icon name="si-opensuse" scale="1.4" class="mr-3" />
+                    <span>openSUSE</span>
+                  </div>
+                </summary>
+                <div class="details-content">
+                  <div class="code-container">
+                    <pre><code>sudo zypper remove fcitx5-lotus
+sudo zypper removerepo fcitx5-lotus</code></pre>
+                  </div>
+                </div>
+              </details>
+
+              <details class="uninstall-details">
+                <summary>
+                  <div class="distro-label">
+                    <v-icon name="si-nixos" scale="1.4" class="mr-3" />
+                    <span>NixOS</span>
+                  </div>
+                </summary>
+                <div class="details-content">
+                  <p class="instruction">Xóa (hoặc comment) dòng <code>services.fcitx5-lotus</code> và <code>inputs</code> trong file config, sau đó rebuild lại system. NixOS sẽ tự dọn dẹp.</p>
+                </div>
+              </details>
+
+              <details class="uninstall-details">
+                <summary>
+                  <div class="distro-label">
+                    <v-icon name="si-github" scale="1.4" class="mr-3" />
+                    <span>GitHub Releases</span>
+                  </div>
+                </summary>
+                <div class="details-content">
+                  <p class="instruction mb-3">Gỡ cài đặt tùy theo distro bạn đang sử dụng:</p>
+                  <div class="code-container">
+                    <pre><code># Debian / Ubuntu
+sudo apt remove fcitx5-lotus</code></pre>
+                  </div>
+                  <div class="code-container">
+                    <pre><code># Fedora
+sudo dnf remove fcitx5-lotus</code></pre>
+                  </div>
+                  <div class="code-container">
+                    <pre><code># openSUSE
+sudo zypper remove fcitx5-lotus</code></pre>
+                  </div>
+                </div>
+              </details>
+
+              <details class="uninstall-details">
+                <summary>
+                  <div class="distro-label">
+                    <v-icon name="si-linux" scale="1.4" class="mr-3" />
+                    <span>Source</span>
+                  </div>
+                </summary>
+                <div class="details-content">
+                  <p class="instruction mb-3">Vào lại thư mục source code đã build và chạy:</p>
+                  <div class="code-container">
+                    <pre><code>sudo make uninstall</code></pre>
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            <div class="custom-card cleanup-card mt-6">
+              <div class="usage-header mb-3">
+                <h3>Dọn dẹp hệ thống</h3>
+              </div>
+              <p class="instruction mb-3">Nếu muốn xóa hoàn toàn dữ liệu gõ tắt và cấu hình:</p>
+              <div class="code-container">
+                <pre><code>rm -rf ~/.local/share/fcitx5/lotus
+rm -rf ~/.config/fcitx5/conf/lotus.conf</code></pre>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
     <section id="contributors" class="section section-bg-base">
       <div class="container">
         <div class="section-title">
@@ -772,6 +1010,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           <h4>Tài liệu</h4>
           <a href="#installation">Cài đặt & Thiết lập</a>
           <a href="#usage">Hướng dẫn</a>
+          <a href="#uninstall">Gỡ cài đặt</a>
           <a
             href="https://github.com/LotusInputMethod/fcitx5-lotus/blob/main/CONTRIBUTING.md"
             >Đóng góp</a
@@ -1847,11 +2086,32 @@ body {
 
 /* Contributors */
 .contributors-flex {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 40px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 24px;
   margin-bottom: 50px;
+  justify-items: center;
+}
+
+@media (max-width: 1200px) {
+  .contributors-flex {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 800px) {
+  .contributors-flex {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+}
+
+@media (max-width: 500px) {
+  .contributors-flex {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
 }
 .contributor-item {
   text-align: center;
@@ -1998,4 +2258,146 @@ body {
 :deep(.el-button--primary:hover) {
   opacity: 0.9;
 }
+/* Uninstall Section */
+.uninstall-master-details {
+  list-style: none;
+}
+
+.uninstall-master-summary {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+  transition: all 0.3s ease;
+}
+
+.uninstall-master-summary::-webkit-details-marker {
+  display: none;
+}
+
+.uninstall-master-summary .section-title {
+  width: 100%;
+}
+
+.uninstall-master-summary .section-title h2 {
+  position: relative;
+  display: inline-block;
+  padding-right: 35px;
+  margin: 0 auto;
+}
+
+/* Custom arrow for master toggle */
+.uninstall-master-summary .section-title h2::after {
+  content: '→';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: var(--ctp-subtext0);
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.uninstall-master-details[open] .uninstall-master-summary .section-title h2::after {
+  transform: translateY(-50%) rotate(90deg);
+  color: var(--ctp-green);
+}
+
+.uninstall-card {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.uninstall-details {
+  border: 1px solid var(--ctp-surface1);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background-color: var(--ctp-mantle);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.uninstall-details[open] {
+  border-color: var(--ctp-green);
+}
+
+.uninstall-details summary {
+  padding: 12px 16px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.uninstall-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.uninstall-details summary:hover {
+  background-color: var(--ctp-surface0);
+}
+
+.distro-label {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: var(--ctp-text);
+  font-size: 1.1rem;
+}
+
+.distro-label .ov-icon {
+  color: var(--ctp-subtext0);
+}
+
+.uninstall-details[open] .distro-label .ov-icon {
+  color: var(--ctp-green);
+}
+
+.details-content {
+  padding: 20px;
+  border-top: 1px solid var(--ctp-surface1);
+  background-color: var(--ctp-base);
+}
+
+.uninstall-card .code-container {
+  background-color: var(--ctp-crust);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--ctp-surface2);
+  margin-bottom: 12px;
+  overflow-x: auto;
+}
+
+.uninstall-card .code-container pre {
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--ctp-text);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.cleanup-card {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.custom-alert-info {
+  background-color: var(--ctp-surface1) !important;
+  border: 1px solid var(--ctp-surface2) !important;
+}
+
+.release-link {
+  color: var(--ctp-green);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.release-link:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
 </style>
+
