@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { DocumentCopy } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
+import DOMPurify from 'dompurify';
 import {
   distros,
   methods,
@@ -20,6 +21,8 @@ const selectedShell = ref<string>(shells[0] || '');
 const selectedDe = ref<string>(deWms[0] || '');
 const selectedEnv = ref<string>(environments[1] || '');
 const selectedInit = ref<string>(initSystems[0] || 'systemd');
+
+const sanitize = (html: string) => DOMPurify.sanitize(html);
 
 const activateServerCode = computed(() => {
   if (selectedDistro.value === 'NixOS')
@@ -346,7 +349,7 @@ const chromiumWaylandFlags =
               <li
                 v-for="(step, idx) in fcitx5Config.steps"
                 :key="idx"
-                v-html="step"
+                v-html="sanitize(step)"
               ></li>
             </ul>
           </div>
@@ -398,7 +401,7 @@ const chromiumWaylandFlags =
                       <li
                         v-for="(point, idx) in waylandDeSpecific.best_setup"
                         :key="idx"
-                        v-html="point"
+                        v-html="sanitize(point)"
                       ></li>
                     </ul>
                   </div>
