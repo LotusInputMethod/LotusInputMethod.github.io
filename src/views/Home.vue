@@ -799,12 +799,33 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   <p class="instruction mb-3">Bạn có thể dùng <code>pacman</code> (khuyên dùng), <code>yay</code> hoặc <code>paru</code> để gỡ cài đặt:</p>
                   <div class="code-container">
                     <pre><code>sudo pacman -Rns fcitx5-lotus</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      size="small"
+                      :icon="DocumentCopy"
+                      @click="copyToClipboard('sudo pacman -Rns fcitx5-lotus')"
+                    />
                   </div>
                   <div class="code-container">
                     <pre><code>yay -Rns fcitx5-lotus</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      size="small"
+                      :icon="DocumentCopy"
+                      @click="copyToClipboard('yay -Rns fcitx5-lotus')"
+                    />
                   </div>
                   <div class="code-container">
                     <pre><code>paru -Rns fcitx5-lotus</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      size="small"
+                      :icon="DocumentCopy"
+                      @click="copyToClipboard('paru -Rns fcitx5-lotus')"
+                    />
                   </div>
                   <el-alert
                     title="Lưu ý"
@@ -829,6 +850,16 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 sudo rm /etc/apt/sources.list.d/fcitx5-lotus.list
 sudo rm /etc/apt/keyrings/fcitx5-lotus.gpg
 sudo apt update</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      :icon="DocumentCopy"
+                      @click="
+                        copyToClipboard(
+                          'sudo apt remove fcitx5-lotus\nsudo rm /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo rm /etc/apt/keyrings/fcitx5-lotus.gpg\nsudo apt update',
+                        )
+                      "
+                    />
                   </div>
                 </div>
               </details>
@@ -846,6 +877,16 @@ sudo apt update</code></pre>
 sudo rm /etc/apt/sources.list.d/fcitx5-lotus.list
 sudo rm /etc/apt/keyrings/fcitx5-lotus.gpg
 sudo apt update</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      :icon="DocumentCopy"
+                      @click="
+                        copyToClipboard(
+                          'sudo apt remove fcitx5-lotus\nsudo rm /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo rm /etc/apt/keyrings/fcitx5-lotus.gpg\nsudo apt update',
+                        )
+                      "
+                    />
                   </div>
                 </div>
               </details>
@@ -861,6 +902,16 @@ sudo apt update</code></pre>
                   <div class="code-container">
                     <pre><code>sudo dnf remove fcitx5-lotus
 sudo rm /etc/yum.repos.d/fcitx5-lotus-*.repo</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      :icon="DocumentCopy"
+                      @click="
+                        copyToClipboard(
+                          'sudo dnf remove fcitx5-lotus\nsudo rm /etc/yum.repos.d/fcitx5-lotus-*.repo',
+                        )
+                      "
+                    />
                   </div>
                 </div>
               </details>
@@ -876,6 +927,16 @@ sudo rm /etc/yum.repos.d/fcitx5-lotus-*.repo</code></pre>
                   <div class="code-container">
                     <pre><code>sudo zypper remove fcitx5-lotus
 sudo zypper removerepo fcitx5-lotus</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      :icon="DocumentCopy"
+                      @click="
+                        copyToClipboard(
+                          'sudo zypper remove fcitx5-lotus\nsudo zypper removerepo fcitx5-lotus',
+                        )
+                      "
+                    />
                   </div>
                 </div>
               </details>
@@ -904,14 +965,32 @@ sudo zypper removerepo fcitx5-lotus</code></pre>
                   <div class="code-container">
                     <pre><code># Debian / Ubuntu
 sudo apt remove fcitx5-lotus</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      :icon="DocumentCopy"
+                      @click="copyToClipboard('# Debian / Ubuntu\nsudo apt remove fcitx5-lotus')"
+                    />
                   </div>
                   <div class="code-container">
                     <pre><code># Fedora
 sudo dnf remove fcitx5-lotus</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      :icon="DocumentCopy"
+                      @click="copyToClipboard('# Fedora\nsudo dnf remove fcitx5-lotus')"
+                    />
                   </div>
                   <div class="code-container">
                     <pre><code># openSUSE
 sudo zypper remove fcitx5-lotus</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      :icon="DocumentCopy"
+                      @click="copyToClipboard('# openSUSE\nsudo zypper remove fcitx5-lotus')"
+                    />
                   </div>
                 </div>
               </details>
@@ -927,6 +1006,13 @@ sudo zypper remove fcitx5-lotus</code></pre>
                   <p class="instruction mb-3">Vào lại thư mục source code đã build và chạy:</p>
                   <div class="code-container">
                     <pre><code>sudo make uninstall</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      size="small"
+                      :icon="DocumentCopy"
+                      @click="copyToClipboard('sudo make uninstall')"
+                    />
                   </div>
                 </div>
               </details>
@@ -940,6 +1026,16 @@ sudo zypper remove fcitx5-lotus</code></pre>
               <div class="code-container">
                 <pre><code>rm -rf ~/.local/share/fcitx5/lotus
 rm -rf ~/.config/fcitx5/conf/lotus.conf</code></pre>
+                <el-button
+                  class="copy-float"
+                  circle
+                  :icon="DocumentCopy"
+                  @click="
+                    copyToClipboard(
+                      'rm -rf ~/.local/share/fcitx5/lotus\nrm -rf ~/.config/fcitx5/conf/lotus.conf',
+                    )
+                  "
+                />
               </div>
             </div>
           </div>
@@ -1436,6 +1532,23 @@ body {
   background-color: var(--ctp-surface1) !important;
   border-color: var(--ctp-green) !important;
   color: var(--ctp-green) !important;
+}
+
+.copy-float {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background-color: var(--ctp-surface1) !important;
+  border: 1px solid var(--ctp-surface2) !important;
+  color: var(--ctp-text) !important;
+  transition: all 0.2s;
+  z-index: 2;
+}
+
+.copy-float:hover {
+  background-color: var(--ctp-surface2) !important;
+  color: var(--ctp-green) !important;
+  border-color: var(--ctp-green) !important;
 }
 
 /* Navbar */
@@ -2367,6 +2480,10 @@ body {
   padding: 20px;
   border-top: 1px solid var(--ctp-surface1);
   background-color: var(--ctp-base);
+}
+
+.code-container {
+  position: relative;
 }
 
 .uninstall-card .code-container {
