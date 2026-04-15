@@ -20,8 +20,6 @@ import InteractiveInstaller from '../components/InteractiveInstaller.vue';
 
 // --- STATE ---
 const mobileMenuOpen = ref<boolean>(false);
-const activeOS = ref<string>('arch');
-const setupStep = ref<number>(0);
 const isScrolled = ref<boolean>(false);
 const starCount = ref<string>('0');
 const contributorCount = ref<number>(0);
@@ -117,13 +115,20 @@ const fetchLatestRelease = async () => {
     const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
     const now = Date.now();
 
-    if (cachedVersion && cachedUrl && lastFetch && now - parseInt(lastFetch) < TWO_HOURS) {
+    if (
+      cachedVersion &&
+      cachedUrl &&
+      lastFetch &&
+      now - parseInt(lastFetch) < TWO_HOURS
+    ) {
       latestVersion.value = cachedVersion;
       latestReleaseUrl.value = cachedUrl;
       return;
     }
 
-    const response = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
+    const response = await fetch(
+      `https://api.github.com/repos/${REPO}/releases/latest`,
+    );
     if (!response.ok) throw new Error('GitHub API error');
 
     const data = await response.json();
@@ -381,31 +386,8 @@ interface Contributor {
   avatar: string;
   githubUrl: string;
 }
-const contributors = ref<Contributor[]>([]);
 
-// --- COMMANDS ---
-const commands: Record<string, string> = {
-  arch: '# Dùng yay\nyay -S fcitx5-lotus-bin\n\n# Hoặc dùng paru\nparu -S fcitx5-lotus-bin',
-  debian: `CODENAME=$(grep '^VERSION_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho "deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus`,
-  ubuntu: `CODENAME=$(grep '^UBUNTU_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho "deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus`,
-  fedora: `RELEASEVER=$(grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2)\nsudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo dnf config-manager addrepo --from-repofile=https://fcitx5-lotus.pages.dev/rpm/fedora/fcitx5-lotus-$RELEASEVER.repo\nsudo dnf install fcitx5-lotus`,
-  opensuse: `sudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo zypper addrepo https://fcitx5-lotus.pages.dev/rpm/opensuse/fcitx5-lotus-tumbleweed.repo\nsudo zypper refresh\nsudo zypper install fcitx5-lotus`,
-  nixosInput: `nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";\n\nfcitx5-lotus = {\n  url = "github:LotusInputMethod/fcitx5-lotus";\n  inputs.nixpkgs.follows = "nixpkgs";\n};`,
-  nixosService: `services.fcitx5-lotus = {\n  enable = true;\n  user = "your_username";\n};`,
-  github: `# Debian/Ubuntu\nsudo dpkg -i fcitx5-lotus_*.deb\n\n# Fedora / openSUSE\nsudo rpm -i fcitx5-lotus-*.rpm`,
-  serverBash:
-    'sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service || \\\n(sudo systemd-sysusers && sudo systemctl enable --now fcitx5-lotus-server@$(whoami).service)',
-  serverFish:
-    'sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; or begin\n    sudo systemd-sysusers; and sudo systemctl enable --now fcitx5-lotus-server@(whoami).service\nend',
-  envBash: `cat <<EOF >> ~/.bash_profile\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx\nexport SDL_IM_MODULE=fcitx\nexport GLFW_IM_MODULE=ibus\nEOF`,
-  envZsh: `cat <<EOF >> ~/.zprofile\nexport GTK_IM_MODULE=fcitx\nexport QT_IM_MODULE=fcitx\nexport XMODIFIERS=@im=fcitx\nexport SDL_IM_MODULE=fcitx\nexport GLFW_IM_MODULE=ibus\nEOF`,
-  envFish: `echo 'if status is-login\n    set -Ux GTK_IM_MODULE fcitx\n    set -Ux QT_IM_MODULE fcitx\n    set -Ux XMODIFIERS "@im=fcitx"\n    set -gx SDL_IM_MODULE fcitx\n    set -gx GLFW_IM_MODULE ibus\nend' >> ~/.config/fish/config.fish`,
-  envGlobal: `cat <<EOF | sudo tee -a /etc/environment\nGTK_IM_MODULE=fcitx\nQT_IM_MODULE=fcitx\nXMODIFIERS=@im=fcitx\nSDL_IM_MODULE=fcitx\nGLFW_IM_MODULE=ibus\nEOF`,
-  killIbus: 'killall ibus-daemon || ibus exit',
-  hyprland: 'permission = fcitx5-lotus-server, keyboard, allow',
-  chromium:
-    '--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3',
-};
+const contributors = ref<Contributor[]>([]);
 
 // --- METHODS ---
 const scrollToInstall = (): void => {
@@ -778,12 +760,19 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
               <h2 class="mb-0">Gỡ cài đặt</h2>
             </div>
           </summary>
-          
+
           <div class="uninstall-expanded-content mt-6">
             <div class="section-title text-left mb-6">
               <p>
-                Rất tiếc khi thấy bạn phải gỡ cài đặt Lotus. Nếu bạn gặp vấn đề gì,
-                hãy mở <a href="https://github.com/LotusInputMethod/fcitx5-lotus/issues/new" target="_blank" class="text-link">issue trên GitHub</a> để team có thể hỗ trợ bạn sớm nhất nhé!
+                Rất tiếc khi thấy bạn phải gỡ cài đặt Lotus. Nếu bạn gặp vấn đề
+                gì, hãy mở
+                <a
+                  href="https://github.com/LotusInputMethod/fcitx5-lotus/issues/new"
+                  target="_blank"
+                  class="text-link"
+                  >issue trên GitHub</a
+                >
+                để team có thể hỗ trợ bạn sớm nhất nhé!
               </p>
             </div>
 
@@ -796,7 +785,10 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   </div>
                 </summary>
                 <div class="details-content">
-                  <p class="instruction mb-3">Bạn có thể dùng <code>pacman</code> (khuyên dùng), <code>yay</code> hoặc <code>paru</code> để gỡ cài đặt:</p>
+                  <p class="instruction mb-3">
+                    Bạn có thể dùng <code>pacman</code> (khuyên dùng),
+                    <code>yay</code> hoặc <code>paru</code> để gỡ cài đặt:
+                  </p>
                   <div class="code-container">
                     <pre><code>sudo pacman -Rns fcitx5-lotus</code></pre>
                     <el-button
@@ -949,7 +941,12 @@ sudo zypper removerepo fcitx5-lotus</code></pre>
                   </div>
                 </summary>
                 <div class="details-content">
-                  <p class="instruction">Xóa (hoặc comment) dòng <code>services.fcitx5-lotus</code> và <code>inputs</code> trong file config, sau đó rebuild lại system. NixOS sẽ tự dọn dẹp.</p>
+                  <p class="instruction">
+                    Xóa (hoặc comment) dòng
+                    <code>services.fcitx5-lotus</code> và
+                    <code>inputs</code> trong file config, sau đó rebuild lại
+                    system. NixOS sẽ tự dọn dẹp.
+                  </p>
                 </div>
               </details>
 
@@ -961,7 +958,9 @@ sudo zypper removerepo fcitx5-lotus</code></pre>
                   </div>
                 </summary>
                 <div class="details-content">
-                  <p class="instruction mb-3">Gỡ cài đặt tùy theo distro bạn đang sử dụng:</p>
+                  <p class="instruction mb-3">
+                    Gỡ cài đặt tùy theo distro bạn đang sử dụng:
+                  </p>
                   <div class="code-container">
                     <pre><code># Debian / Ubuntu
 sudo apt remove fcitx5-lotus</code></pre>
@@ -969,7 +968,11 @@ sudo apt remove fcitx5-lotus</code></pre>
                       class="copy-float"
                       circle
                       :icon="DocumentCopy"
-                      @click="copyToClipboard('# Debian / Ubuntu\nsudo apt remove fcitx5-lotus')"
+                      @click="
+                        copyToClipboard(
+                          '# Debian / Ubuntu\nsudo apt remove fcitx5-lotus',
+                        )
+                      "
                     />
                   </div>
                   <div class="code-container">
@@ -979,7 +982,11 @@ sudo dnf remove fcitx5-lotus</code></pre>
                       class="copy-float"
                       circle
                       :icon="DocumentCopy"
-                      @click="copyToClipboard('# Fedora\nsudo dnf remove fcitx5-lotus')"
+                      @click="
+                        copyToClipboard(
+                          '# Fedora\nsudo dnf remove fcitx5-lotus',
+                        )
+                      "
                     />
                   </div>
                   <div class="code-container">
@@ -989,7 +996,11 @@ sudo zypper remove fcitx5-lotus</code></pre>
                       class="copy-float"
                       circle
                       :icon="DocumentCopy"
-                      @click="copyToClipboard('# openSUSE\nsudo zypper remove fcitx5-lotus')"
+                      @click="
+                        copyToClipboard(
+                          '# openSUSE\nsudo zypper remove fcitx5-lotus',
+                        )
+                      "
                     />
                   </div>
                 </div>
@@ -1003,7 +1014,9 @@ sudo zypper remove fcitx5-lotus</code></pre>
                   </div>
                 </summary>
                 <div class="details-content">
-                  <p class="instruction mb-3">Vào lại thư mục source code đã build và chạy:</p>
+                  <p class="instruction mb-3">
+                    Vào lại thư mục source code đã build và chạy:
+                  </p>
                   <div class="code-container">
                     <pre><code>sudo make uninstall</code></pre>
                     <el-button
@@ -1022,7 +1035,9 @@ sudo zypper remove fcitx5-lotus</code></pre>
               <div class="usage-header mb-3">
                 <h3>Dọn dẹp hệ thống</h3>
               </div>
-              <p class="instruction mb-3">Nếu muốn xóa hoàn toàn dữ liệu gõ tắt và cấu hình:</p>
+              <p class="instruction mb-3">
+                Nếu muốn xóa hoàn toàn dữ liệu gõ tắt và cấu hình:
+              </p>
               <div class="code-container">
                 <pre><code>rm -rf ~/.local/share/fcitx5/lotus
 rm -rf ~/.config/fcitx5/conf/lotus.conf</code></pre>
@@ -2417,10 +2432,15 @@ body {
   transform: translateY(-50%);
   font-size: 1.5rem;
   color: var(--ctp-subtext0);
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
 }
 
-.uninstall-master-details[open] .uninstall-master-summary .section-title h2::after {
+.uninstall-master-details[open]
+  .uninstall-master-summary
+  .section-title
+  h2::after {
   transform: translateY(-50%) rotate(90deg);
   color: var(--ctp-green);
 }
@@ -2526,4 +2546,3 @@ body {
   opacity: 0.8;
 }
 </style>
-

@@ -100,7 +100,7 @@ const copyToClipboard = async (text: string) => {
   try {
     await navigator.clipboard.writeText(text);
     ElMessage.success('Đã sao chép!');
-  } catch (err) {
+  } catch {
     ElMessage.error('Không thể sao chép');
   }
 };
@@ -134,8 +134,11 @@ const waylandDeSpecific = computed(() => {
   return (logic.steps.wayland_extras as any)[selectedDe.value] || null;
 });
 
-const chromiumWaylandFlags =
-  '--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3';
+const chromiumWaylandFlags = computed(() =>
+  selectedDe.value === 'KDE Plasma'
+    ? '--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime'
+    : '--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3'
+);
 </script>
 
 <template>
