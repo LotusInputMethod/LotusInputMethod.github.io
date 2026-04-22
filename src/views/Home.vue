@@ -247,7 +247,7 @@ interface SettingInfo {
   default: string;
 }
 const quickSettings: SettingInfo[] = [
-  { option: 'Charset', description: 'Chọn bảng mã đầu ra', default: 'Unicode' },
+  { option: 'Output Charset', description: 'Chọn bảng mã đầu ra', default: 'Unicode' },
   {
     option: 'Spell Check',
     description: 'Kiểm tra lỗi chính tả',
@@ -257,7 +257,7 @@ const quickSettings: SettingInfo[] = [
   { option: 'Capitalize Macro', description: 'Tự động viết hoa từ gõ tắt', default: 'Bật' },
   {
     option: 'Auto Non-VN Restore',
-    description: 'Tự động khôi phục từ khi gõ sai tiếng Việt',
+    description: 'Tự động khôi phục khi gõ từ không phải tiếng Việt',
     default: 'Bật',
   },
   {
@@ -311,7 +311,7 @@ const advancedSettings: AdvancedSettingInfo[] = [
   },
   {
     page: 'Typing',
-    option: 'Allow dd To Produce đ',
+    option: 'Allow dd to Produce đ',
     feature: 'Cho phép gõ dd ra đ ngay cả khi đang khôi phục từ',
   },
   {
@@ -347,7 +347,7 @@ const advancedSettings: AdvancedSettingInfo[] = [
   {
     page: 'Dictionary',
     option: 'Enable Custom Dictionary',
-    feature: 'Bật/tắt sử dụng từ điển người dùng',
+    feature: 'Bật/tắt sử dụng từ điển cá nhân',
   },
   {
     page: 'Keymap',
@@ -2636,42 +2636,42 @@ body {
 }
 
 .custom-tabs {
-  background-color: var(--ctp-surface0) !important;
-  border: 1px solid var(--ctp-surface1) !important;
-  border-radius: 12px !important;
+  background-color: var(--ctp-surface0);
+  border: 1px solid var(--ctp-surface1);
+  border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--el-box-shadow-light);
 }
 
 .custom-tabs :deep(.el-tabs__header) {
-  background-color: var(--ctp-mantle) !important;
-  border-bottom: 1px solid var(--ctp-surface1) !important;
-  margin: 0 !important;
+  background-color: var(--ctp-mantle);
+  border-bottom: 1px solid var(--ctp-surface1);
+  margin: 0;
 }
 
 .custom-tabs :deep(.el-tabs__nav) {
-  border: none !important;
+  border: none;
 }
 
 .custom-tabs :deep(.el-tabs__item) {
-  border: none !important;
-  border-right: 1px solid var(--ctp-surface1) !important;
-  color: var(--ctp-subtext1) !important;
-  padding: 0 30px !important;
-  height: 60px !important;
+  border: none;
+  border-right: 1px solid var(--ctp-surface1);
+  color: var(--ctp-subtext1);
+  padding: 0 30px;
+  height: 60px;
   display: inline-flex;
   align-items: center;
-  transition: all 0.3s ease !important;
+  transition: all 0.3s ease;
 }
 
 .custom-tabs :deep(.el-tabs__item.is-active) {
-  background-color: var(--ctp-surface0) !important;
-  color: var(--ctp-green) !important;
+  background-color: var(--ctp-surface0);
+  color: var(--ctp-green);
   font-weight: bold;
 }
 
 .custom-tabs :deep(.el-tabs__content) {
-  padding: 40px !important;
+  padding: 40px;
   background-color: var(--ctp-surface0);
 }
 
@@ -2691,8 +2691,8 @@ body {
 }
 
 .custom-alert-info {
-  background-color: var(--ctp-surface1) !important;
-  border: 1px solid var(--ctp-surface2) !important;
+  background-color: var(--ctp-surface1);
+  border: 1px solid var(--ctp-surface2);
 }
 
 .release-link {
