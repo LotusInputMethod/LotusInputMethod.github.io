@@ -247,22 +247,22 @@ interface SettingInfo {
   default: string;
 }
 const quickSettings: SettingInfo[] = [
-  { option: 'Charset', description: 'Chọn bảng mã', default: 'Unicode' },
+  { option: 'Output Charset', description: 'Chọn bảng mã đầu ra', default: 'Unicode' },
   {
     option: 'Spell Check',
     description: 'Kiểm tra lỗi chính tả',
     default: 'Bật',
   },
   { option: 'Macro', description: 'Bật/tắt gõ tắt', default: 'Bật' },
-  { option: 'Capitalize Macro', description: 'Gõ tắt chữ hoa', default: 'Bật' },
+  { option: 'Capitalize Macro', description: 'Tự động viết hoa từ gõ tắt', default: 'Bật' },
   {
-    option: 'Auto non-VN restore',
-    description: 'Tự động khôi phục với từ không phải tiếng Việt',
+    option: 'Auto Non-VN Restore',
+    description: 'Tự động khôi phục khi gõ từ không phải tiếng Việt',
     default: 'Bật',
   },
   {
     option: 'Custom Dictionary',
-    description: 'Từ điển tuỳ chỉnh',
+    description: 'Sử dụng từ điển cá nhân',
     default: 'Tắt',
   },
 ];
@@ -276,64 +276,83 @@ interface AdvancedSettingInfo {
 const advancedSettings: AdvancedSettingInfo[] = [
   {
     page: 'General',
-    option: 'Mode Menu Hotkey',
-    feature: 'Phím tắt menu chế độ gõ',
+    option: 'Input Method',
+    feature: 'Kiểu gõ chính (Telex, VNI, ...)',
   },
   {
     page: 'General',
-    option: 'Input Method',
-    feature: 'Kiểu gõ. Mặc định Telex.',
+    option: 'Output Charset',
+    feature: 'Bảng mã ký tự đầu ra (Unicode, VNI, TCVN3, ...)',
+  },
+  {
+    page: 'General',
+    option: 'Mode Menu Hotkey',
+    feature: 'Phím tắt mở menu chuyển chế độ gõ',
   },
   {
     page: 'Typing',
-    option: 'Allow dd to produce đ',
-    feature: 'Cho phép dd->đ là tiếng việt, hay dùng cho gõ tắt',
+    option: 'Type w to Produce ư',
+    feature: 'Thiết lập cách gõ phím w để ra chữ ư',
   },
   {
     page: 'Typing',
-    option: 'Use oà, uý instead of òa, úy',
-    feature: 'Bỏ dấu vị trí chuẩn tiếng việt thay vì bỏ theo thẩm mỹ',
+    option: 'Enable Spell Check',
+    feature: 'Bật/tắt kiểm tra chính tả tiếng Việt',
   },
   {
     page: 'Typing',
-    option: 'Type w to produce ư',
-    feature:
-      'Gõ w ra ư, dùng ở kiểu gõ telex nếu có nhu cầu này vì Telex mặc định không có.',
+    option: 'Use oà, uý (Instead Of òa, úy)',
+    feature: 'Sử dụng chuẩn bỏ dấu mới cho oà, uý',
   },
   {
     page: 'Typing',
-    option: 'Fix uinput with ack',
-    feature: 'Sửa lỗi khi dùng chromium-based trên X11',
+    option: 'Allow Type With More Freedom',
+    feature: 'Cho phép bỏ dấu tự do ở bất kỳ vị trí nào trong từ',
   },
   {
     page: 'Typing',
-    option: 'Double space to period',
-    feature: 'Gõ dấu cách 2 lần để chấm câu, thử nghiệm',
+    option: 'Allow dd to Produce đ',
+    feature: 'Cho phép gõ dd ra đ ngay cả khi đang khôi phục từ',
   },
   {
     page: 'Typing',
-    option: 'Auto capitalize',
-    feature: 'Tự viết hoa sau dấu câu, thử nghiệm',
+    option: 'Fix Uinput Mode With Ack',
+    feature: 'Sửa lỗi dính phím trên một số ứng dụng (như Chromium)',
   },
   {
-    page: 'Applications',
-    option: '',
-    feature: 'Quản lý chế độ mặc định của các ứng dụng',
+    page: 'Typing',
+    option: 'Double Space to Period',
+    feature: 'Nhấn dấu cách 2 lần để gõ dấu chấm (Thử nghiệm)',
+  },
+  {
+    page: 'Typing',
+    option: 'Auto Capitalize',
+    feature: 'Tự động viết hoa sau dấu câu (Thử nghiệm)',
+  },
+  {
+    page: 'Appearance',
+    option: 'Use Lotus Status Icons',
+    feature: 'Sử dụng bộ icon riêng của Lotus trên thanh trạng thái',
+  },
+  {
+    page: 'Appearance',
+    option: 'Icon Color',
+    feature: 'Màu sắc biểu tượng (Auto, Light, Dark)',
   },
   {
     page: 'Macros',
-    option: '',
-    feature: 'Quản lý các từ gõ tắt',
+    option: 'Macro Editor',
+    feature: 'Quản lý danh sách các từ viết tắt cá nhân',
   },
   {
     page: 'Dictionary',
-    option: '',
-    feature: 'Quản lý từ điển tuỳ chỉnh',
+    option: 'Enable Custom Dictionary',
+    feature: 'Bật/tắt sử dụng từ điển cá nhân',
   },
   {
     page: 'Keymap',
-    option: '',
-    feature: 'Quản lý keymap tuỳ chỉnh',
+    option: 'Custom Keymap',
+    feature: 'Tùy biến sơ đồ bàn phím theo ý thích',
   },
 ];
 
@@ -347,35 +366,35 @@ const typingModes: TypingMode[] = [
     mode: 'Uinput (Smooth)',
     shortcut: '1',
     description:
-      'Chế độ mặc định, phản hồi nhanh. Tối ưu ứng dụng tốc độ cao và máy cấu hình tốt.',
+      'Chế độ mặc định, phản hồi cực nhanh và mượt mà.',
   },
   {
     mode: 'Uinput (Slow)',
     shortcut: '2',
     description:
-      'Tốc độ gửi phím chậm hơn. Tối ưu các ứng dụng xử lý phím chậm, hoặc máy có cấu hình yếu.',
+      'Tốc độ gửi phím chậm hơn, tăng khả năng tương thích.',
   },
   {
-    mode: 'Uinput (Hardcore)',
+    mode: 'Minecraft',
     shortcut: '3',
-    description: 'Tối ưu cho ứng dụng Windows chạy qua Wine.',
+    description: 'Chế độ đặc biệt tối ưu cho trò chơi Minecraft.',
   },
   {
     mode: 'Surrounding Text',
     shortcut: '4',
-    description: 'Cho phép sửa dấu trên văn bản đã gõ (Tối ưu Qt/GTK).',
+    description: 'Sử dụng kỹ thuật surrounding text (Qt/GTK/Wayland).',
   },
-  { mode: 'Preedit', shortcut: 'Q', description: 'Hiển thị gạch chân khi gõ.' },
+  { mode: 'Preedit', shortcut: 'Q', description: 'Hiển thị đường gạch chân khi đang gõ.' },
   {
     mode: 'Emoji Picker',
     shortcut: 'W',
-    description: 'Tìm kiếm và nhập Emoji (hỗ trợ fuzzy search).',
+    description: 'Mở bảng chọn nhanh Emoji với tìm kiếm thông minh.',
   },
-  { mode: 'OFF', shortcut: 'E', description: 'Tắt bộ gõ.' },
+  { mode: 'OFF', shortcut: 'E', description: 'Tắt tạm thời bộ gõ.' },
   {
-    mode: 'Default',
+    mode: 'Default Typing',
     shortcut: 'R',
-    description: 'Chế độ gõ mặc định theo cấu hình.',
+    description: 'Khôi phục về chế độ gõ mặc định theo cấu hình.',
   },
 ];
 
@@ -665,89 +684,163 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
           <p>Làm chủ bộ gõ của bạn với các menu cài đặt đa dạng</p>
         </div>
 
-        <div class="usage-grid">
-          <div class="custom-card">
-            <div class="usage-header">
-              <el-icon class="icon-title color-green"><Setting /></el-icon>
-              <h3>Cài đặt nhanh</h3>
-            </div>
-            <p class="text-sm instruction mb-3">
-              Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
-              Tray):
-            </p>
-            <el-table
-              :data="quickSettings"
-              size="small"
-              class="mb-5 table-bordered"
-            >
-              <el-table-column prop="option" label="Tùy chọn" width="140" />
-              <el-table-column prop="description" label="Chức năng" />
-              <el-table-column prop="default" label="Mặc định" />
-            </el-table>
+        <div class="usage-tabs-wrapper">
+          <el-tabs type="border-card" class="custom-tabs">
+            <el-tab-pane>
+              <template #label>
+                <span class="tab-label">
+                  <el-icon><Setting /></el-icon>
+                  <span>Thiết lập nhanh</span>
+                </span>
+              </template>
 
-            <div class="usage-header mt-6">
-              <el-icon class="icon-title color-mauve"><Edit /></el-icon>
-              <h3>Cài đặt nâng cao</h3>
-            </div>
-            <p class="text-sm instruction mb-3">
-              Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
-              Tray) -> Settings
-            </p>
-            <el-table
-              :data="advancedSettings"
-              size="small"
-              class="table-bordered"
-            >
-              <el-table-column prop="page" label="Trang" width="140" />
-              <el-table-column prop="option" label="Tuỳ chọn" />
-              <el-table-column prop="feature" label="Tính năng" />
-            </el-table>
-          </div>
-
-          <div class="custom-card">
-            <div class="usage-header">
-              <el-icon class="icon-title color-blue"><Cpu /></el-icon>
-              <h3>Menu chuyển chế độ gõ</h3>
-            </div>
-            <p class="text-sm instruction mb-3">
-              Nhấn phím <code class="inline-code">`</code> (backtick) trong khi
-              đang ở ô nhập liệu để mở nhanh menu chế độ gõ:
-            </p>
-            <el-table
-              :data="typingModes"
-              size="small"
-              class="mb-6 table-bordered"
-            >
-              <el-table-column prop="mode" label="Chế độ" width="160" />
-              <el-table-column
-                prop="shortcut"
-                label="Phím tắt"
-                width="80"
-                align="center"
-              >
-                <template #default="{ row }"
-                  ><kbd class="kbd-key">{{ row.shortcut }}</kbd></template
+              <div class="tab-content-inner">
+                <div class="usage-header">
+                  <el-icon class="icon-title color-green"><Setting /></el-icon>
+                  <h3>Cài đặt nhanh</h3>
+                </div>
+                <p class="text-sm instruction mb-3">
+                  Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
+                  Tray):
+                </p>
+                <el-table
+                  :data="quickSettings"
+                  class="table-bordered"
                 >
-              </el-table-column>
-              <el-table-column prop="description" label="Mô tả" />
-            </el-table>
+                  <el-table-column prop="option" label="Tùy chọn" width="160" />
+                  <el-table-column prop="description" label="Chức năng" />
+                  <el-table-column prop="default" label="Mặc định" width="120" />
+                </el-table>
+              </div>
+            </el-tab-pane>
 
-            <el-alert
-              title="Reset trạng thái đang gõ"
-              type="info"
-              description="Chỉ cần nhấp chuột hoặc chạm touchpad trong khi đang gõ, bộ gõ sẽ tự động ngắt từ, ngăn chặn hiện tượng dính chữ."
-              :closable="false"
-              class="custom-alert-info mb-4"
-            />
+            <el-tab-pane>
+              <template #label>
+                <span class="tab-label">
+                  <el-icon><Edit /></el-icon>
+                  <span>Thiết lập nâng cao</span>
+                </span>
+              </template>
 
-            <el-alert
-              title="Về phím tắt của menu chế độ gõ"
-              type="info"
-              description="Phím tắt của menu chế độ gõ có thể tuỳ chỉnh được trong cài đặt của lotus, bạn nên chỉnh nếu bạn có nhu cầu gõ phím này nhiều."
-              :closable="false"
-              class="custom-alert-info"
-            />
-          </div>
+              <div class="tab-content-inner">
+                <div class="usage-header">
+                  <el-icon class="icon-title color-mauve"><Edit /></el-icon>
+                  <h3>Cài đặt nâng cao</h3>
+                </div>
+                <p class="text-sm instruction mb-3">
+                  Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
+                  Tray) -> Settings
+                </p>
+                <el-table
+                  :data="advancedSettings"
+                  class="table-bordered"
+                >
+                  <el-table-column prop="page" label="Trang" width="160" />
+                  <el-table-column prop="option" label="Tuỳ chọn" width="200" />
+                  <el-table-column prop="feature" label="Tính năng" />
+                </el-table>
+              </div>
+            </el-tab-pane>
+
+            <el-tab-pane>
+              <template #label>
+                <span class="tab-label">
+                  <el-icon><Cpu /></el-icon>
+                  <span>Chế độ gõ</span>
+                </span>
+              </template>
+
+              <div class="tab-content-inner">
+                <div class="usage-header">
+                  <el-icon class="icon-title color-blue"><Cpu /></el-icon>
+                  <h3>Menu chuyển chế độ gõ</h3>
+                </div>
+                <p class="text-sm instruction mb-3">
+                  Nhấn phím <code class="inline-code">`</code> (backtick) trong khi
+                  đang ở ô nhập liệu để mở nhanh menu chế độ gõ:
+                </p>
+                <el-table
+                  :data="typingModes"
+                  class="mb-6 table-bordered"
+                >
+                  <el-table-column prop="mode" label="Chế độ" width="200" />
+                  <el-table-column
+                    prop="shortcut"
+                    label="Phím tắt"
+                    width="100"
+                    align="center"
+                  >
+                    <template #default="{ row }"
+                      ><kbd class="kbd-key">{{ row.shortcut }}</kbd></template
+                    >
+                  </el-table-column>
+                  <el-table-column prop="description" label="Mô tả" />
+                </el-table>
+
+                <div class="alerts-grid mt-6">
+                  <el-alert
+                    title="Reset trạng thái đang gõ"
+                    type="info"
+                    description="Chỉ cần nhấp chuột hoặc chạm touchpad trong khi đang gõ, bộ gõ sẽ tự động ngắt từ, ngăn chặn hiện tượng dính chữ."
+                    :closable="false"
+                    class="custom-alert-info"
+                  />
+
+                  <el-alert
+                    title="Tuỳ chỉnh phím tắt"
+                    type="info"
+                    description="Phím tắt menu chế độ gõ có thể thay đổi được trong phần cài đặt của Lotus để phù hợp với thói quen của bạn."
+                    :closable="false"
+                    class="custom-alert-info"
+                  />
+                </div>
+              </div>
+            </el-tab-pane>
+
+            <el-tab-pane>
+              <template #label>
+                <span class="tab-label">
+                  <el-icon><MagicStick /></el-icon>
+                  <span>Mẹo hay</span>
+                </span>
+              </template>
+
+              <div class="tab-content-inner">
+                <div class="usage-header">
+                  <el-icon class="icon-title color-peach"><MagicStick /></el-icon>
+                  <h3>QuickPhrase (Gõ nhanh)</h3>
+                </div>
+                <p class="text-sm instruction mb-4">
+                  Tính năng mạnh mẽ của Fcitx5 giúp bạn nhập nhanh Emoji, ký tự đặc biệt hoặc các đoạn văn bản mẫu thông qua từ khóa gợi ý.
+                </p>
+
+                <div class="quickphrase-demo mb-6">
+                  <div class="demo-label text-xs mb-2">Ví dụ cấu hình:</div>
+                  <div class="code-block m-0">
+                    <pre><code>shrug ¯\_(ツ)_/¯
+\alpha α</code></pre>
+                  </div>
+                </div>
+
+                <div class="text-sm instruction bg-mantle p-4 rounded-lg border mb-6">
+                  <p class="mb-2">
+                    <strong>Cách dùng:</strong> Nhấn phím <kbd class="kbd-key">;</kbd> hoặc <kbd class="kbd-key">Super</kbd> + <kbd class="kbd-key">`</kbd> và nhập từ khóa (ví dụ: <code>shrug</code>).
+                  </p>
+                  <p class="m-0">
+                    <strong>Tùy chỉnh:</strong> Thêm dòng mới vào file <code>~/.local/share/fcitx5/data/QuickPhrase.mb</code> theo định dạng: <code>từ_khóa nội_dung</code>.
+                  </p>
+                </div>
+
+                <a
+                  href="https://fcitx-im.org/wiki/QuickPhrase"
+                  target="_blank"
+                  class="text-link text-sm inline-flex items-center"
+                >
+                  Xem chi tiết tại Fcitx5 Wiki <v-icon name="hi-external-link" class="ml-1" scale="0.8" />
+                </a>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
         </div>
       </div>
     </section>
@@ -2530,9 +2623,76 @@ body {
   margin-right: auto;
 }
 
+.usage-tips {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Usage Tabs Overhaul */
+.usage-tabs-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.custom-tabs {
+  background-color: var(--ctp-surface0);
+  border: 1px solid var(--ctp-surface1);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--el-box-shadow-light);
+}
+
+.custom-tabs :deep(.el-tabs__header) {
+  background-color: var(--ctp-mantle);
+  border-bottom: 1px solid var(--ctp-surface1);
+  margin: 0;
+}
+
+.custom-tabs :deep(.el-tabs__nav) {
+  border: none;
+}
+
+.custom-tabs :deep(.el-tabs__item) {
+  border: none;
+  border-right: 1px solid var(--ctp-surface1);
+  color: var(--ctp-subtext1);
+  padding: 0 30px;
+  height: 60px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.custom-tabs :deep(.el-tabs__item.is-active) {
+  background-color: var(--ctp-surface0);
+  color: var(--ctp-green);
+  font-weight: bold;
+}
+
+.custom-tabs :deep(.el-tabs__content) {
+  padding: 40px;
+  background-color: var(--ctp-surface0);
+}
+
+.tab-content-inner {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.alerts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
 .custom-alert-info {
-  background-color: var(--ctp-surface1) !important;
-  border: 1px solid var(--ctp-surface2) !important;
+  background-color: var(--ctp-surface1);
+  border: 1px solid var(--ctp-surface2);
 }
 
 .release-link {
