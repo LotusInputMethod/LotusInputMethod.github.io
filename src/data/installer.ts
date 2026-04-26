@@ -5,6 +5,7 @@ export const distros = [
   { name: 'Arch Linux', icon: 'si-archlinux' },
   { name: 'openSUSE', icon: 'si-opensuse' },
   { name: 'NixOS', icon: 'si-nixos' },
+  { name: 'Void Linux', icon: 'co-linux' },
 ];
 
 export const methods = ['Package Manager', 'Binary', 'Source'];
@@ -24,7 +25,7 @@ export const deWms = [
   'Hyprland',
 ];
 export const environments = ['X11', 'Wayland'];
-export const initSystems = ['systemd', 'OpenRC'];
+export const initSystems = ['systemd', 'OpenRC', 'runit'];
 
 export const logic = {
   steps: {
@@ -39,34 +40,42 @@ export const logic = {
           "CODENAME=$(grep '^VERSION_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho \"deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main\" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus",
         Binary: 'sudo dpkg -i fcitx5-lotus_*.deb',
         Source:
-          'sudo apt-get install cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev libfcitx5-qt6-dev qt6-base-dev fcitx5-modules-dev\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
+          'sudo apt-get install cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev fcitx5-modules-dev python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
       },
       Ubuntu: {
         'Package Manager':
           "CODENAME=$(grep '^UBUNTU_CODENAME=' /etc/os-release | cut -d'=' -f2)\nsudo mkdir -p /etc/apt/keyrings\ncurl -fsSL https://fcitx5-lotus.pages.dev/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/fcitx5-lotus.gpg\necho \"deb [signed-by=/etc/apt/keyrings/fcitx5-lotus.gpg] https://fcitx5-lotus.pages.dev/apt/$CODENAME $CODENAME main\" | sudo tee /etc/apt/sources.list.d/fcitx5-lotus.list\nsudo apt update && sudo apt install fcitx5-lotus",
         Binary: 'sudo dpkg -i fcitx5-lotus_*.deb',
         Source:
-          'sudo apt-get install cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev libfcitx5-qt6-dev qt6-base-dev fcitx5-modules-dev\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
+          'sudo apt-get install cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev fcitx5-modules-dev python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
       },
       Fedora: {
         'Package Manager':
           "RELEASEVER=$(grep '^VERSION_ID=' /etc/os-release | cut -d'=' -f2)\nsudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo dnf config-manager addrepo --from-repofile=https://fcitx5-lotus.pages.dev/rpm/fedora/fcitx5-lotus-$RELEASEVER.repo\nsudo dnf install fcitx5-lotus",
         Binary: 'sudo rpm -i fcitx5-lotus-*.rpm',
         Source:
-          'sudo dnf install cmake extra-cmake-modules fcitx5-devel libinput-devel libudev-devel gcc-c++ golang hicolor-icon-theme systemd-devel libX11-devel fcitx5-qt-devel\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
+          'sudo dnf install cmake extra-cmake-modules fcitx5-devel libinput-devel libudev-devel gcc-c++ golang hicolor-icon-theme systemd-devel libX11-devel python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
       },
       openSUSE: {
         'Package Manager':
           'sudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo zypper addrepo https://fcitx5-lotus.pages.dev/rpm/opensuse/fcitx5-lotus-tumbleweed.repo\nsudo zypper refresh\nsudo zypper install fcitx5-lotus',
         Binary: 'sudo rpm -i fcitx5-lotus-*.rpm',
         Source:
-          'sudo zypper install cmake extra-cmake-modules fcitx5-devel libinput-devel systemd-devel gcc-c++ go hicolor-icon-theme systemd-devel libX11-devel udev fcitx5-qt-devel\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
+          'sudo zypper install cmake extra-cmake-modules fcitx5-devel libinput-devel systemd-devel gcc-c++ go hicolor-icon-theme systemd-devel libX11-devel udev python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
       },
       NixOS: {
         'Package Manager':
-          '# Thêm input của fcitx5-lotus vào flake.nix:\n{\n  inputs = {\n    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";\n\n    fcitx5-lotus = {\n      url = "github:LotusInputMethod/fcitx5-lotus";\n      inputs.nixpkgs.follows = "nixpkgs";\n    };\n  };\n\n  outputs = {\n    self,\n  ...\n}\n\n# Bật fcitx5-lotus service trong configuration.nix:\n\n{\n  inputs,\n  ...\n}: {\n  imports = [\n    inputs.fcitx5-lotus.nixosModules.fcitx5-lotus\n  ];\n\n  services.fcitx5-lotus = {\n    enable = true;\n    user = "your_username"; # Sửa thành tên user của bạn\n  };\n}\n\n# Rebuild lại system để cài đặt.',
+          '# Thêm input của fcitx5-lotus vào flake.nix:\n{\n  inputs = {\n    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";\n\n    fcitx5-lotus = {\n      url = "github:LotusInputMethod/fcitx5-lotus";\n      inputs.nixpkgs.follows = "nixpkgs";\n    };\n  };\n\n  outputs = {\n    self,\n  ...\n}\n\n# Bật fcitx5-lotus service trong configuration.nix:\n\n{\n  inputs,\n  ...\n}: {\n  imports = [\n    inputs.fcitx5-lotus.nixosModules.fcitx5-lotus\n  ];\n\n  services.fcitx5-lotus = {\n    enable = true;\n    user = "your_username"; # Sửa thành tên user của bạn\n\n  };\n}\n\n# Rebuild lại system để cài đặt.',
         Binary: 'NixOS ưu tiên cấu hình thông qua flake hoặc module.',
         Source: 'NixOS ưu tiên sử dụng nix-shell.',
+      },
+      'Void Linux': {
+        'Package Manager':
+          'Void Linux sử dụng xbps. Hiện chưa có gói chính thức, vui lòng build from source.',
+        Binary:
+          'Void Linux sử dụng xbps. Hiện chưa có gói chính thức, vui lòng build from source.',
+        Source:
+          'sudo xbps-install -S cmake extra-cmake-modules libfcitx5-devel libinput-devel eudev-libudev-devel gcc go gettext-devel pkg-config hicolor-icon-theme libx11-devel\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
       },
     },
     autostart: {
@@ -118,6 +127,14 @@ export const logic = {
     },
   },
 };
+
+export const userCreationCmd =
+  'sudo groupadd -f input\nsudo useradd -M -g input -s /usr/bin/nologin -d / uinput_proxy';
+
+export const udevReloadCmd =
+  'sudo udevadm control --reload-rules\nsudo udevadm trigger';
+
+export const uinputModprobeCmd = 'sudo modprobe uinput';
 
 export const fcitx5Config = {
   steps: [

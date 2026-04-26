@@ -12,6 +12,9 @@ import {
   logic,
   fcitx5Config,
   kanataConfig,
+  userCreationCmd,
+  udevReloadCmd,
+  uinputModprobeCmd,
 } from '@/data/installer';
 
 const selectedDistro = ref(distros[0]?.name || '');
@@ -21,10 +24,26 @@ const selectedDe = ref<string>(deWms[0] || '');
 const selectedEnv = ref<string>(environments[1] || '');
 const selectedInit = ref<string>(initSystems[0] || 'systemd');
 
+const needsUserCreation = computed(() => {
+  return selectedInit.value !== 'systemd' || selectedMethod.value === 'Source';
+});
+
+const needsUdevReload = computed(() => {
+  return selectedMethod.value === 'Source';
+});
+
+const needsUinputModprobe = computed(() => {
+  return selectedMethod.value === 'Source';
+});
+
 const activateServerCode = computed(() => {
   if (selectedDistro.value === 'NixOS')
     return '# Bước này đã được cấu hình trong flake.nix ở trên.';
-  if (isAutoHandled.value && selectedInit.value !== 'OpenRC') {
+  if (
+    isAutoHandled.value &&
+    selectedInit.value !== 'OpenRC' &&
+    selectedInit.value !== 'runit'
+  ) {
     return '# Gói .deb sẽ tự động thực hiện bước này.\n' + serverCmd.value;
   }
   return serverCmd.value;
@@ -38,7 +57,13 @@ const shellConfigCode = computed(() => {
 
 const serverCmd = computed(() => {
   if (selectedInit.value === 'OpenRC') {
-    return 'sudo rc-update add fcitx5-lotus\nsudo ln -s /etc/init.d/fcitx5-lotus /etc/init.d/fcitx5-lotus.$(whoami)\nsudo rc-service fcitx5-lotus.$(whoami) restart';
+    return 'sudo ln -s /etc/init.d/fcitx5-lotus /etc/init.d/fcitx5-lotus.$(whoami)\nsudo rc-update add fcitx5-lotus.$(whoami) default\nsudo rc-service fcitx5-lotus.$(whoami) restart';
+  }
+  if (selectedInit.value === 'runit') {
+    if (selectedDistro.value === 'Void Linux') {
+      return 'sudo ln -s /etc/sv/fcitx5-lotus /var/service/fcitx5-lotus.$(whoami)\nsudo sv start fcitx5-lotus.$(whoami)';
+    }
+    return 'sudo ln -sf /etc/runit/sv/fcitx5-lotus /etc/runit/sv/fcitx5-lotus.$(whoami)\nsudo sv start /etc/runit/sv/fcitx5-lotus.$(whoami)';
   }
   if (selectedShell.value === 'Fish')
     return 'sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; or begin; sudo systemd-sysusers; and sudo systemctl enable --now fcitx5-lotus-server@(whoami).service; end';
@@ -78,7 +103,6 @@ const envCmd = computed(() => {
   } else if (selectedShell.value === 'Zsh') {
     return `cat <<EOF >> ~/.zprofile\n${vars.join('\n')}\nEOF`;
   } else {
-    // Fish
     const fishVars = vars.map((v) => {
       const idxEq = v.indexOf('=');
       const name = v.slice(0, idxEq).replace('export ', '');
@@ -123,7 +147,6 @@ const autostartText = computed(
     ],
 );
 
-// Wayland Logic
 const waylandGeneral = computed(() => {
   if (selectedEnv.value !== 'Wayland') return null;
   return logic.steps.wayland_extras.General;
@@ -137,7 +160,7 @@ const waylandDeSpecific = computed(() => {
 const chromiumWaylandFlags = computed(() =>
   selectedDe.value === 'KDE Plasma'
     ? '--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime'
-    : '--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3'
+    : '--enable-features=UseOzonePlatform --ozone-platform=wayland --enable-wayland-ime --wayland-text-input-version=3',
 );
 </script>
 
@@ -254,11 +277,58 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
+        <div v-if="needsUserCreation" class="step-card">
+          <div class="step-badge">1.5</div>
+          <div class="step-content">
+            <h4>Tạo User và Group (thay thế systemd-sysusers)</h4>
+            <p class="instruction">
+              Non-systemd và build from source cần tạo user
+              <code>uinput_proxy</code> và group <code>input</code> thủ công.
+            </p>
+            <div class="code-container">
+              <pre><code>{{ userCreationCmd }}</code></pre>
+              <el-button
+                class="copy-float"
+                circle
+                :icon="DocumentCopy"
+                @click="copyToClipboard(userCreationCmd)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div v-if="needsUdevReload" class="step-card">
+          <div class="step-badge">1.6</div>
+          <div class="step-content">
+            <h4>Reload Udev Rules</h4>
+            <p class="instruction">
+              Áp dụng các udev rules mới (99-lotus.rules) để thiết bị uinput có
+              quyền đúng.
+            </p>
+            <div class="code-container">
+              <pre><code>{{ udevReloadCmd }}</code></pre>
+              <el-button
+                class="copy-float"
+                circle
+                :icon="DocumentCopy"
+                @click="copyToClipboard(udevReloadCmd)"
+              />
+            </div>
+          </div>
+        </div>
+
         <div class="step-card">
           <div class="step-badge">2</div>
           <div class="step-content">
             <h4>Kích hoạt Server</h4>
-            <div v-if="isAutoHandled && selectedInit !== 'OpenRC'" class="mb-3">
+            <div
+              v-if="
+                isAutoHandled &&
+                selectedInit !== 'OpenRC' &&
+                selectedInit !== 'runit'
+              "
+              class="mb-3"
+            >
               <el-alert
                 title="Gói .deb sẽ tự động kích hoạt server qua post-install script. Bạn có thể bỏ qua bước này."
                 type="success"
@@ -272,6 +342,26 @@ const chromiumWaylandFlags = computed(() =>
                 circle
                 :icon="DocumentCopy"
                 @click="copyToClipboard(activateServerCode)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div v-if="needsUinputModprobe" class="step-card">
+          <div class="step-badge">2.5</div>
+          <div class="step-content">
+            <h4>Nạp Kernel Module uinput</h4>
+            <p class="instruction">
+              Module uinput cần được nạp lần để fcitx5-lotus-server có thể tạo
+              thiết bị input ảo, lần sau khởi động sẽ tự động nạp.
+            </p>
+            <div class="code-container">
+              <pre><code>{{ uinputModprobeCmd }}</code></pre>
+              <el-button
+                class="copy-float"
+                circle
+                :icon="DocumentCopy"
+                @click="copyToClipboard(uinputModprobeCmd)"
               />
             </div>
           </div>
@@ -420,11 +510,15 @@ const chromiumWaylandFlags = computed(() =>
                 </div>
               </div>
 
-              <div v-if="selectedInit === 'OpenRC'" class="extra-item mb-4">
+              <div
+                v-if="selectedInit === 'OpenRC' || selectedInit === 'runit'"
+                class="extra-item mb-4"
+              >
                 <p class="instruction">
-                  <b>Lưu ý cho OpenRC:</b> Thêm biến sau vào cấu hình môi trường
-                  (ví dụ <code>/etc/environment</code> hoặc config của DE/WM) để
-                  fix lỗi không gõ được trên các ứng dụng X11/XCB:
+                  <b>Lưu ý cho {{ selectedInit }}:</b> Thêm biến sau vào cấu
+                  hình môi trường (ví dụ <code>/etc/environment</code> hoặc
+                  config của DE/WM) để fix lỗi không gõ được trên các ứng dụng
+                  X11/XCB:
                 </p>
                 <div class="code-container mini">
                   <pre><code>DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus</code></pre>
