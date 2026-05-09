@@ -23,6 +23,7 @@ export const deWms = [
   'i3',
   'Sway',
   'Hyprland',
+  'Niri',
 ];
 export const environments = ['X11', 'Wayland'];
 export const initSystems = ['systemd', 'OpenRC', 'runit'];
@@ -96,6 +97,7 @@ export const logic = {
       i3: 'Add `exec --no-startup-id fcitx5 -d` to ~/.config/i3/config',
       Sway: 'Add `exec --no-startup-id fcitx5 -d` to ~/.config/sway/config',
       Hyprland: 'Add `exec-once = fcitx5 -d` to ~/.config/hypr/hyprland.conf',
+      Niri: 'Add `spawn-sh-at-startup "fcitx5 -d"` to ~/.config/niri/config.kdl',
     },
     wayland_extras: {
       General: {
@@ -123,6 +125,13 @@ export const logic = {
         support_info: 'Sử dụng text-input-v1 và zwp_input_method_v1.',
         caveats:
           'Do thiếu text-input-v3, IM module là giải pháp duy nhất cho Gtk/Qt.',
+      },
+      Niri: {
+        best_setup: [
+          'Nên cài đặt xwayland-satellite. Mặc định niri sẽ tự khởi động mà không cần spawn-at-startup.'
+        ],
+        caveats:
+          'niri không hỗ trợ Xorg trực tiếp. Hãy cài chung với xwayland-satellite',
       },
     },
   },
