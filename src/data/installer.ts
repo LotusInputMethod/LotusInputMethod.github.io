@@ -94,10 +94,10 @@ export const logic = {
       LXQt: 'LXQt Configuration Center → Session Settings → Autostart → LXQt Autostart → Add (Name: Fcitx 5, Command: fcitx5)',
       COSMIC:
         'COSMIC Settings → Applications → Startup Applications → Add app → Fcitx 5',
-      i3: 'Add `exec --no-startup-id fcitx5 -d` to ~/.config/i3/config',
-      Sway: 'Add `exec --no-startup-id fcitx5 -d` to ~/.config/sway/config',
-      Hyprland: 'Add `exec-once = fcitx5 -d` to ~/.config/hypr/hyprland.conf',
-      Niri: 'Add `spawn-sh-at-startup "fcitx5 -d"` to ~/.config/niri/config.kdl',
+      i3: 'Thêm `exec --no-startup-id fcitx5 -d` vào ~/.config/i3/config',
+      Sway: 'Thêm `exec --no-startup-id fcitx5 -d` vào ~/.config/sway/config',
+      Hyprland: 'Thêm `exec-once = fcitx5 -d` vào ~/.config/hypr/hyprland.conf',
+      Niri: 'Thêm `spawn-sh-at-startup "fcitx5 -d"` vào ~/.config/niri/config.kdl',
     },
     wayland_extras: {
       General: {
@@ -128,7 +128,7 @@ export const logic = {
       },
       Niri: {
         best_setup: [
-          'Nên cài đặt xwayland-satellite. Mặc định niri sẽ tự khởi động mà không cần spawn-at-startup.'
+          'Nên cài đặt xwayland-satellite. Mặc định niri sẽ tự khởi động mà không cần spawn-at-startup.',
         ],
         caveats:
           'niri không hỗ trợ Xorg trực tiếp. Hãy cài chung với xwayland-satellite',
