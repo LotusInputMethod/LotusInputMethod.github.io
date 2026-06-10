@@ -135,9 +135,12 @@ const installStepCode = computed(() => {
       selectedDistro.value as keyof typeof logic.steps.install
     ];
   if (!distroInfo) return 'Cấu hình chưa sẵn sàng.';
-  return (
-    (distroInfo as any)[selectedMethod.value] || 'Phương thức chưa sẵn sàng.'
-  );
+  const methodData = (distroInfo as any)[selectedMethod.value];
+  if (!methodData) return 'Phương thức chưa sẵn sàng.';
+  if (typeof methodData === 'object' && methodData !== null) {
+    return methodData[selectedShell.value] || methodData.Bash || 'Cấu hình chưa sẵn sàng.';
+  }
+  return methodData;
 });
 
 const autostartText = computed(

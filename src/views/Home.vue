@@ -893,13 +893,13 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                     />
                   </div>
                   <div class="code-container">
-                    <pre><code>yay -Rns fcitx5-lotus</code></pre>
+                    <pre><code>paru -Rns fcitx5-lotus</code></pre>
                     <el-button
                       class="copy-float"
                       circle
                       size="small"
                       :icon="DocumentCopy"
-                      @click="copyToClipboard('yay -Rns fcitx5-lotus')"
+                      @click="copyToClipboard('paru -Rns fcitx5-lotus')"
                     />
                   </div>
                   <div class="code-container">
