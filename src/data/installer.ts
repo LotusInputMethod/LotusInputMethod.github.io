@@ -82,7 +82,7 @@ export const logic = {
         Binary:
           'Void Linux sử dụng xbps. Hiện chưa có gói chính thức, vui lòng build from source.',
         Source:
-          'sudo xbps-install -S acl cmake extra-cmake-modules libfcitx5-devel libinput-devel eudev-libudev-devel gcc go gettext-devel pkg-config hicolor-icon-theme libx11-devel\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
+          'sudo xbps-install -S fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt acl acl-progs cmake extra-cmake-modules libfcitx5-devel libinput-devel eudev-libudev-devel gcc go gettext-devel pkg-config hicolor-icon-theme libX11-devel python3-QtPy python3-PyQt5 python3-pyqt6 python3-pyqt6-gui python3-pyqt6-widgets\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
       },
     },
     autostart: {
