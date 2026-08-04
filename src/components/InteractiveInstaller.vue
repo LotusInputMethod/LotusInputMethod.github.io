@@ -603,6 +603,8 @@ const chromiumWaylandFlags = computed(() =>
   height: fit-content;
   position: sticky;
   top: 100px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
   transition:
     background-color 0.3s,
     border-color 0.3s;
@@ -927,6 +929,8 @@ code {
     position: relative;
     top: 0;
     padding: 1.5rem;
+    max-height: none;
+    overflow-y: visible;
   }
 }
 
