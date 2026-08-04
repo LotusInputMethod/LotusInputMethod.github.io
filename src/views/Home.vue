@@ -1034,32 +1034,40 @@ sudo zypper removerepo fcitx5-lotus</code></pre>
                   </div>
                 </summary>
                 <div class="details-content">
-                  <p class="instruction mb-3">
+                  <p class="instruction mb-2">
                     Gỡ tùy theo cách bạn đã cài:
                   </p>
-                  <div class="code-container">
-                    <pre><code># Nếu cài từ nixpkgs (package manager):
-#   - Xóa/comment dòng pkgs.fcitx5-lotus trong home.packages
-#     hoặc environment.systemPackages / i18n.inputMethod.fcitx5.addons
-#   - nixos-rebuild switch   (hoặc home-manager switch)
-
-# Nếu build từ source qua flake repo:
-#   - Xóa dòng services.fcitx5-lotus và inputs trong config
-#   - nixos-rebuild switch
-
-# NixOS sẽ tự dọn dẹp.</code></pre>
-                    <el-button
-                      class="copy-float"
-                      circle
-                      :icon="DocumentCopy"
-                      size="small"
-                      @click="
-                        copyToClipboard(
-                          '# Nếu cài từ nixpkgs (package manager):\n#   - Xóa/comment dòng pkgs.fcitx5-lotus trong home.packages\n#     hoặc environment.systemPackages / i18n.inputMethod.fcitx5.addons\n#   - nixos-rebuild switch   (hoặc home-manager switch)\n\n# Nếu build từ source qua flake repo:\n#   - Xóa dòng services.fcitx5-lotus và inputs trong config\n#   - nixos-rebuild switch\n\n# NixOS sẽ tự dọn dẹp.',
-                        )
-                      "
-                    />
-                  </div>
+                  <p class="instruction mb-2">
+                    <b>Cách 1 — Cài từ nixpkgs (package manager):</b>
+                  </p>
+                  <ul class="uninstall-list">
+                    <li>
+                      Xóa/comment dòng
+                      <code class="inline-code">pkgs.fcitx5-lotus</code> trong
+                      <code class="inline-code">home.packages</code> hoặc
+                      <code class="inline-code">environment.systemPackages</code>
+                      /
+                      <code class="inline-code">i18n.inputMethod.fcitx5.addons</code>.
+                    </li>
+                    <li>
+                      Chạy <code class="inline-code">nixos-rebuild switch</code>
+                      (hoặc <code class="inline-code">home-manager switch</code>).
+                    </li>
+                  </ul>
+                  <p class="instruction mb-2 mt-3">
+                    <b>Cách 2 — Build từ source qua flake repo:</b>
+                  </p>
+                  <ul class="uninstall-list">
+                    <li>
+                      Xóa dòng
+                      <code class="inline-code">services.fcitx5-lotus</code> và
+                      <code class="inline-code">inputs</code> trong config.
+                    </li>
+                    <li>
+                      Chạy <code class="inline-code">nixos-rebuild switch</code>.
+                    </li>
+                  </ul>
+                  <p class="instruction mt-3">NixOS sẽ tự dọn dẹp.</p>
                 </div>
               </details>
 
@@ -2613,6 +2621,17 @@ body {
   padding: 20px;
   border-top: 1px solid var(--ctp-surface1);
   background-color: var(--ctp-base);
+}
+
+.uninstall-list {
+  padding-left: 1.25rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--ctp-subtext0);
+  line-height: 1.6;
+}
+
+.uninstall-list li {
+  margin-bottom: 0.25rem;
 }
 
 .code-container {
