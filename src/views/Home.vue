@@ -880,7 +880,7 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                 <div class="details-content">
                   <p class="instruction mb-3">
                     Bạn có thể dùng <code>pacman</code> (khuyên dùng),
-                    <code>yay</code> hoặc <code>paru</code> để gỡ cài đặt:
+                    <code>yay</code> hoặc <code>paru</code> để gỡ cài đặt (nhớ gỡ đúng gói bạn đã cài):
                   </p>
                   <div class="code-container">
                     <pre><code>sudo pacman -Rns fcitx5-lotus</code></pre>
@@ -903,13 +903,13 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                     />
                   </div>
                   <div class="code-container">
-                    <pre><code>paru -Rns fcitx5-lotus</code></pre>
+                    <pre><code>yay -Rns fcitx5-lotus</code></pre>
                     <el-button
                       class="copy-float"
                       circle
                       size="small"
                       :icon="DocumentCopy"
-                      @click="copyToClipboard('paru -Rns fcitx5-lotus')"
+                      @click="copyToClipboard('yay -Rns fcitx5-lotus')"
                     />
                   </div>
                   <el-alert
