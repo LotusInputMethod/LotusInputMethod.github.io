@@ -33,6 +33,19 @@ type CatppuccinTheme = (typeof catppuccinThemes)[number];
 
 const currentTheme = ref<CatppuccinTheme>('mocha');
 
+const themeBaseColor: Record<CatppuccinTheme, string> = {
+  latte: '#eff1f5',
+  frappe: '#303446',
+  macchiato: '#24273a',
+  mocha: '#1e1e2e',
+};
+
+const setThemeColor = (theme: CatppuccinTheme): void => {
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', themeBaseColor[theme]);
+};
+
 const cycleTheme = (): void => {
   const currentIndex = catppuccinThemes.indexOf(currentTheme.value);
   const nextIndex = (currentIndex + 1) % catppuccinThemes.length;
@@ -40,6 +53,7 @@ const cycleTheme = (): void => {
 
   currentTheme.value = nextTheme;
   document.documentElement.setAttribute('data-theme', nextTheme);
+  setThemeColor(nextTheme);
   localStorage.setItem('catppuccin-theme', nextTheme);
 };
 
@@ -50,6 +64,12 @@ const formatThemeName = (name: string) =>
 // --- SCROLL HANDLING ---
 const handleScroll = (): void => {
   isScrolled.value = window.scrollY > 20;
+};
+
+const handleResize = (): void => {
+  if (window.innerWidth > 900) {
+    mobileMenuOpen.value = false;
+  }
 };
 
 const fullText = 'Gõ không gạch chân cực mượt';
@@ -228,15 +248,18 @@ onMounted(() => {
   }
 
   document.documentElement.setAttribute('data-theme', currentTheme.value);
+  setThemeColor(currentTheme.value);
   startTyping();
   fetchGithubStars();
   fetchContributors();
   fetchLatestRelease();
   window.addEventListener('scroll', handleScroll);
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll);
+  window.removeEventListener('resize', handleResize);
   clearInterval(typingTimer);
   clearTimeout(resetTimer);
 });
@@ -436,9 +459,16 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
 
 <template>
   <div class="home-page">
-    <nav class="navbar" :class="{ scrolled: isScrolled }">
+    <nav class="navbar" :class="{ scrolled: isScrolled }" aria-label="Điều hướng chính">
       <div class="container nav-content">
-        <div class="nav-brand" @click="scrollToTop">
+        <div
+          class="nav-brand"
+          role="link"
+          tabindex="0"
+          aria-label="Về đầu trang"
+          @click="scrollToTop"
+          @keydown.enter="scrollToTop"
+        >
           <img src="/fcitx-lotus.svg" alt="Lotus Logo" class="logo" />
           <span class="brand-name">Fcitx5 Lotus</span>
         </div>
@@ -466,12 +496,19 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         </div>
 
         <div class="mobile-controls">
-          <el-button circle class="btn-theme" @click="cycleTheme">
+          <el-button
+            circle
+            class="btn-theme"
+            aria-label="Đổi theme"
+            @click="cycleTheme"
+          >
             <el-icon><Brush /></el-icon>
           </el-button>
           <el-button
             class="mobile-menu-btn"
             text
+            aria-label="Mở menu"
+            :aria-expanded="mobileMenuOpen"
             @click="mobileMenuOpen = !mobileMenuOpen"
           >
             <el-icon size="24"><Menu /></el-icon>
@@ -479,18 +516,20 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
         </div>
       </div>
 
-      <div class="mobile-menu" v-show="mobileMenuOpen">
-        <a href="#features" @click="mobileMenuOpen = false">Tính năng</a>
-        <a href="#installation" @click="mobileMenuOpen = false"
-          >Cài đặt & Thiết lập</a
-        >
-        <a href="#usage" @click="mobileMenuOpen = false">Hướng dẫn</a>
-        <a href="#uninstall" @click="mobileMenuOpen = false">Gỡ cài đặt</a>
-        <a href="#contributors" @click="mobileMenuOpen = false">Đóng góp</a>
-        <el-button type="primary" @click="goToGitHub">
-          <v-icon name="si-github" class="mr-2" /> GitHub
-        </el-button>
-      </div>
+      <Transition name="mobile-menu">
+        <div v-if="mobileMenuOpen" class="mobile-menu">
+          <a href="#features" @click="mobileMenuOpen = false">Tính năng</a>
+          <a href="#installation" @click="mobileMenuOpen = false"
+            >Cài đặt & Thiết lập</a
+          >
+          <a href="#usage" @click="mobileMenuOpen = false">Hướng dẫn</a>
+          <a href="#uninstall" @click="mobileMenuOpen = false">Gỡ cài đặt</a>
+          <a href="#contributors" @click="mobileMenuOpen = false">Đóng góp</a>
+          <el-button type="primary" @click="goToGitHub">
+            <v-icon name="si-github" class="mr-2" /> GitHub
+          </el-button>
+        </div>
+      </Transition>
     </nav>
 
     <header class="hero section-bg-mantle">
@@ -703,14 +742,13 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
                   Tray):
                 </p>
-                <el-table
-                  :data="quickSettings"
-                  class="table-bordered"
-                >
-                  <el-table-column prop="option" label="Tùy chọn" width="160" />
-                  <el-table-column prop="description" label="Chức năng" />
-                  <el-table-column prop="default" label="Mặc định" width="120" />
-                </el-table>
+                <div class="table-responsive">
+                  <el-table :data="quickSettings" class="table-bordered">
+                    <el-table-column prop="option" label="Tùy chọn" width="160" />
+                    <el-table-column prop="description" label="Chức năng" />
+                    <el-table-column prop="default" label="Mặc định" width="120" />
+                  </el-table>
+                </div>
               </div>
             </el-tab-pane>
 
@@ -731,14 +769,13 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   Nhấp chuột phải vào biểu tượng Lotus trên khay hệ thống (System
                   Tray) -> Settings
                 </p>
-                <el-table
-                  :data="advancedSettings"
-                  class="table-bordered"
-                >
-                  <el-table-column prop="page" label="Trang" width="160" />
-                  <el-table-column prop="option" label="Tuỳ chọn" width="200" />
-                  <el-table-column prop="feature" label="Tính năng" />
-                </el-table>
+                <div class="table-responsive">
+                  <el-table :data="advancedSettings" class="table-bordered">
+                    <el-table-column prop="page" label="Trang" width="160" />
+                    <el-table-column prop="option" label="Tuỳ chọn" width="200" />
+                    <el-table-column prop="feature" label="Tính năng" />
+                  </el-table>
+                </div>
               </div>
             </el-tab-pane>
 
@@ -759,23 +796,22 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                   Nhấn phím <code class="inline-code">`</code> (backtick) trong khi
                   đang ở ô nhập liệu để mở nhanh menu chế độ gõ:
                 </p>
-                <el-table
-                  :data="typingModes"
-                  class="mb-6 table-bordered"
-                >
-                  <el-table-column prop="mode" label="Chế độ" width="200" />
-                  <el-table-column
-                    prop="shortcut"
-                    label="Phím tắt"
-                    width="100"
-                    align="center"
-                  >
-                    <template #default="{ row }"
-                      ><kbd class="kbd-key">{{ row.shortcut }}</kbd></template
+                <div class="table-responsive mb-6">
+                  <el-table :data="typingModes" class="table-bordered">
+                    <el-table-column prop="mode" label="Chế độ" width="200" />
+                    <el-table-column
+                      prop="shortcut"
+                      label="Phím tắt"
+                      width="100"
+                      align="center"
                     >
-                  </el-table-column>
-                  <el-table-column prop="description" label="Mô tả" />
-                </el-table>
+                      <template #default="{ row }"
+                        ><kbd class="kbd-key">{{ row.shortcut }}</kbd></template
+                      >
+                    </el-table-column>
+                    <el-table-column prop="description" label="Mô tả" />
+                  </el-table>
+                </div>
 
                 <div class="alerts-grid mt-6">
                   <el-alert
@@ -1187,16 +1223,18 @@ rm -rf ~/.config/fcitx5/conf/lotus.conf</code></pre>
         </div>
 
         <div class="contributors-flex">
-          <div
+          <a
             v-for="c in contributors"
             :key="c.name"
+            :href="c.githubUrl"
+            target="_blank"
+            rel="noopener"
             class="contributor-item"
-            @click="openLink(c.githubUrl)"
           >
             <el-avatar :size="80" :src="c.avatar" class="contributor-avatar" />
             <div class="c-name">{{ c.name }}</div>
             <div class="c-role">{{ c.role }}</div>
-          </div>
+          </a>
         </div>
 
         <div class="custom-card contribute-action">
@@ -1285,6 +1323,7 @@ rm -rf ~/.config/fcitx5/conf/lotus.conf</code></pre>
 /* 1. CATPPUCCIN COLOR PALETTE - 100% VARIABLES, NO HARDCODING                */
 /* ========================================================================== */
 :root[data-theme='latte'] {
+  color-scheme: light;
   --ctp-base: #eff1f5;
   --ctp-mantle: #e6e9ef;
   --ctp-crust: #dce0e8;
@@ -1309,6 +1348,7 @@ rm -rf ~/.config/fcitx5/conf/lotus.conf</code></pre>
 }
 
 :root[data-theme='frappe'] {
+  color-scheme: dark;
   --ctp-base: #303446;
   --ctp-mantle: #292c3c;
   --ctp-crust: #232634;
@@ -1333,6 +1373,7 @@ rm -rf ~/.config/fcitx5/conf/lotus.conf</code></pre>
 }
 
 :root[data-theme='macchiato'] {
+  color-scheme: dark;
   --ctp-base: #24273a;
   --ctp-mantle: #1e2030;
   --ctp-crust: #181926;
@@ -1357,6 +1398,7 @@ rm -rf ~/.config/fcitx5/conf/lotus.conf</code></pre>
 }
 
 :root[data-theme='mocha'] {
+  color-scheme: dark;
   --ctp-base: #1e1e2e;
   --ctp-mantle: #181825;
   --ctp-crust: #11111b;
@@ -1431,6 +1473,18 @@ body {
 *::before,
 *::after {
   box-sizing: inherit;
+}
+
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--ctp-green);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+section {
+  scroll-margin-top: 80px;
 }
 
 ::-webkit-scrollbar {
@@ -1653,7 +1707,7 @@ body {
 }
 .btn-github:hover {
   border-color: var(--ctp-green) !important;
-  color: var(--ctp-surface2) !important;
+  color: var(--ctp-green) !important;
 }
 .btn-source {
   background-color: var(--ctp-surface0) !important;
@@ -1753,6 +1807,19 @@ body {
   position: absolute;
   width: 100%;
   box-shadow: var(--el-box-shadow-light);
+}
+
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.mobile-menu-enter-from,
+.mobile-menu-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 .mobile-menu a {
   color: var(--ctp-text);
@@ -1856,7 +1923,15 @@ body {
   transition: color 0.3s;
 }
 .text-gradient {
-  color: var(--ctp-green);
+  background: linear-gradient(
+    120deg,
+    var(--ctp-green),
+    var(--ctp-sky) 50%,
+    var(--ctp-mauve)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .hero-description {
   font-size: 1.125rem;
@@ -2342,6 +2417,11 @@ body {
   border-radius: 6px;
 }
 
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Contributors */
 .contributors-flex {
   display: grid;
@@ -2374,6 +2454,8 @@ body {
 .contributor-item {
   text-align: center;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
 }
 .contributor-avatar {
   border: 3px solid var(--ctp-surface0);

@@ -1,21 +1,47 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/fcitx-lotus.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="google-site-verification"
-      content="uX42eG_ahgGB4-T_cD-piddp8xyyNg6ldpMopZcwCOI"
-    />
-    <meta
-      name="description"
-      content="Fcitx5 Lotus: Bộ gõ tiếng Việt hiện đại và hiệu năng cao cho Linux. Hỗ trợ đầy đủ các kiểu gõ Telex, VNI với trải nghiệm mượt mà."
-    />
-    <title>Fcitx5 Lotus | Bộ gõ tiếng Việt cho Linux</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/fcitx-lotus.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="google-site-verification" content="uX42eG_ahgGB4-T_cD-piddp8xyyNg6ldpMopZcwCOI" />
+  <meta name="description"
+    content="Fcitx5 Lotus: Bộ gõ tiếng Việt hiện đại và hiệu năng cao cho Linux. Hỗ trợ đầy đủ các kiểu gõ Telex, VNI với trải nghiệm mượt mà." />
+  <meta name="theme-color" content="#1e1e2e" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Fcitx5 Lotus | Bộ gõ tiếng Việt cho Linux" />
+  <meta property="og:description"
+    content="Bộ gõ tiếng Việt hiện đại và hiệu năng cao cho Linux. Hỗ trợ đầy đủ các kiểu gõ Telex, VNI với trải nghiệm mượt mà." />
+  <meta property="og:image" content="/fcitx-lotus.svg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Fcitx5 Lotus | Bộ gõ tiếng Việt cho Linux" />
+  <meta name="twitter:description" content="Bộ gõ tiếng Việt hiện đại và hiệu năng cao cho Linux." />
+  <script>
+    (function () {
+      try {
+        var themes = ['latte', 'frappe', 'macchiato', 'mocha'];
+        var t = localStorage.getItem('catppuccin-theme');
+        if (themes.indexOf(t) === -1) {
+          t =
+            window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'latte'
+              : 'mocha';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <title>Fcitx5 Lotus | Bộ gõ tiếng Việt cho Linux</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

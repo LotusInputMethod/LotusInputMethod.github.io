@@ -240,7 +240,11 @@ const chromiumWaylandFlags = computed(() =>
               :key="d.name"
               class="distro-card"
               :class="{ active: selectedDistro === d.name }"
+              role="button"
+              tabindex="0"
+              :aria-pressed="selectedDistro === d.name"
               @click="selectedDistro = d.name"
+              @keydown.enter="selectedDistro = d.name"
             >
               <v-icon :name="d.icon" scale="1.5" />
               <span>{{ d.name }}</span>
@@ -256,7 +260,11 @@ const chromiumWaylandFlags = computed(() =>
               :key="de"
               class="de-card"
               :class="{ active: selectedDe === de }"
+              role="button"
+              tabindex="0"
+              :aria-pressed="selectedDe === de"
               @click="selectedDe = de"
+              @keydown.enter="selectedDe = de"
             >
               <span>{{ de }}</span>
             </div>
@@ -271,7 +279,11 @@ const chromiumWaylandFlags = computed(() =>
               :key="e"
               class="option-card"
               :class="{ active: selectedEnv === e }"
+              role="button"
+              tabindex="0"
+              :aria-pressed="selectedEnv === e"
               @click="selectedEnv = e"
+              @keydown.enter="selectedEnv = e"
             >
               <span>{{ e }}</span>
             </div>
@@ -286,7 +298,11 @@ const chromiumWaylandFlags = computed(() =>
               :key="i"
               class="option-card"
               :class="{ active: selectedInit === i }"
+              role="button"
+              tabindex="0"
+              :aria-pressed="selectedInit === i"
               @click="selectedInit = i"
+              @keydown.enter="selectedInit = i"
             >
               <span>{{ i }}</span>
             </div>
@@ -301,7 +317,11 @@ const chromiumWaylandFlags = computed(() =>
               :key="m"
               class="option-card"
               :class="{ active: selectedMethod === m }"
+              role="button"
+              tabindex="0"
+              :aria-pressed="selectedMethod === m"
               @click="selectedMethod = m"
+              @keydown.enter="selectedMethod = m"
             >
               <span>{{ m }}</span>
             </div>
@@ -316,7 +336,11 @@ const chromiumWaylandFlags = computed(() =>
               :key="s"
               class="option-card"
               :class="{ active: selectedShell === s }"
+              role="button"
+              tabindex="0"
+              :aria-pressed="selectedShell === s"
               @click="selectedShell = s"
+              @keydown.enter="selectedShell = s"
             >
               <span>{{ s }}</span>
             </div>
@@ -772,6 +796,13 @@ const chromiumWaylandFlags = computed(() =>
   background-color: var(--ctp-surface0);
   border-color: var(--ctp-surface2);
   color: var(--ctp-text);
+}
+
+.distro-card:focus-visible,
+.de-card:focus-visible,
+.option-card:focus-visible {
+  outline: 2px solid var(--ctp-green);
+  outline-offset: 2px;
 }
 
 /* Trạng thái Active - Chỉ đổi viền và chữ để không bị lóa mảng màu lớn */
