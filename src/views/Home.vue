@@ -1034,12 +1034,32 @@ sudo zypper removerepo fcitx5-lotus</code></pre>
                   </div>
                 </summary>
                 <div class="details-content">
-                  <p class="instruction">
-                    Xóa (hoặc comment) dòng
-                    <code>services.fcitx5-lotus</code> và
-                    <code>inputs</code> trong file config, sau đó rebuild lại
-                    system. NixOS sẽ tự dọn dẹp.
+                  <p class="instruction mb-3">
+                    Gỡ tùy theo cách bạn đã cài:
                   </p>
+                  <div class="code-container">
+                    <pre><code># Nếu cài từ nixpkgs (package manager):
+#   - Xóa/comment dòng pkgs.fcitx5-lotus trong home.packages
+#     hoặc environment.systemPackages / i18n.inputMethod.fcitx5.addons
+#   - nixos-rebuild switch   (hoặc home-manager switch)
+
+# Nếu build từ source qua flake repo:
+#   - Xóa dòng services.fcitx5-lotus và inputs trong config
+#   - nixos-rebuild switch
+
+# NixOS sẽ tự dọn dẹp.</code></pre>
+                    <el-button
+                      class="copy-float"
+                      circle
+                      :icon="DocumentCopy"
+                      size="small"
+                      @click="
+                        copyToClipboard(
+                          '# Nếu cài từ nixpkgs (package manager):\n#   - Xóa/comment dòng pkgs.fcitx5-lotus trong home.packages\n#     hoặc environment.systemPackages / i18n.inputMethod.fcitx5.addons\n#   - nixos-rebuild switch   (hoặc home-manager switch)\n\n# Nếu build từ source qua flake repo:\n#   - Xóa dòng services.fcitx5-lotus và inputs trong config\n#   - nixos-rebuild switch\n\n# NixOS sẽ tự dọn dẹp.',
+                        )
+                      "
+                    />
+                  </div>
                 </div>
               </details>
 

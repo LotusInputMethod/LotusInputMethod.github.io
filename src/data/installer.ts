@@ -8,6 +8,10 @@ export const distros = [
   { name: 'Void Linux', icon: 'co-linux' },
 ];
 
+export type StepBlock =
+  | { type: 'text'; content: string }
+  | { type: 'code'; content: string };
+
 export const methods = ['Package Manager', 'Binary', 'Source'];
 export const shells = ['Bash', 'Zsh', 'Fish'];
 export const deWms = [
@@ -71,10 +75,65 @@ export const logic = {
           'sudo zypper install acl cmake extra-cmake-modules fcitx5-devel libinput-devel systemd-devel gcc-c++ go hicolor-icon-theme systemd-devel libX11-devel udev python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib .\nmake\nsudo make install',
       },
       NixOS: {
-        'Package Manager':
-          '# Thêm input của fcitx5-lotus vào flake.nix:\n{\n  inputs = {\n    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";\n\n    fcitx5-lotus = {\n      url = "github:LotusInputMethod/fcitx5-lotus";\n      inputs.nixpkgs.follows = "nixpkgs";\n    };\n  };\n\n  outputs = { self, ... }:\n  # ...\n}\n\n# Bật fcitx5-lotus service trong configuration.nix:\n\n{\n  inputs,\n  ...\n}: {\n  imports = [\n    inputs.fcitx5-lotus.nixosModules.fcitx5-lotus\n  ];\n\n  services.fcitx5-lotus = {\n    enable = true;\n    users = [ "your_username" ]; # Sửa thành list tên user của bạn\n  };\n}\n\n# Rebuild lại system để cài đặt.',
-        Binary: 'NixOS ưu tiên cấu hình thông qua flake hoặc module.',
-        Source: 'NixOS ưu tiên sử dụng nix-shell.',
+        'Package Manager': [
+          {
+            type: 'text',
+            content: 'Fcitx5-lotus 3.4.0 đã có trên nixpkgs-unstable.',
+          },
+          {
+            type: 'text',
+            content:
+              'Lưu ý: cần dùng nixpkgs-unstable (gói chưa có ở nhánh stable).',
+          },
+          {
+            type: 'text',
+            content:
+              'Cách 1 — configuration.nix: thêm engine vào fcitx5(NixOS sẽ tự set các biến môi trường cần thiết):',
+          },
+          {
+            type: 'code',
+            content:
+              '{\n  pkgs,\n  ...\n}: {\n  i18n.inputMethod = {\n    enable = true;\n    type = "fcitx5";\n    fcitx5.addons = [ pkgs.fcitx5-lotus ];\n  };\n}',
+          },
+          { type: 'text', content: 'Cách 2 — Home Manager (home.nix):' },
+          {
+            type: 'code',
+            content:
+              '{\n  pkgs,\n  ...\n}: {\n  home.packages = [ pkgs.fcitx5-lotus ];\n}',
+          },
+          {
+            type: 'text',
+            content: 'Cách 3 — thử nghiệm nhanh, không khai báo:',
+          },
+          {
+            type: 'code',
+            content:
+              'nix profile install nixpkgs#fcitx5-lotus\nnix shell nixpkgs#fcitx5-lotus',
+          },
+        ],
+        Binary:
+          'NixOS ưu tiên cấu hình thông qua nixpkgs hoặc build from source',
+        Source: [
+          {
+            type: 'text',
+            content: 'Thêm input của fcitx5-lotus vào flake.nix:',
+          },
+          {
+            type: 'code',
+            content:
+              '{\n  inputs = {\n    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";\n\n    fcitx5-lotus = {\n      url = "github:LotusInputMethod/fcitx5-lotus";\n      inputs.nixpkgs.follows = "nixpkgs";\n    };\n  };\n\n  outputs = { self, ... }:\n  # ...\n}',
+          },
+          {
+            type: 'text',
+            content: 'Bật fcitx5-lotus service trong configuration.nix:',
+          },
+          {
+            type: 'code',
+            content:
+              '{\n  inputs,\n  ...\n}: {\n  imports = [\n    inputs.fcitx5-lotus.nixosModules.fcitx5-lotus\n  ];\n\n  services.fcitx5-lotus = {\n    enable = true;\n    users = [ "your_username" ]; # Sửa thành list tên user của bạn\n  };\n}',
+          },
+          { type: 'text', content: 'Rebuild lại system để cài đặt.' },
+        ],
       },
       'Void Linux': {
         'Package Manager':

@@ -15,6 +15,7 @@ import {
   userCreationCmd,
   udevReloadCmd,
   uinputModprobeCmd,
+  type StepBlock,
 } from '@/data/installer';
 
 const selectedDistro = ref(distros[0]?.name || '');
@@ -36,23 +37,97 @@ const needsUinputModprobe = computed(() => {
   return selectedMethod.value === 'Source';
 });
 
-const activateServerCode = computed(() => {
-  if (selectedDistro.value === 'NixOS')
-    return '# Bước này đã được cấu hình trong flake.nix ở trên.';
+const nixosServerBlocks: StepBlock[] = [
+  {
+    type: 'text',
+    content:
+      'Thêm vào configuration.nix để bật server daemon (thay your_username bằng tên user của bạn):',
+  },
+  {
+    type: 'code',
+    content:
+      '{\n  pkgs,\n  ...\n}: {\n  systemd.packages = [ pkgs.fcitx5-lotus ];\n  systemd.services."fcitx5-lotus-server@your_username" = {\n    wantedBy = [ "multi-user.target" ];\n    overrideStrategy = "asDropin";\n  };\n}',
+  },
+];
+
+const nixosEnvBlocks: StepBlock[] = [
+  {
+    type: 'text',
+    content:
+      'Nếu cài qua i18n.inputMethod (Cách 1), NixOS tự set các biến này.\nNếu cần khai báo thủ công, thêm vào configuration.nix:',
+  },
+  {
+    type: 'code',
+    content:
+      'environment.sessionVariables = {\n  GTK_IM_MODULE = "fcitx";\n  QT_IM_MODULE = "fcitx";\n  XMODIFIERS = "@im=fcitx";\n  SDL_IM_MODULE = "fcitx";\n  GLFW_IM_MODULE = "ibus";\n};',
+  },
+];
+
+const toBlocks = (value: string | StepBlock[]): StepBlock[] => {
+  if (Array.isArray(value)) return value;
+  return [{ type: 'code', content: value }];
+};
+
+const installStepBlocks = computed<StepBlock[]>(() => {
+  const distroInfo =
+    logic.steps.install[
+      selectedDistro.value as keyof typeof logic.steps.install
+    ];
+  if (!distroInfo) return [{ type: 'text', content: 'Cấu hình chưa sẵn sàng.' }];
+  const methodData = (distroInfo as any)[selectedMethod.value];
+  if (!methodData) {
+    return [{ type: 'text', content: 'Phương thức chưa sẵn sàng.' }];
+  }
+  if (Array.isArray(methodData)) {
+    return toBlocks(methodData);
+  }
+  if (methodData && typeof methodData === 'object') {
+    return toBlocks(
+      methodData[selectedShell.value] ||
+        methodData.Bash ||
+        'Cấu hình chưa sẵn sàng.',
+    );
+  }
+  return toBlocks(methodData);
+});
+
+const activateServerBlocks = computed<StepBlock[]>(() => {
+  if (selectedDistro.value === 'NixOS') {
+    if (selectedMethod.value === 'Package Manager') return nixosServerBlocks;
+    return [
+      {
+        type: 'text',
+        content: 'Bước này đã được cấu hình trong flake.nix ở trên.',
+      },
+    ];
+  }
   if (
     isAutoHandled.value &&
     selectedInit.value !== 'OpenRC' &&
     selectedInit.value !== 'runit'
   ) {
-    return '# Gói .deb sẽ tự động thực hiện bước này.\n' + serverCmd.value;
+    return [
+      {
+        type: 'text',
+        content: 'Gói .deb sẽ tự động thực hiện bước này. Có thể chạy thủ công:',
+      },
+      { type: 'code', content: serverCmd.value },
+    ];
   }
-  return serverCmd.value;
+  return toBlocks(serverCmd.value);
 });
 
-const shellConfigCode = computed(() => {
-  if (selectedDistro.value === 'NixOS')
-    return '# Bước này đã được cấu hình trong flake.nix ở trên.';
-  return envCmd.value;
+const shellConfigBlocks = computed<StepBlock[]>(() => {
+  if (selectedDistro.value === 'NixOS') {
+    if (selectedMethod.value === 'Package Manager') return nixosEnvBlocks;
+    return [
+      {
+        type: 'text',
+        content: 'Bước này đã được cấu hình trong flake.nix ở trên.',
+      },
+    ];
+  }
+  return toBlocks(envCmd.value);
 });
 
 const serverCmd = computed(() => {
@@ -128,20 +203,6 @@ const copyToClipboard = async (text: string) => {
     ElMessage.error('Không thể sao chép');
   }
 };
-
-const installStepCode = computed(() => {
-  const distroInfo =
-    logic.steps.install[
-      selectedDistro.value as keyof typeof logic.steps.install
-    ];
-  if (!distroInfo) return 'Cấu hình chưa sẵn sàng.';
-  const methodData = (distroInfo as any)[selectedMethod.value];
-  if (!methodData) return 'Phương thức chưa sẵn sàng.';
-  if (typeof methodData === 'object' && methodData !== null) {
-    return methodData[selectedShell.value] || methodData.Bash || 'Cấu hình chưa sẵn sàng.';
-  }
-  return methodData;
-});
 
 const autostartText = computed(
   () =>
@@ -268,14 +329,21 @@ const chromiumWaylandFlags = computed(() =>
           <div class="step-badge">1</div>
           <div class="step-content">
             <h4>Cài đặt gói</h4>
-            <div class="code-container">
-              <pre><code>{{ installStepCode }}</code></pre>
-              <el-button
-                class="copy-float"
-                circle
-                :icon="DocumentCopy"
-                @click="copyToClipboard(installStepCode)"
-              />
+            <div class="step-blocks">
+              <template v-for="(block, idx) in installStepBlocks" :key="idx">
+                <p v-if="block.type === 'text'" class="instruction">
+                  {{ block.content }}
+                </p>
+                <div v-else class="code-container">
+                  <pre><code>{{ block.content }}</code></pre>
+                  <el-button
+                    class="copy-float"
+                    circle
+                    :icon="DocumentCopy"
+                    @click="copyToClipboard(block.content)"
+                  />
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -338,14 +406,21 @@ const chromiumWaylandFlags = computed(() =>
                 :closable="false"
               />
             </div>
-            <div class="code-container">
-              <pre><code>{{ activateServerCode }}</code></pre>
-              <el-button
-                class="copy-float"
-                circle
-                :icon="DocumentCopy"
-                @click="copyToClipboard(activateServerCode)"
-              />
+            <div class="step-blocks">
+              <template v-for="(block, idx) in activateServerBlocks" :key="idx">
+                <p v-if="block.type === 'text'" class="instruction">
+                  {{ block.content }}
+                </p>
+                <div v-else class="code-container">
+                  <pre><code>{{ block.content }}</code></pre>
+                  <el-button
+                    class="copy-float"
+                    circle
+                    :icon="DocumentCopy"
+                    @click="copyToClipboard(block.content)"
+                  />
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -406,14 +481,21 @@ const chromiumWaylandFlags = computed(() =>
           <div class="step-badge">4</div>
           <div class="step-content">
             <h4>Thiết lập biến môi trường (Shell)</h4>
-            <div class="code-container">
-              <pre><code>{{ shellConfigCode }}</code></pre>
-              <el-button
-                class="copy-float"
-                circle
-                :icon="DocumentCopy"
-                @click="copyToClipboard(shellConfigCode)"
-              />
+            <div class="step-blocks">
+              <template v-for="(block, idx) in shellConfigBlocks" :key="idx">
+                <p v-if="block.type === 'text'" class="instruction">
+                  {{ block.content }}
+                </p>
+                <div v-else class="code-container">
+                  <pre><code>{{ block.content }}</code></pre>
+                  <el-button
+                    class="copy-float"
+                    circle
+                    :icon="DocumentCopy"
+                    @click="copyToClipboard(block.content)"
+                  />
+                </div>
+              </template>
             </div>
             <el-alert
               title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực."
@@ -776,6 +858,22 @@ const chromiumWaylandFlags = computed(() =>
   margin-bottom: 1rem;
   width: 100%;
   overflow-x: auto;
+}
+
+.step-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.step-blocks .code-container {
+  margin-bottom: 0;
+}
+
+.step-blocks .instruction {
+  margin: 0;
+  line-height: 1.6;
 }
 
 .code-container.mini {
