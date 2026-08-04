@@ -2373,6 +2373,7 @@ body {
 }
 .contributor-item {
   text-align: center;
+  cursor: pointer;
 }
 .contributor-avatar {
   border: 3px solid var(--ctp-surface0);
