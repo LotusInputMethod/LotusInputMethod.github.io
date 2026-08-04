@@ -26,6 +26,7 @@ const contributorCount = ref<number>(0);
 const latestVersion = ref<string>('');
 const latestReleaseUrl = ref<string>('');
 const REPO = 'LotusInputMethod/fcitx5-lotus';
+const GITHUB_URL = 'https://github.com/LotusInputMethod/fcitx5-lotus';
 
 // --- CATPPUCCIN THEME LOGIC ---
 const catppuccinThemes = ['latte', 'frappe', 'macchiato', 'mocha'] as const;
@@ -82,70 +83,73 @@ const startTyping = () => {
   let i = 0;
   displayText.value = '';
   typingTimer = setInterval(() => {
-    if (i < fullText.length) {
-      displayText.value += fullText.charAt(i);
-      i++;
-    } else {
+    if (i === fullText.length) {
       clearInterval(typingTimer);
       resetTimer = setTimeout(startTyping, 3000);
+      return;
     }
+    displayText.value = fullText.slice(0, ++i);
   }, typingSpeed);
 };
 
+const CACHE_KEYS = {
+  stars: 'lotus_stars_cache',
+  starsTime: 'lotus_stars_timestamp',
+  version: 'lotus_latest_version_cache',
+  versionUrl: 'lotus_latest_url_cache',
+  versionTime: 'lotus_latest_version_timestamp',
+  contributors: 'lotus_contributors_cache',
+  contributorsTime: 'lotus_contributors_timestamp',
+} as const;
+
+const CACHE_TTL = 2 * 60 * 60 * 1000;
+
+const getCached = (dataKey: string, timeKey: string) => {
+  const data = localStorage.getItem(dataKey);
+  const ts = localStorage.getItem(timeKey);
+  return {
+    data,
+    fresh: !!(data && ts && Date.now() - parseInt(ts) < CACHE_TTL),
+  };
+};
+
+const setCached = (dataKey: string, timeKey: string, data: string): void => {
+  localStorage.setItem(dataKey, data);
+  localStorage.setItem(timeKey, Date.now().toString());
+};
+
 const fetchGithubStars = async () => {
-  const CACHE_KEY = 'lotus_stars_cache';
-  const CACHE_TIME_KEY = 'lotus_stars_timestamp';
-  const TWO_HOURS = 2 * 60 * 60 * 1000;
+  const cached = getCached(CACHE_KEYS.stars, CACHE_KEYS.starsTime);
+  if (cached.fresh && cached.data !== null) {
+    starCount.value = cached.data;
+    return;
+  }
 
   try {
-    const cachedStars = localStorage.getItem(CACHE_KEY);
-    const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
-    const now = Date.now();
-
-    if (cachedStars && lastFetch && now - parseInt(lastFetch) < TWO_HOURS) {
-      starCount.value = cachedStars;
-      return;
-    }
-
     const response = await fetch(`https://api.github.com/repos/${REPO}`);
     if (!response.ok) throw new Error('GitHub API rate limit or error');
 
-    const data = await response.json();
-    const count = data.stargazers_count.toLocaleString();
+    const count = (await response.json()).stargazers_count.toLocaleString();
 
     starCount.value = count;
-    localStorage.setItem(CACHE_KEY, count);
-    localStorage.setItem(CACHE_TIME_KEY, now.toString());
+    setCached(CACHE_KEYS.stars, CACHE_KEYS.starsTime, count);
   } catch (error) {
     console.error('Lỗi khi lấy star từ GitHub:', error);
-    const oldCache = localStorage.getItem(CACHE_KEY);
-    if (oldCache) starCount.value = oldCache;
+    if (cached.data) starCount.value = cached.data;
   }
 };
 
 const fetchLatestRelease = async () => {
-  const CACHE_KEY = 'lotus_latest_version_cache';
-  const CACHE_URL_KEY = 'lotus_latest_url_cache';
-  const CACHE_TIME_KEY = 'lotus_latest_version_timestamp';
-  const TWO_HOURS = 2 * 60 * 60 * 1000;
+  const v = getCached(CACHE_KEYS.version, CACHE_KEYS.versionTime);
+  const u = getCached(CACHE_KEYS.versionUrl, CACHE_KEYS.versionTime);
+
+  if (v.fresh && u.fresh && v.data !== null && u.data !== null) {
+    latestVersion.value = v.data;
+    latestReleaseUrl.value = u.data;
+    return;
+  }
 
   try {
-    const cachedVersion = localStorage.getItem(CACHE_KEY);
-    const cachedUrl = localStorage.getItem(CACHE_URL_KEY);
-    const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
-    const now = Date.now();
-
-    if (
-      cachedVersion &&
-      cachedUrl &&
-      lastFetch &&
-      now - parseInt(lastFetch) < TWO_HOURS
-    ) {
-      latestVersion.value = cachedVersion;
-      latestReleaseUrl.value = cachedUrl;
-      return;
-    }
-
     const response = await fetch(
       `https://api.github.com/repos/${REPO}/releases/latest`,
     );
@@ -158,47 +162,40 @@ const fetchLatestRelease = async () => {
     if (version && url) {
       latestVersion.value = version;
       latestReleaseUrl.value = url;
-      localStorage.setItem(CACHE_KEY, version);
-      localStorage.setItem(CACHE_URL_KEY, url);
-      localStorage.setItem(CACHE_TIME_KEY, now.toString());
+      setCached(CACHE_KEYS.version, CACHE_KEYS.versionTime, version);
+      setCached(CACHE_KEYS.versionUrl, CACHE_KEYS.versionTime, url);
     }
   } catch (error) {
     console.error('Lỗi khi lấy version từ GitHub:', error);
-    const oldVersion = localStorage.getItem(CACHE_KEY);
-    const oldUrl = localStorage.getItem(CACHE_URL_KEY);
-    if (oldVersion && oldUrl) {
-      latestVersion.value = oldVersion;
-      latestReleaseUrl.value = oldUrl;
+    if (v.data && u.data) {
+      latestVersion.value = v.data;
+      latestReleaseUrl.value = u.data;
     }
   }
 };
 
 const fetchContributors = async () => {
-  const CACHE_KEY = 'lotus_contributors_cache';
-  const CACHE_TIME_KEY = 'lotus_contributors_timestamp';
-  const TWO_HOURS = 2 * 60 * 60 * 1000;
-
   const specialRoles: Record<number, string> = {
     57983253: 'Founder', // nhktmdzhg
   };
 
   const blacklist = ['thanhpy2009', 'loccun'];
 
+  const cached = getCached(
+    CACHE_KEYS.contributors,
+    CACHE_KEYS.contributorsTime,
+  );
+  if (cached.fresh && cached.data !== null) {
+    const parsed = JSON.parse(cached.data);
+    const filtered = parsed.filter(
+      (c: any) => !blacklist.includes(c.name) && !c.name.includes('[bot]'),
+    );
+    contributors.value = filtered;
+    contributorCount.value = filtered.length;
+    return;
+  }
+
   try {
-    const cachedData = localStorage.getItem(CACHE_KEY);
-    const lastFetch = localStorage.getItem(CACHE_TIME_KEY);
-    const now = Date.now();
-
-    if (cachedData && lastFetch && now - parseInt(lastFetch) < TWO_HOURS) {
-      const parsed = JSON.parse(cachedData);
-      const filtered = parsed.filter(
-        (c: any) => !blacklist.includes(c.name) && !c.name.includes('[bot]'),
-      );
-      contributors.value = filtered;
-      contributorCount.value = filtered.length;
-      return;
-    }
-
     const response = await fetch(
       `https://api.github.com/repos/${REPO}/contributors`,
     );
@@ -222,13 +219,15 @@ const fetchContributors = async () => {
 
     contributors.value = fetchedContributors;
     contributorCount.value = fetchedContributors.length;
-    localStorage.setItem(CACHE_KEY, JSON.stringify(fetchedContributors));
-    localStorage.setItem(CACHE_TIME_KEY, now.toString());
+    setCached(
+      CACHE_KEYS.contributors,
+      CACHE_KEYS.contributorsTime,
+      JSON.stringify(fetchedContributors),
+    );
   } catch (error) {
     console.error('Lỗi khi lấy contributor từ GitHub:', error);
-    const oldCache = localStorage.getItem(CACHE_KEY);
-    if (oldCache) {
-      contributors.value = JSON.parse(oldCache);
+    if (cached.data) {
+      contributors.value = JSON.parse(cached.data);
       contributorCount.value = contributors.value.length;
     }
   }
@@ -441,7 +440,7 @@ const scrollToTop = (): void => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 const goToGitHub = (): void => {
-  window.open('https://github.com/LotusInputMethod/fcitx5-lotus', '_blank');
+  openLink(GITHUB_URL);
 };
 const openLink = (url: string): void => {
   window.open(url, '_blank');

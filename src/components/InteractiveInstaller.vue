@@ -29,11 +29,7 @@ const needsUserCreation = computed(() => {
   return selectedInit.value !== 'systemd' || selectedMethod.value === 'Source';
 });
 
-const needsUdevReload = computed(() => {
-  return selectedMethod.value === 'Source';
-});
-
-const needsUinputModprobe = computed(() => {
+const needsSourceSteps = computed(() => {
   return selectedMethod.value === 'Source';
 });
 
@@ -392,7 +388,7 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
-        <div v-if="needsUdevReload" class="step-card">
+        <div v-if="needsSourceSteps" class="step-card">
           <div class="step-badge">1.6</div>
           <div class="step-content">
             <h4>Reload Udev Rules</h4>
@@ -449,7 +445,7 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
-        <div v-if="needsUinputModprobe" class="step-card">
+        <div v-if="needsSourceSteps" class="step-card">
           <div class="step-badge">2.5</div>
           <div class="step-content">
             <h4>Nạp Kernel Module uinput</h4>
