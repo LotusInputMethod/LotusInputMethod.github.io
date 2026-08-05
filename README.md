@@ -1,42 +1,42 @@
-# fcitx5-lotus-landing
+# Fcitx5 Lotus — Trang chủ
 
-This template should help get you started developing with Vue 3 in Vite.
+Trang web giới thiệu và hướng dẫn cài đặt cho [Fcitx5 Lotus](https://github.com/LotusInputMethod/fcitx5-lotus) — bộ gõ tiếng Việt hiện đại, hiệu năng cao cho Linux.
 
-## Recommended IDE Setup
+Trang chủ trực tiếp tại: https://lotusinputmethod.github.io/
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Tính năng trang web
 
-## Recommended Browser Setup
+- Hero động với terminal mockup + thống kê GitHub (stars, contributors, phiên bản).
+- Installer tương tác: chọn distro/DE/shell/init → hướng dẫn cài đặt tương ứng.
+- Hướng dẫn sử dụng (tabs): cài đặt nhanh, cài đặt nâng cao, chế độ gõ, mẹo hay.
+- Hướng dẫn gỡ cài đặt theo từng distro.
+- Danh sách contributor tải từ GitHub (cache 2 giờ).
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Tech stack
 
-## Type Support for `.vue` Imports in TS
+Vue 3 · Vite · TypeScript · Element Plus · oh-vue-icons · Bun · GitHub Pages
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Phát triển
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+Yêu cầu: Node ≥ 20.19 (hoặc Bun).
 
 ```sh
-bun install
+bun install          # cài phụ thuộc
+bun dev              # chạy dev server
+bun run lint         # kiểm tra eslint
+bun run type-check   # kiểm tra TypeScript
+bun run build        # build production
+bun run preview      # xem bản build
 ```
 
-### Compile and Hot-Reload for Development
+## Triển khai
 
-```sh
-bun dev
-```
+Push lên nhánh `main` → GitHub Actions (`deploy.yml`) tự build và deploy lên GitHub Pages.
 
-### Type-Check, Compile and Minify for Production
+## Đóng góp
 
-```sh
-bun run build
-```
+Mọi đóng góp đều được hoan nghênh — xem [CONTRIBUTING](https://github.com/LotusInputMethod/fcitx5-lotus/blob/main/CONTRIBUTING.md) của dự án chính.
+
+## Giấy phép
+
+GNU General Public License v3.0 — xem [LICENSE](LICENSE).
