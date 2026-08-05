@@ -778,14 +778,14 @@ pre {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-all;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Maple Mono', monospace;
   font-size: 0.95rem;
   line-height: 1.6;
   color: var(--ctp-text);
 }
 
 code {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Maple Mono', monospace;
   font-size: 0.9rem;
 }
 

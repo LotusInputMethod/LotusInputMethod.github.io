@@ -308,13 +308,13 @@ onUnmounted(() => {
   flex: 1;
   text-align: center;
   color: var(--ctp-subtext0);
-  font-family: monospace;
+  font-family: 'Maple Mono', monospace;
   font-size: 0.75rem;
 }
 
 .term-body {
   padding: 24px;
-  font-family: monospace;
+  font-family: 'Maple Mono', monospace;
   font-size: 0.875rem;
   color: var(--ctp-text);
   line-height: 1.6;
@@ -334,7 +334,7 @@ onUnmounted(() => {
   align-items: center;
   min-height: 1.2em;
   color: var(--ctp-text);
-  font-family: monospace;
+  font-family: 'Maple Mono', monospace;
 }
 
 @keyframes blink {

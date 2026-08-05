@@ -2,6 +2,13 @@
   --max-width: 1200px;
 }
 
+@font-face {
+  font-family: 'Maple Mono';
+  src: url('https://cdn.jsdelivr.net/gh/subframe7536/maple-font@v7.9/woff2/var/MapleMono[wght]-VF.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root[data-theme='latte'] {
   color-scheme: light;
   --ctp-base: #eff1f5;
@@ -402,7 +409,7 @@ section {
   color: var(--ctp-text);
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: monospace;
+  font-family: 'Maple Mono', monospace;
   font-size: 0.9em;
   transition:
     background-color 0.3s,
@@ -425,7 +432,7 @@ section {
 .code-block pre {
   margin: 0;
   color: var(--ctp-text);
-  font-family: monospace;
+  font-family: 'Maple Mono', monospace;
   font-size: 0.875rem;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -560,7 +567,7 @@ section {
   border: 1px solid var(--ctp-surface2);
   border-radius: 4px;
   border-bottom-width: 2px;
-  font-family: monospace;
+  font-family: 'Maple Mono', monospace;
   font-size: 0.85rem;
   color: var(--ctp-text);
   transition: all 0.3s;
@@ -591,7 +598,7 @@ section {
 
 .uninstall-card .code-container pre {
   margin: 0;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Maple Mono', monospace;
   font-size: 0.9rem;
   color: var(--ctp-text);
   white-space: pre-wrap;
@@ -930,4 +937,14 @@ section {
 
 :root .el-button--primary:hover {
   opacity: 0.9;
+}
+
+pre,
+code,
+.inline-code,
+.kbd-key,
+.term-body,
+.term-title,
+.typing {
+  font-feature-settings: 'calt', 'liga', 'zero';
 }
