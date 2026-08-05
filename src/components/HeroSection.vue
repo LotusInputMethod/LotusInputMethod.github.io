@@ -134,13 +134,45 @@ onUnmounted(() => {
 <style scoped>
 /* Hero Section */
 .hero {
+  position: relative;
   padding: 160px 0 100px;
   background-color: var(--ctp-mantle);
   overflow: hidden;
   transition: background 0.3s;
 }
 
+.hero::before,
+.hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero::before {
+  width: 480px;
+  height: 480px;
+  top: -140px;
+  left: -140px;
+  background: radial-gradient(circle,
+      color-mix(in srgb, var(--ctp-green) 26%, transparent),
+      transparent 70%);
+}
+
+.hero::after {
+  width: 560px;
+  height: 560px;
+  bottom: -180px;
+  right: -160px;
+  background: radial-gradient(circle,
+      color-mix(in srgb, var(--ctp-mauve) 22%, transparent),
+      transparent 70%);
+}
+
 .hero-container {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -203,9 +235,23 @@ onUnmounted(() => {
       var(--ctp-green),
       var(--ctp-sky) 50%,
       var(--ctp-mauve));
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+  animation: text-shift 8s ease-in-out infinite;
+}
+
+@keyframes text-shift {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .hero-description {
@@ -264,16 +310,22 @@ onUnmounted(() => {
   background-color: var(--ctp-crust);
   border-radius: 12px;
   border: 1px solid var(--ctp-surface1);
-  box-shadow: var(--el-box-shadow-light);
+  box-shadow:
+    var(--el-box-shadow-light),
+    0 0 40px color-mix(in srgb, var(--ctp-green) 18%, transparent);
   transform: rotateY(-5deg) rotateX(5deg);
   transition:
     transform 0.3s,
-    background-color 0.3s;
+    background-color 0.3s,
+    box-shadow 0.3s;
   overflow: hidden;
 }
 
 .terminal-mockup:hover {
   transform: rotateY(0) rotateX(0);
+  box-shadow:
+    var(--el-box-shadow-light),
+    0 0 60px color-mix(in srgb, var(--ctp-green) 30%, transparent);
 }
 
 .term-header {

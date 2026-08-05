@@ -104,7 +104,24 @@ onUnmounted(() => {
 }
 
 .navbar.scrolled {
-  border-bottom: 1px solid var(--ctp-surface1);
+  border-bottom-color: transparent;
+}
+
+.navbar.scrolled::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent,
+      var(--ctp-green),
+      var(--ctp-sky),
+      var(--ctp-mauve),
+      transparent);
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .nav-content {

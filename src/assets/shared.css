@@ -387,6 +387,27 @@ section {
       var(--ctp-surface0));
 }
 
+.features-grid .custom-card:has(.color-green):hover,
+.features-grid .custom-card:has(.icon-primary):hover {
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--ctp-green) 22%, transparent);
+}
+
+.features-grid .custom-card:has(.color-mauve):hover {
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--ctp-mauve) 22%, transparent);
+}
+
+.features-grid .custom-card:has(.color-peach):hover {
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--ctp-peach) 22%, transparent);
+}
+
+.features-grid .custom-card:has(.color-pink):hover {
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--ctp-pink) 22%, transparent);
+}
+
+.features-grid .custom-card:has(.color-sky):hover {
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--ctp-sky) 22%, transparent);
+}
+
 .special-features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -494,6 +515,20 @@ section {
   background-color: var(--ctp-surface1) !important;
   border-color: var(--ctp-green) !important;
   color: var(--ctp-green) !important;
+}
+
+:root .el-button.btn-install {
+  background: linear-gradient(120deg,
+      var(--ctp-green),
+      color-mix(in srgb, var(--ctp-sky) 60%, var(--ctp-green))) !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--ctp-green) 30%, transparent);
+  transition: all 0.3s ease;
+}
+
+:root .el-button.btn-install:hover {
+  box-shadow: 0 6px 28px color-mix(in srgb, var(--ctp-green) 45%, transparent);
+  filter: brightness(1.05);
 }
 
 .copy-float {
