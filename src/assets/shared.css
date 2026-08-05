@@ -890,6 +890,7 @@ section {
 }
 
 :root .el-table {
+  --el-table-row-hover-bg-color: var(--ctp-surface1);
   border-radius: 8px;
   overflow: hidden;
   background-color: var(--ctp-surface0);
