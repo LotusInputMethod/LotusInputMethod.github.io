@@ -70,7 +70,7 @@ const toBlocks = (value: string | StepBlock[]): StepBlock[] => {
 const installStepBlocks = computed<StepBlock[]>(() => {
   const distroInfo =
     logic.steps.install[
-      selectedDistro.value as keyof typeof logic.steps.install
+    selectedDistro.value as keyof typeof logic.steps.install
     ];
   if (!distroInfo) return [{ type: 'text', content: 'Cấu hình chưa sẵn sàng.' }];
   const methodData = (distroInfo as any)[selectedMethod.value];
@@ -83,8 +83,8 @@ const installStepBlocks = computed<StepBlock[]>(() => {
   if (methodData && typeof methodData === 'object') {
     return toBlocks(
       methodData[selectedShell.value] ||
-        methodData.Bash ||
-        'Cấu hình chưa sẵn sàng.',
+      methodData.Bash ||
+      'Cấu hình chưa sẵn sàng.',
     );
   }
   return toBlocks(methodData);
@@ -206,7 +206,7 @@ const copyToClipboard = async (text: string) => {
 const autostartText = computed(
   () =>
     logic.steps.autostart[
-      selectedDe.value as keyof typeof logic.steps.autostart
+    selectedDe.value as keyof typeof logic.steps.autostart
     ],
 );
 
@@ -234,17 +234,9 @@ const chromiumWaylandFlags = computed(() =>
         <div class="control-item">
           <label>Distro</label>
           <div class="distro-grid">
-            <div
-              v-for="d in distros"
-              :key="d.name"
-              class="distro-card"
-              :class="{ active: selectedDistro === d.name }"
-              role="button"
-              tabindex="0"
-              :aria-pressed="selectedDistro === d.name"
-              @click="selectedDistro = d.name"
-              @keydown.enter="selectedDistro = d.name"
-            >
+            <div v-for="d in distros" :key="d.name" class="distro-card" :class="{ active: selectedDistro === d.name }"
+              role="button" tabindex="0" :aria-pressed="selectedDistro === d.name" @click="selectedDistro = d.name"
+              @keydown.enter="selectedDistro = d.name">
               <v-icon :name="d.icon" scale="1.5" />
               <span>{{ d.name }}</span>
             </div>
@@ -254,17 +246,8 @@ const chromiumWaylandFlags = computed(() =>
         <div class="control-item">
           <label>Desktop Environment / WM</label>
           <div class="de-grid">
-            <div
-              v-for="de in deWms"
-              :key="de"
-              class="de-card"
-              :class="{ active: selectedDe === de }"
-              role="button"
-              tabindex="0"
-              :aria-pressed="selectedDe === de"
-              @click="selectedDe = de"
-              @keydown.enter="selectedDe = de"
-            >
+            <div v-for="de in deWms" :key="de" class="de-card" :class="{ active: selectedDe === de }" role="button"
+              tabindex="0" :aria-pressed="selectedDe === de" @click="selectedDe = de" @keydown.enter="selectedDe = de">
               <span>{{ de }}</span>
             </div>
           </div>
@@ -273,17 +256,9 @@ const chromiumWaylandFlags = computed(() =>
         <div class="control-item">
           <label>Môi trường</label>
           <div class="option-grid">
-            <div
-              v-for="e in environments"
-              :key="e"
-              class="option-card"
-              :class="{ active: selectedEnv === e }"
-              role="button"
-              tabindex="0"
-              :aria-pressed="selectedEnv === e"
-              @click="selectedEnv = e"
-              @keydown.enter="selectedEnv = e"
-            >
+            <div v-for="e in environments" :key="e" class="option-card" :class="{ active: selectedEnv === e }"
+              role="button" tabindex="0" :aria-pressed="selectedEnv === e" @click="selectedEnv = e"
+              @keydown.enter="selectedEnv = e">
               <span>{{ e }}</span>
             </div>
           </div>
@@ -292,17 +267,9 @@ const chromiumWaylandFlags = computed(() =>
         <div class="control-item">
           <label>Init System</label>
           <div class="option-grid">
-            <div
-              v-for="i in initSystems"
-              :key="i"
-              class="option-card"
-              :class="{ active: selectedInit === i }"
-              role="button"
-              tabindex="0"
-              :aria-pressed="selectedInit === i"
-              @click="selectedInit = i"
-              @keydown.enter="selectedInit = i"
-            >
+            <div v-for="i in initSystems" :key="i" class="option-card" :class="{ active: selectedInit === i }"
+              role="button" tabindex="0" :aria-pressed="selectedInit === i" @click="selectedInit = i"
+              @keydown.enter="selectedInit = i">
               <span>{{ i }}</span>
             </div>
           </div>
@@ -311,17 +278,9 @@ const chromiumWaylandFlags = computed(() =>
         <div class="control-item">
           <label>Phương thức cài đặt</label>
           <div class="option-grid">
-            <div
-              v-for="m in methods"
-              :key="m"
-              class="option-card"
-              :class="{ active: selectedMethod === m }"
-              role="button"
-              tabindex="0"
-              :aria-pressed="selectedMethod === m"
-              @click="selectedMethod = m"
-              @keydown.enter="selectedMethod = m"
-            >
+            <div v-for="m in methods" :key="m" class="option-card" :class="{ active: selectedMethod === m }"
+              role="button" tabindex="0" :aria-pressed="selectedMethod === m" @click="selectedMethod = m"
+              @keydown.enter="selectedMethod = m">
               <span>{{ m }}</span>
             </div>
           </div>
@@ -330,17 +289,9 @@ const chromiumWaylandFlags = computed(() =>
         <div class="control-item">
           <label>Shell đang dùng</label>
           <div class="option-grid">
-            <div
-              v-for="s in shells"
-              :key="s"
-              class="option-card"
-              :class="{ active: selectedShell === s }"
-              role="button"
-              tabindex="0"
-              :aria-pressed="selectedShell === s"
-              @click="selectedShell = s"
-              @keydown.enter="selectedShell = s"
-            >
+            <div v-for="s in shells" :key="s" class="option-card" :class="{ active: selectedShell === s }" role="button"
+              tabindex="0" :aria-pressed="selectedShell === s" @click="selectedShell = s"
+              @keydown.enter="selectedShell = s">
               <span>{{ s }}</span>
             </div>
           </div>
@@ -359,12 +310,7 @@ const chromiumWaylandFlags = computed(() =>
                 </p>
                 <div v-else class="code-container">
                   <pre><code>{{ block.content }}</code></pre>
-                  <el-button
-                    class="copy-float"
-                    circle
-                    :icon="DocumentCopy"
-                    @click="copyToClipboard(block.content)"
-                  />
+                  <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(block.content)" />
                 </div>
               </template>
             </div>
@@ -381,12 +327,7 @@ const chromiumWaylandFlags = computed(() =>
             </p>
             <div class="code-container">
               <pre><code>{{ userCreationCmd }}</code></pre>
-              <el-button
-                class="copy-float"
-                circle
-                :icon="DocumentCopy"
-                @click="copyToClipboard(userCreationCmd)"
-              />
+              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(userCreationCmd)" />
             </div>
           </div>
         </div>
@@ -401,12 +342,7 @@ const chromiumWaylandFlags = computed(() =>
             </p>
             <div class="code-container">
               <pre><code>{{ udevReloadCmd }}</code></pre>
-              <el-button
-                class="copy-float"
-                circle
-                :icon="DocumentCopy"
-                @click="copyToClipboard(udevReloadCmd)"
-              />
+              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(udevReloadCmd)" />
             </div>
           </div>
         </div>
@@ -415,19 +351,14 @@ const chromiumWaylandFlags = computed(() =>
           <div class="step-badge">2</div>
           <div class="step-content">
             <h4>Kích hoạt Server</h4>
-            <div
-              v-if="
-                isAutoHandled &&
-                selectedInit !== 'OpenRC' &&
-                selectedInit !== 'runit'
-              "
-              class="mb-3"
-            >
+            <div v-if="
+              isAutoHandled &&
+              selectedInit !== 'OpenRC' &&
+              selectedInit !== 'runit'
+            " class="mb-3">
               <el-alert
                 title="Gói .deb sẽ tự động kích hoạt server qua post-install script. Bạn có thể bỏ qua bước này."
-                type="success"
-                :closable="false"
-              />
+                type="success" :closable="false" />
             </div>
             <div class="step-blocks">
               <template v-for="(block, idx) in activateServerBlocks" :key="idx">
@@ -436,12 +367,7 @@ const chromiumWaylandFlags = computed(() =>
                 </p>
                 <div v-else class="code-container">
                   <pre><code>{{ block.content }}</code></pre>
-                  <el-button
-                    class="copy-float"
-                    circle
-                    :icon="DocumentCopy"
-                    @click="copyToClipboard(block.content)"
-                  />
+                  <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(block.content)" />
                 </div>
               </template>
             </div>
@@ -458,12 +384,7 @@ const chromiumWaylandFlags = computed(() =>
             </p>
             <div class="code-container">
               <pre><code>{{ uinputModprobeCmd }}</code></pre>
-              <el-button
-                class="copy-float"
-                circle
-                :icon="DocumentCopy"
-                @click="copyToClipboard(uinputModprobeCmd)"
-              />
+              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(uinputModprobeCmd)" />
             </div>
           </div>
         </div>
@@ -473,11 +394,8 @@ const chromiumWaylandFlags = computed(() =>
           <div class="step-content">
             <h4>Tắt bộ gõ cũ (IBus)</h4>
             <div v-if="isAutoHandled" class="mb-3">
-              <el-alert
-                title="Gói .deb sẽ tự động tắt IBus. Bước này chỉ dùng để kiểm tra lại."
-                type="success"
-                :closable="false"
-              />
+              <el-alert title="Gói .deb sẽ tự động tắt IBus. Bước này chỉ dùng để kiểm tra lại." type="success"
+                :closable="false" />
             </div>
             <p class="instruction">
               Nếu máy bạn đang dùng IBus, hãy tắt nó đi trước khi chuyển sang
@@ -485,13 +403,8 @@ const chromiumWaylandFlags = computed(() =>
             </p>
             <div class="code-container mini">
               <pre><code>killall ibus-daemon || ibus exit</code></pre>
-              <el-button
-                class="copy-float"
-                circle
-                :icon="DocumentCopy"
-                size="small"
-                @click="copyToClipboard('killall ibus-daemon || ibus exit')"
-              />
+              <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
+                @click="copyToClipboard('killall ibus-daemon || ibus exit')" />
             </div>
             <p class="instruction mt-2" style="font-size: 0.85rem">
               * Lưu ý: Hãy tắt autostart của IBus (thường là ibus-daemon hoặc
@@ -511,20 +424,12 @@ const chromiumWaylandFlags = computed(() =>
                 </p>
                 <div v-else class="code-container">
                   <pre><code>{{ block.content }}</code></pre>
-                  <el-button
-                    class="copy-float"
-                    circle
-                    :icon="DocumentCopy"
-                    @click="copyToClipboard(block.content)"
-                  />
+                  <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(block.content)" />
                 </div>
               </template>
             </div>
-            <el-alert
-              title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực."
-              type="info"
-              :closable="false"
-            />
+            <el-alert title="Lưu ý: Bạn cần Đăng xuất và Đăng nhập lại sau bước này để cấu hình Shell có hiệu lực."
+              type="info" :closable="false" />
           </div>
         </div>
 
@@ -544,11 +449,7 @@ const chromiumWaylandFlags = computed(() =>
             <h4>Cấu hình bộ gõ Fcitx5</h4>
             <p class="instruction">Sau khi đã Log out và Log in lại:</p>
             <ul class="setup-list-mini">
-              <li
-                v-for="(step, idx) in fcitx5Config.steps"
-                :key="idx"
-                v-html="step"
-              ></li>
+              <li v-for="(step, idx) in fcitx5Config.steps" :key="idx" v-html="step"></li>
             </ul>
           </div>
         </div>
@@ -560,12 +461,7 @@ const chromiumWaylandFlags = computed(() =>
 
             <div v-if="selectedEnv === 'Wayland'">
               <div v-if="waylandGeneral" class="extra-item mb-4">
-                <el-alert
-                  :title="waylandGeneral.title"
-                  type="info"
-                  :closable="false"
-                  show-icon
-                >
+                <el-alert :title="waylandGeneral.title" type="info" :closable="false" show-icon>
                   <p style="margin: 0; line-height: 1.5">
                     {{ waylandGeneral.description }}
                   </p>
@@ -578,39 +474,25 @@ const chromiumWaylandFlags = computed(() =>
                 </h5>
 
                 <div class="wayland-details p-4">
-                  <p
-                    v-if="waylandDeSpecific.support_info"
-                    class="instruction mb-2"
-                  >
+                  <p v-if="waylandDeSpecific.support_info" class="instruction mb-2">
                     <b>Thành phần hỗ trợ:</b>
                     {{ waylandDeSpecific.support_info }}
                   </p>
 
-                  <div
-                    v-if="
-                      waylandDeSpecific.best_setup &&
-                      waylandDeSpecific.best_setup.length > 0
-                    "
-                  >
+                  <div v-if="
+                    waylandDeSpecific.best_setup &&
+                    waylandDeSpecific.best_setup.length > 0
+                  ">
                     <p v-if="selectedDe !== 'KDE Plasma'" class="instruction">
                       <b>Hướng dẫn cài đặt tốt nhất:</b>
                     </p>
                     <ul class="setup-list-mini">
-                      <li
-                        v-for="(point, idx) in waylandDeSpecific.best_setup"
-                        :key="idx"
-                        v-html="point"
-                      ></li>
+                      <li v-for="(point, idx) in waylandDeSpecific.best_setup" :key="idx" v-html="point"></li>
                     </ul>
                   </div>
 
-                  <el-alert
-                    v-if="waylandDeSpecific.caveats"
-                    title="Lưu ý"
-                    type="warning"
-                    :closable="false"
-                    class="mt-2"
-                  >
+                  <el-alert v-if="waylandDeSpecific.caveats" title="Lưu ý" type="warning" :closable="false"
+                    class="mt-2">
                     <p style="margin: 0; line-height: 1.4; font-size: 0.85rem">
                       {{ waylandDeSpecific.caveats }}
                     </p>
@@ -618,10 +500,7 @@ const chromiumWaylandFlags = computed(() =>
                 </div>
               </div>
 
-              <div
-                v-if="selectedInit === 'OpenRC' || selectedInit === 'runit'"
-                class="extra-item mb-4"
-              >
+              <div v-if="selectedInit === 'OpenRC' || selectedInit === 'runit'" class="extra-item mb-4">
                 <p class="instruction">
                   <b>Lưu ý cho {{ selectedInit }}:</b> Thêm biến sau vào cấu
                   hình môi trường (ví dụ <code>/etc/environment</code> hoặc
@@ -630,17 +509,11 @@ const chromiumWaylandFlags = computed(() =>
                 </p>
                 <div class="code-container mini">
                   <pre><code>DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus</code></pre>
-                  <el-button
-                    class="copy-float"
-                    circle
-                    :icon="DocumentCopy"
-                    size="small"
-                    @click="
-                      copyToClipboard(
-                        'DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus',
-                      )
-                    "
-                  />
+                  <el-button class="copy-float" circle :icon="DocumentCopy" size="small" @click="
+                    copyToClipboard(
+                      'DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus',
+                    )
+                    " />
                 </div>
               </div>
 
@@ -650,13 +523,8 @@ const chromiumWaylandFlags = computed(() =>
                 </p>
                 <div class="code-container mini">
                   <pre><code>{{ chromiumWaylandFlags }}</code></pre>
-                  <el-button
-                    class="copy-float"
-                    circle
-                    :icon="DocumentCopy"
-                    size="small"
-                    @click="copyToClipboard(chromiumWaylandFlags)"
-                  />
+                  <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
+                    @click="copyToClipboard(chromiumWaylandFlags)" />
                 </div>
               </div>
             </div>
@@ -667,13 +535,8 @@ const chromiumWaylandFlags = computed(() =>
               </p>
               <div class="code-container mini">
                 <pre><code>{{ kanataConfig.code }}</code></pre>
-                <el-button
-                  class="copy-float"
-                  circle
-                  :icon="DocumentCopy"
-                  size="small"
-                  @click="copyToClipboard(kanataConfig.code)"
-                />
+                <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
+                  @click="copyToClipboard(kanataConfig.code)" />
               </div>
             </div>
           </div>
@@ -981,15 +844,19 @@ code {
 .mb-2 {
   margin-bottom: 0.5rem;
 }
+
 .mb-3 {
   margin-bottom: 0.75rem;
 }
+
 .mb-4 {
   margin-bottom: 1rem;
 }
+
 .mb-6 {
   margin-bottom: 1.5rem;
 }
+
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -997,6 +864,7 @@ code {
 .wayland-setup-section {
   margin-bottom: 1.5rem;
 }
+
 .setup-list-mini {
   padding-left: 1.25rem;
   margin: 0.75rem 0;
@@ -1004,6 +872,7 @@ code {
   font-size: 0.95rem;
   line-height: 1.6;
 }
+
 .setup-list-mini li {
   margin-bottom: 0.5rem;
 }
@@ -1014,6 +883,7 @@ code {
   border: 1px solid var(--ctp-surface1);
   overflow: hidden;
 }
+
 .wayland-details summary {
   padding: 0.75rem 1rem;
   font-weight: 700;
@@ -1022,9 +892,11 @@ code {
   transition: background-color 0.2s;
   user-select: none;
 }
+
 .wayland-details summary:hover {
   background-color: var(--ctp-surface0);
 }
+
 .details-content {
   padding: 1rem;
   border-top: 1px solid var(--ctp-surface1);
@@ -1091,6 +963,7 @@ code {
 
 /* Extra Small Mobile */
 @media (max-width: 480px) {
+
   .distro-grid,
   .de-grid {
     grid-template-columns: 1fr;

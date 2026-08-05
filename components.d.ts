@@ -11,6 +11,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CodeBlock: typeof import('./src/components/CodeBlock.vue')['default']
+    ContributorsSection: typeof import('./src/components/ContributorsSection.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -19,8 +21,18 @@ declare module 'vue' {
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
+    FeatureCard: typeof import('./src/components/FeatureCard.vue')['default']
+    FeaturesSection: typeof import('./src/components/FeaturesSection.vue')['default']
+    FooterSection: typeof import('./src/components/FooterSection.vue')['default']
+    HeroSection: typeof import('./src/components/HeroSection.vue')['default']
+    InstallSection: typeof import('./src/components/InstallSection.vue')['default']
     InteractiveInstaller: typeof import('./src/components/InteractiveInstaller.vue')['default']
+    NavBar: typeof import('./src/components/NavBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    UninstallItem: typeof import('./src/components/UninstallItem.vue')['default']
+    UninstallSection: typeof import('./src/components/UninstallSection.vue')['default']
+    UsageSection: typeof import('./src/components/UsageSection.vue')['default']
+    UsageTable: typeof import('./src/components/UsageTable.vue')['default']
   }
 }
