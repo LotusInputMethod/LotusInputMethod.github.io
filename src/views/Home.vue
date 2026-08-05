@@ -312,6 +312,16 @@ const advancedSettings: AdvancedSettingInfo[] = [
     feature: 'Phím tắt mở menu chuyển chế độ gõ',
   },
   {
+    page: 'General',
+    option: 'Cycle Mode Hotkey',
+    feature: 'Phím tắt chuyển nhanh vòng qua các chế độ gõ (mặc định chưa gán)',
+  },
+  {
+    page: 'General',
+    option: 'App Rules',
+    feature: 'Gán chế độ gõ riêng cho từng ứng dụng hoặc cửa sổ',
+  },
+  {
     page: 'Typing',
     option: 'Type w to Produce ư',
     feature: 'Thiết lập cách gõ phím w để ra chữ ư',
@@ -334,7 +344,8 @@ const advancedSettings: AdvancedSettingInfo[] = [
   {
     page: 'Typing',
     option: 'Allow dd to Produce đ',
-    feature: 'Cho phép gõ dd ra đ ngay cả khi đang khôi phục từ',
+    feature:
+      'Cho phép gõ dd ra đ ngay cả khi Auto Restore Invalid Words đang bật',
   },
   {
     page: 'Typing',
@@ -349,7 +360,17 @@ const advancedSettings: AdvancedSettingInfo[] = [
   {
     page: 'Typing',
     option: 'Auto Capitalize',
-    feature: 'Tự động viết hoa sau dấu câu (Thử nghiệm)',
+    feature: 'Tự động viết hoa sau dấu câu (. ! ? Enter)',
+  },
+  {
+    page: 'Typing',
+    option: 'Bracket Transform',
+    feature: 'Gõ [ → ơ, ] → ư, { → Ơ, } → Ư (Disabled / Non-Start / Everywhere)',
+  },
+  {
+    page: 'Typing',
+    option: 'Double Hyphen to Em-Dash',
+    feature: 'Gõ -- thành dấu gạch ngang dài (—)',
   },
   {
     page: 'Appearance',
@@ -367,14 +388,47 @@ const advancedSettings: AdvancedSettingInfo[] = [
     feature: 'Quản lý danh sách các từ viết tắt cá nhân',
   },
   {
+    page: 'Macros',
+    option: 'Macro in Off Mode',
+    feature: 'Cho phép gõ tắt hoạt động cả khi bộ gõ ở chế độ OFF',
+  },
+  {
+    page: 'Macros',
+    option: 'Time Format',
+    feature: 'Định dạng $TIME trong gõ tắt (mặc định %H:%M)',
+  },
+  {
+    page: 'Macros',
+    option: 'Date Format',
+    feature: 'Định dạng $DATE trong gõ tắt (mặc định %d/%m/%Y)',
+  },
+  {
+    page: 'Shortcuts',
+    option: 'Mode Order',
+    feature: 'Thứ tự hiển thị các chế độ gõ trong menu chuyển chế độ',
+  },
+  {
+    page: 'Shortcuts',
+    option: 'Show/Hide Modes',
+    feature: 'Bật/tắt hiển thị từng chế độ và đổi phím tắt riêng cho từng chế độ',
+  },
+  {
     page: 'Dictionary',
     option: 'Enable Custom Dictionary',
-    feature: 'Bật/tắt sử dụng từ điển cá nhân',
+    feature:
+      'Từ thêm vào từ điển sẽ không bị auto-restore (tên riêng, từ chuyên môn...)',
   },
   {
     page: 'Keymap',
     option: 'Custom Keymap',
-    feature: 'Tùy biến sơ đồ bàn phím theo ý thích',
+    feature:
+      'Tùy biến sơ đồ bàn phím, hỗ trợ preset Telex / VNI / VIQR / Microsoft layout',
+  },
+  {
+    page: 'Backup',
+    option: 'Backup & Restore',
+    feature:
+      'Xuất/nhập cấu hình JSON (Main Settings, Macros, Keymaps, App Rules, Dictionary)',
   },
 ];
 
@@ -389,6 +443,12 @@ const typingModes: TypingMode[] = [
     shortcut: '1',
     description:
       'Chế độ mặc định, phản hồi cực nhanh và mượt mà.',
+  },
+  {
+    mode: 'Uinput (Super Smooth)',
+    shortcut: 'a',
+    description:
+      'Giống Uinput (Smooth) nhưng bỏ bước kiểm tra autofill — phản hồi nhanh nhất, không bao giờ xoá dôi ký tự.',
   },
   {
     mode: 'Uinput (Slow)',
@@ -873,6 +933,90 @@ const copyToClipboard = async (text: string | undefined): Promise<void> => {
                 >
                   Xem chi tiết tại Fcitx5 Wiki <v-icon name="hi-external-link" class="ml-1" scale="0.8" />
                 </a>
+              </div>
+            </el-tab-pane>
+
+            <el-tab-pane>
+              <template #label>
+                <span class="tab-label">
+                  <el-icon><Setting /></el-icon>
+                  <span>Tính năng đặc biệt</span>
+                </span>
+              </template>
+
+              <div class="tab-content-inner">
+                <div class="usage-header">
+                  <el-icon class="icon-title color-sky"><Setting /></el-icon>
+                  <h3>Những tính năng nổi bật</h3>
+                </div>
+                <p class="text-sm instruction mb-4">
+                  Khám phá các tính năng mạnh mẽ của Fcitx5 Lotus, quản lý trong
+                  <code class="inline-code">fcitx5-lotus-settings</code>.
+                </p>
+
+                <div class="special-features-grid">
+                  <div class="custom-card">
+                    <div class="icon-wrapper color-green">
+                      <el-icon><Cpu /></el-icon>
+                    </div>
+                    <h3>Chế độ theo ứng dụng (App Rules)</h3>
+                    <p>
+                      Gán chế độ gõ riêng cho từng ứng dụng hoặc từng cửa sổ. Mở
+                      menu chế độ gõ (phím <code class="inline-code">`</code>) rồi
+                      chọn chế độ cho ứng dụng hiện tại, hoặc dùng
+                      <code class="inline-code">fcitx5-lotus-settings</code> →
+                      Applications.
+                    </p>
+                  </div>
+
+                  <div class="custom-card">
+                    <div class="icon-wrapper color-blue">
+                      <el-icon><DocumentCopy /></el-icon>
+                    </div>
+                    <h3>Sao lưu & Phục hồi</h3>
+                    <p>
+                      Xuất/nhập toàn bộ cấu hình dạng file JSON, chọn lọc từng
+                      thành phần: Main Settings, Macros, Custom Keymaps, App
+                      Rules, Custom Dictionary.
+                    </p>
+                  </div>
+
+                  <div class="custom-card">
+                    <div class="icon-wrapper color-mauve">
+                      <el-icon><MagicStick /></el-icon>
+                    </div>
+                    <h3>Gõ tắt $TIME / $DATE</h3>
+                    <p>
+                      Macro hỗ trợ placeholder động: <code>$TIME</code> và
+                      <code>$DATE</code>. Ví dụ: <code>kg</code> →
+                      <code>khô gà $TIME</code> sẽ tự chèn giờ hiện tại. Định
+                      dạng tùy chỉnh qua Time Format và Date Format.
+                    </p>
+                  </div>
+
+                  <div class="custom-card">
+                    <div class="icon-wrapper color-peach">
+                      <el-icon><Edit /></el-icon>
+                    </div>
+                    <h3>Preset bàn phím</h3>
+                    <p>
+                      Custom Keymap hỗ trợ sẵn các preset quen thuộc: Telex, VNI,
+                      VIQR và Microsoft layout — dễ dàng chuyển đổi hoặc tùy biến
+                      theo ý thích.
+                    </p>
+                  </div>
+
+                  <div class="custom-card">
+                    <div class="icon-wrapper color-sky">
+                      <el-icon><Aim /></el-icon>
+                    </div>
+                    <h3>Emoji Picker thông minh</h3>
+                    <p>
+                      Tìm kiếm emoji với fuzzy matching và lịch sử 9 emoji gần
+                      đây để chèn nhanh ký tự mong muốn.
+                    </p>
+                  </div>
+                </div>
               </div>
             </el-tab-pane>
           </el-tabs>
@@ -2088,6 +2232,19 @@ section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 30px;
+}
+
+.special-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.special-features-grid .custom-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
 }
 .feature-card {
   background-color: var(--ctp-surface0);
