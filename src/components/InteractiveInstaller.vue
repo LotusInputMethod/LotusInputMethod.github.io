@@ -22,7 +22,7 @@ const selectedDistro = ref(distros[0]?.name || '');
 const selectedMethod = ref<string>(methods[0] || '');
 const selectedShell = ref<string>(shells[0] || '');
 const selectedDe = ref<string>(deWms[0] || '');
-const selectedEnv = ref<string>(environments[1] || '');
+const selectedEnv = ref<string>(environments[0] || '');
 const selectedInit = ref<string>(initSystems[0] || 'systemd');
 
 const needsUserCreation = computed(() => {
