@@ -5,7 +5,10 @@ import vueParser from 'vue-eslint-parser';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', '*.d.ts'] },
+  {
+    ignores: ['dist', 'node_modules', '*.d.ts'],
+  },
+
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -28,7 +31,9 @@ export default tseslint.config(
       'vue/no-setup-props-destructure': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_' },
+        {
+          argsIgnorePattern: '^_',
+        },
       ],
       '@typescript-eslint/no-explicit-any': 'off',
     },
@@ -40,6 +45,18 @@ export default tseslint.config(
       parserOptions: {
         parser: tseslint.parser,
         extraFileExtensions: ['.vue'],
+      },
+    },
+  },
+  {
+    files: ['scripts/**/*.mjs', 'scripts/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
       },
     },
   },
