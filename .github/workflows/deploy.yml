@@ -4,6 +4,8 @@ on:
   push:
     branches: ['main']
   workflow_dispatch:
+  schedule:
+    - cron: '0 19 * * *'
 
 permissions:
   contents: read
@@ -28,6 +30,11 @@ jobs:
 
       - name: 📦 Install dependencies
         run: bun install
+
+      - name: 📊 Generate star history SVG
+        run: node scripts/gen-star-chart.mjs
+        env:
+          STAR_TOKEN: ${{ secrets.STAR_TOKEN }}
 
       - name: 🛠️ Build project
         run: bun run build
