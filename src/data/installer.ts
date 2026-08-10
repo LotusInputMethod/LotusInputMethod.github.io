@@ -161,7 +161,7 @@ export const logic = {
         'COSMIC Settings → Applications → Startup Applications → Add app → Fcitx 5',
       i3: 'Thêm `exec --no-startup-id fcitx5 -d` vào ~/.config/i3/config',
       Sway: 'Thêm `exec --no-startup-id fcitx5 -d` vào ~/.config/sway/config',
-      Hyprland: 'Thêm `exec-once = fcitx5 -d` vào ~/.config/hypr/hyprland.conf',
+      Hyprland: 'Thêm `hl.exec_cmd("fcitx5 -d")` vào ~/.config/hypr/hyprland.lua',
       Niri: 'Thêm `spawn-sh-at-startup "fcitx5 -d"` vào ~/.config/niri/config.kdl',
     },
     wayland_extras: {
