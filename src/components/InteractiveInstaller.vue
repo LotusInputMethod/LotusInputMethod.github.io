@@ -27,13 +27,13 @@ const selectedInit = ref<string>(initSystems[0] || 'systemd');
 
 const needsUserCreation = computed(() => {
   return (
-    selectedDistro.value !== 'NixOS' &&
+    selectedDistro.value !== 'NixOS' && selectedDistro.value !== 'Arch Linux' &&
     (selectedInit.value !== 'systemd' || selectedMethod.value === 'Source')
   );
 });
 
 const needsSourceSteps = computed(() => {
-  return selectedDistro.value !== 'NixOS' && selectedMethod.value === 'Source';
+  return selectedDistro.value !== 'NixOS' && selectedDistro.value !== 'Arch Linux' && selectedMethod.value === 'Source';
 });
 
 const nixosServerBlocks: StepBlock[] = [
