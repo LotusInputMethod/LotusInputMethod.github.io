@@ -47,7 +47,7 @@ export const logic = {
         },
         Binary: 'sudo dpkg -i fcitx5-lotus_*.deb',
         Source:
-          'sudo apt-get install acl cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev fcitx5-modules-dev python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib/x86_64-linux-gnu .\nmake\nsudo make install',
+          'sudo apt-get install acl cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev fcitx5-modules-dev python3 librsvg2-bin\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib/x86_64-linux-gnu .\nmake\nsudo make install',
       },
       Ubuntu: {
         'Package Manager': {
@@ -56,7 +56,7 @@ export const logic = {
         },
         Binary: 'sudo dpkg -i fcitx5-lotus_*.deb',
         Source:
-          'sudo apt-get install acl cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev fcitx5-modules-dev python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib/x86_64-linux-gnu .\nmake\nsudo make install',
+          'sudo apt-get install acl cmake extra-cmake-modules libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libinput-dev libudev-dev g++ golang hicolor-icon-theme pkg-config libx11-dev fcitx5-modules-dev python3 librsvg2-bin\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib/x86_64-linux-gnu .\nmake\nsudo make install',
       },
       Fedora: {
         'Package Manager': {
@@ -65,14 +65,14 @@ export const logic = {
         },
         Binary: 'sudo rpm -i fcitx5-lotus-*.rpm',
         Source:
-          'sudo dnf install acl cmake extra-cmake-modules fcitx5-devel libinput-devel libudev-devel gcc-c++ golang hicolor-icon-theme systemd-devel libX11-devel python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib64 .\nmake\nsudo make install',
+          'sudo dnf install acl cmake extra-cmake-modules fcitx5-devel libinput-devel libudev-devel gcc-c++ golang hicolor-icon-theme systemd-devel libX11-devel python3 librsvg2-tools\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib64 .\nmake\nsudo make install',
       },
       openSUSE: {
         'Package Manager':
           'sudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo zypper addrepo https://fcitx5-lotus.pages.dev/rpm/opensuse/fcitx5-lotus-tumbleweed.repo\nsudo zypper refresh\nsudo zypper install fcitx5-lotus',
         Binary: 'sudo rpm -i fcitx5-lotus-*.rpm',
         Source:
-          'sudo zypper install acl cmake extra-cmake-modules fcitx5-devel libinput-devel systemd-devel gcc-c++ go hicolor-icon-theme systemd-devel libX11-devel udev python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib64 .\nmake\nsudo make install',
+          'sudo zypper install acl cmake extra-cmake-modules fcitx5-devel libinput-devel systemd-devel gcc-c++ go hicolor-icon-theme systemd-devel libX11-devel udev python3 rsvg-convert\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib64 .\nmake\nsudo make install',
       },
       NixOS: {
         'Package Manager': [
@@ -141,7 +141,7 @@ export const logic = {
         Binary:
           'Void Linux sử dụng xbps. Hiện chưa có gói chính thức, vui lòng build from source.',
         Source:
-          'sudo xbps-install -S fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt acl acl-progs cmake extra-cmake-modules libfcitx5-devel libinput-devel eudev-libudev-devel gcc go gettext-devel pkg-config hicolor-icon-theme libX11-devel python3-QtPy python3-PyQt5 python3-pyqt6 python3-pyqt6-gui python3-pyqt6-widgets\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
+          'sudo xbps-install -S fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt acl acl-progs cmake extra-cmake-modules libfcitx5-devel libinput-devel eudev-libudev-devel gcc go gettext-devel pkg-config hicolor-icon-theme libX11-devel python3-QtPy python3-PyQt5 python3-pyqt6 python3-pyqt6-gui python3-pyqt6-widgets librsvg\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ngit submodule update --init --recursive\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
       },
     },
     autostart: {
