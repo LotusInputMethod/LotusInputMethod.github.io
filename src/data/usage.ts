@@ -12,7 +12,7 @@ export const quickSettings: SettingInfo[] = [
   },
   {
     option: 'Spell Check',
-    description: 'Kiểm tra lỗi chính tả',
+    description: 'Kiểm tra lỗi chính tả bằng từ điển',
     default: 'Bật',
   },
   { option: 'Macro', description: 'Bật/tắt gõ tắt', default: 'Bật' },
@@ -73,7 +73,7 @@ export const advancedSettings: AdvancedSettingInfo[] = [
   {
     page: 'Typing',
     option: 'Enable Spell Check',
-    feature: 'Bật/tắt kiểm tra chính tả tiếng Việt',
+    feature: 'Bật/tắt kiểm tra chính tả tiếng Việt bằng từ điển',
   },
   {
     page: 'Typing',
