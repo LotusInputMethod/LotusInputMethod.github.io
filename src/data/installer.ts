@@ -169,7 +169,7 @@ export const logic = {
       General: {
         title: 'Khuyến nghị Xwayland',
         description:
-          'Ngay cả khi bạn chỉ dùng ứng dụng Wayland native, bật Xwayland vẫn được khuyến nghị. Nếu bảng gõ client-side không hoạt động, Fcitx sẽ chuyển sang cửa sổ X11 để đảm bảo vị trí hiển thị chính xác thay vì một cửa sổ Wayland ngẫu nhiên.',
+          'Ngay cả khi bạn chỉ dùng ứng dụng Wayland native, bật Xwayland vẫn được khuyến nghị. Nếu bảng gõ client-side không hoạt động, Fcitx sẽ chuyển sang cửa sổ X11 để đảm bảo vị trí hiển thị chính xác thay vì một cửa sổ Wayland ngẫu nhiên. Việc sử dụng Xwayland cũng giúp sửa một số lỗi liên quan đến các trang web rich text editor, ví dụ google docs. Khuyến khích của tác giả là nên sử dụng trình duyệt Firefox, vì Firefox hỗ trợ X11 tốt hơn các trình duyệt Chromium-based',
       },
       'KDE Plasma': {
         best_setup: [

@@ -100,19 +100,6 @@ const activateServerBlocks = computed<StepBlock[]>(() => {
       },
     ];
   }
-  if (
-    isAutoHandled.value &&
-    selectedInit.value !== 'OpenRC' &&
-    selectedInit.value !== 'runit'
-  ) {
-    return [
-      {
-        type: 'text',
-        content: 'Gói .deb sẽ tự động thực hiện bước này. Có thể chạy thủ công:',
-      },
-      { type: 'code', content: serverCmd.value },
-    ];
-  }
   return toBlocks(serverCmd.value);
 });
 
@@ -185,13 +172,6 @@ const envCmd = computed(() => {
     });
     return `echo 'if status is-login\n${fishVars.join('\n')}\nend' >> ~/.config/fish/config.fish`;
   }
-});
-
-const isAutoHandled = computed(() => {
-  return (
-    ['Debian', 'Ubuntu'].includes(selectedDistro.value) &&
-    selectedMethod.value === 'Package Manager'
-  );
 });
 
 const copyToClipboard = async (text: string) => {
@@ -351,15 +331,6 @@ const chromiumWaylandFlags = computed(() =>
           <div class="step-badge">2</div>
           <div class="step-content">
             <h4>Kích hoạt Server</h4>
-            <div v-if="
-              isAutoHandled &&
-              selectedInit !== 'OpenRC' &&
-              selectedInit !== 'runit'
-            " class="mb-3">
-              <el-alert
-                title="Gói .deb sẽ tự động kích hoạt server qua post-install script. Bạn có thể bỏ qua bước này."
-                type="success" :closable="false" />
-            </div>
             <div class="step-blocks">
               <template v-for="(block, idx) in activateServerBlocks" :key="idx">
                 <p v-if="block.type === 'text'" class="instruction">
@@ -374,7 +345,7 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
-        <div v-if="needsSourceSteps" class="step-card">
+        <div class="step-card">
           <div class="step-badge">2.5</div>
           <div class="step-content">
             <h4>Nạp Kernel Module uinput</h4>
@@ -393,10 +364,6 @@ const chromiumWaylandFlags = computed(() =>
           <div class="step-badge">3</div>
           <div class="step-content">
             <h4>Tắt bộ gõ cũ (IBus)</h4>
-            <div v-if="isAutoHandled" class="mb-3">
-              <el-alert title="Gói .deb sẽ tự động tắt IBus. Bước này chỉ dùng để kiểm tra lại." type="success"
-                :closable="false" />
-            </div>
             <p class="instruction">
               Nếu máy bạn đang dùng IBus, hãy tắt nó đi trước khi chuyển sang
               Fcitx5 để tránh xung đột.
