@@ -15,6 +15,12 @@ const dnfRemove =
 const zypperRemove =
   'sudo zypper remove fcitx5-lotus\nsudo zypper removerepo fcitx5-lotus';
 
+const voidXbpsRemove =
+  'sudo xbps-remove -R fcitx5-lotus fcitx5-lotus-settings';
+
+const voidSvCleanup =
+  'rm -f /var/service/fcitx5-lotus.*\nrm -rf /etc/sv/fcitx5-lotus.*';
+
 const releasesDebian = '# Debian / Ubuntu\nsudo apt remove fcitx5-lotus';
 const releasesFedora = '# Fedora\nsudo dnf remove fcitx5-lotus';
 const releasesOpenSUSE = '# openSUSE\nsudo zypper remove fcitx5-lotus';
@@ -72,6 +78,17 @@ const cleanupCode =
 
             <UninstallItem icon="si-opensuse" name="openSUSE">
               <CodeBlock :code="zypperRemove" />
+            </UninstallItem>
+
+            <UninstallItem icon="co-linux" name="Void Linux">
+              <p class="instruction mb-2">Gỡ gói qua xbps:</p>
+              <CodeBlock :code="voidXbpsRemove" />
+              <p class="instruction mb-2 mt-3">
+                Dịch vụ runit đã kích hoạt nằm ngoài gói (bản sao trong
+                <code>/etc/sv</code> + liên kết <code>/var/service</code>) nên
+                xbps không tự xoá — tắt và dọn thủ công:
+              </p>
+              <CodeBlock :code="voidSvCleanup" />
             </UninstallItem>
 
             <UninstallItem icon="si-nixos" name="NixOS">

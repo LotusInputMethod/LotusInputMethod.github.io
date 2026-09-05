@@ -37,6 +37,12 @@ const needsSourceSteps = computed(() => {
   return selectedDistro.value !== 'NixOS' && selectedDistro.value !== 'Arch Linux' && selectedMethod.value === 'Source';
 });
 
+const voidPmUserAutoCreated = computed(() => {
+  return (
+    selectedDistro.value === 'Void Linux' && selectedMethod.value === 'Package Manager'
+  );
+});
+
 const nixosServerBlocks: StepBlock[] = [
   {
     type: 'text',
@@ -123,6 +129,9 @@ const serverCmd = computed(() => {
   }
   if (selectedInit.value === 'runit') {
     if (selectedDistro.value === 'Void Linux') {
+      if (selectedMethod.value === 'Package Manager') {
+        return 'sudo cp -r /usr/share/examples/sv/fcitx5-lotus /etc/sv/fcitx5-lotus.$(whoami)\nsudo ln -s /etc/sv/fcitx5-lotus.$(whoami) /var/service/fcitx5-lotus.$(whoami)\nsudo sv start fcitx5-lotus.$(whoami)';
+      }
       return 'sudo ln -s /etc/sv/fcitx5-lotus /var/service/fcitx5-lotus.$(whoami)\nsudo sv start fcitx5-lotus.$(whoami)';
     }
     return 'sudo ln -sf /etc/runit/sv/fcitx5-lotus /etc/runit/sv/fcitx5-lotus.$(whoami)\nsudo sv start /etc/runit/sv/fcitx5-lotus.$(whoami)';
@@ -302,14 +311,21 @@ const chromiumWaylandFlags = computed(() =>
           <div class="step-badge">1.5</div>
           <div class="step-content">
             <h4>Tạo User và Group (thay thế systemd-sysusers)</h4>
-            <p class="instruction">
-              Non-systemd và build from source cần tạo user
-              <code>uinput_proxy</code> và group <code>input</code> thủ công.
+            <p v-if="voidPmUserAutoCreated" class="instruction">
+              Gói Void cài qua Package Manager đã tự động tạo tài khoản hệ thống
+              <code>_uinput_proxy</code> (và group <code>input</code>) khi cài,
+              nên bạn không cần tạo thủ công ở bước này.
             </p>
-            <div class="code-container">
-              <CodeLines :code="userCreationCmd" />
-              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(userCreationCmd)" />
-            </div>
+            <template v-else>
+              <p class="instruction">
+                Non-systemd và build from source cần tạo user
+                <code>uinput_proxy</code> và group <code>input</code> thủ công.
+              </p>
+              <div class="code-container">
+                <CodeLines :code="userCreationCmd" />
+                <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(userCreationCmd)" />
+              </div>
+            </template>
           </div>
         </div>
 
