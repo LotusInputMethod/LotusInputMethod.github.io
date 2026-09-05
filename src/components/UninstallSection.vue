@@ -19,7 +19,7 @@ const voidXbpsRemove =
   'sudo xbps-remove -R fcitx5-lotus fcitx5-lotus-settings';
 
 const voidSvCleanup =
-  'rm -f /var/service/fcitx5-lotus.*\nrm -rf /etc/sv/fcitx5-lotus.*';
+  'sudo rm -f /var/service/fcitx5-lotus.*\nsudo rm -rf /etc/sv/fcitx5-lotus.*';
 
 const releasesDebian = '# Debian / Ubuntu\nsudo apt remove fcitx5-lotus';
 const releasesFedora = '# Fedora\nsudo dnf remove fcitx5-lotus';
