@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { DocumentCopy } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
+import CodeLines from './CodeLines.vue';
 import {
   distros,
   methods,
@@ -289,7 +290,7 @@ const chromiumWaylandFlags = computed(() =>
                   {{ block.content }}
                 </p>
                 <div v-else class="code-container">
-                  <pre><code>{{ block.content }}</code></pre>
+                  <CodeLines :code="block.content" />
                   <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(block.content)" />
                 </div>
               </template>
@@ -306,7 +307,7 @@ const chromiumWaylandFlags = computed(() =>
               <code>uinput_proxy</code> và group <code>input</code> thủ công.
             </p>
             <div class="code-container">
-              <pre><code>{{ userCreationCmd }}</code></pre>
+              <CodeLines :code="userCreationCmd" />
               <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(userCreationCmd)" />
             </div>
           </div>
@@ -321,7 +322,7 @@ const chromiumWaylandFlags = computed(() =>
               quyền đúng.
             </p>
             <div class="code-container">
-              <pre><code>{{ udevReloadCmd }}</code></pre>
+              <CodeLines :code="udevReloadCmd" />
               <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(udevReloadCmd)" />
             </div>
           </div>
@@ -337,7 +338,7 @@ const chromiumWaylandFlags = computed(() =>
                   {{ block.content }}
                 </p>
                 <div v-else class="code-container">
-                  <pre><code>{{ block.content }}</code></pre>
+                  <CodeLines :code="block.content" />
                   <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(block.content)" />
                 </div>
               </template>
@@ -354,7 +355,7 @@ const chromiumWaylandFlags = computed(() =>
               thiết bị input ảo, lần sau khởi động sẽ tự động nạp.
             </p>
             <div class="code-container">
-              <pre><code>{{ uinputModprobeCmd }}</code></pre>
+              <CodeLines :code="uinputModprobeCmd" />
               <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(uinputModprobeCmd)" />
             </div>
           </div>
@@ -369,7 +370,7 @@ const chromiumWaylandFlags = computed(() =>
               Fcitx5 để tránh xung đột.
             </p>
             <div class="code-container mini">
-              <pre><code>killall ibus-daemon || ibus exit</code></pre>
+              <CodeLines :code="'killall ibus-daemon || ibus exit'" />
               <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
                 @click="copyToClipboard('killall ibus-daemon || ibus exit')" />
             </div>
@@ -390,7 +391,7 @@ const chromiumWaylandFlags = computed(() =>
                   {{ block.content }}
                 </p>
                 <div v-else class="code-container">
-                  <pre><code>{{ block.content }}</code></pre>
+                  <CodeLines :code="block.content" />
                   <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(block.content)" />
                 </div>
               </template>
@@ -475,7 +476,7 @@ const chromiumWaylandFlags = computed(() =>
                   X11/XCB:
                 </p>
                 <div class="code-container mini">
-                  <pre><code>DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus</code></pre>
+                  <CodeLines :code="'DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus'" />
                   <el-button class="copy-float" circle :icon="DocumentCopy" size="small" @click="
                     copyToClipboard(
                       'DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus',
@@ -489,7 +490,7 @@ const chromiumWaylandFlags = computed(() =>
                   <b>Chromium / Electron:</b> Bật hỗ trợ bộ gõ Wayland:
                 </p>
                 <div class="code-container mini">
-                  <pre><code>{{ chromiumWaylandFlags }}</code></pre>
+                  <CodeLines :code="chromiumWaylandFlags" />
                   <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
                     @click="copyToClipboard(chromiumWaylandFlags)" />
                 </div>
@@ -501,7 +502,7 @@ const chromiumWaylandFlags = computed(() =>
                 <b>{{ kanataConfig.title }}:</b> {{ kanataConfig.desc }}
               </p>
               <div class="code-container mini">
-                <pre><code>{{ kanataConfig.code }}</code></pre>
+                <CodeLines :code="kanataConfig.code" />
                 <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
                   @click="copyToClipboard(kanataConfig.code)" />
               </div>
@@ -739,16 +740,6 @@ const chromiumWaylandFlags = computed(() =>
 .code-container.mini {
   padding: 0.75rem 1rem;
   margin-top: 0.5rem;
-}
-
-pre {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-all;
-  font-family: 'Maple Mono', monospace;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--ctp-text);
 }
 
 code {

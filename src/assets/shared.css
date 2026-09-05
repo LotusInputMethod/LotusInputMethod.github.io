@@ -622,6 +622,10 @@ section {
   position: relative;
 }
 
+.code-container pre {
+  padding-right: 3rem;
+}
+
 .uninstall-card .code-container {
   background-color: var(--ctp-crust);
   padding: 12px 16px;
@@ -637,7 +641,8 @@ section {
   font-size: 0.9rem;
   color: var(--ctp-text);
   white-space: pre-wrap;
-  word-break: break-all;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .uninstall-details {

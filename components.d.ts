@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CodeBlock: typeof import('./src/components/CodeBlock.vue')['default']
+    CodeLines: typeof import('./src/components/CodeLines.vue')['default']
     ContributorsSection: typeof import('./src/components/ContributorsSection.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']

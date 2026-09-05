@@ -78,7 +78,7 @@ export const logic = {
         'Package Manager': [
           {
             type: 'text',
-            content: 'Fcitx5-lotus 3.4.0 đã có trên nixpkgs-unstable.',
+            content: 'Fcitx5-lotus đã có trên nixpkgs-unstable.',
           },
           {
             type: 'text',
