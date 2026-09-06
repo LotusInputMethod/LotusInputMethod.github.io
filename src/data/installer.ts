@@ -5,7 +5,7 @@ export const distros = [
   { name: 'Arch Linux', icon: 'si-archlinux' },
   { name: 'openSUSE', icon: 'si-opensuse' },
   { name: 'NixOS', icon: 'si-nixos' },
-  { name: 'Void Linux', icon: 'co-linux' },
+  { name: 'Void Linux', icon: 'si-voidlinux' },
 ];
 
 export type StepBlock =

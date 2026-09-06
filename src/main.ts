@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import router from './router';
 import App from './App.vue';
 import './assets/shared.css';
-import { OhVueIcon, addIcons } from 'oh-vue-icons';
+import { OhVueIcon, addIcons } from '@kalimahapps/vue-icons';
 import {
   SiGithub,
   SiLinux,
@@ -12,11 +12,9 @@ import {
   SiFedora,
   SiOpensuse,
   SiNixos,
-  CoLinux,
-  HiStar,
-  HiUsers,
-  HiTag,
-} from 'oh-vue-icons/icons';
+  SiVoidlinux,
+} from '@kalimahapps/vue-icons/si';
+import { HiStar, HiUsers, HiTag } from '@kalimahapps/vue-icons/hi';
 
 addIcons(
   SiGithub,
@@ -27,7 +25,7 @@ addIcons(
   SiFedora,
   SiOpensuse,
   SiNixos,
-  CoLinux,
+  SiVoidlinux,
   HiStar,
   HiUsers,
   HiTag,
@@ -36,4 +34,4 @@ addIcons(
 const app = createApp(App);
 app.component('v-icon', OhVueIcon);
 app.use(router);
-app.mount('#app');
+app.mount('#app');   

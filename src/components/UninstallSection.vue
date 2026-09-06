@@ -80,7 +80,7 @@ const cleanupCode =
               <CodeBlock :code="zypperRemove" />
             </UninstallItem>
 
-            <UninstallItem icon="co-linux" name="Void Linux">
+            <UninstallItem icon="si-voidlinux" name="Void Linux">
               <p class="instruction mb-2">Gỡ gói qua xbps:</p>
               <CodeBlock :code="voidXbpsRemove" />
               <p class="instruction mb-2 mt-3">
