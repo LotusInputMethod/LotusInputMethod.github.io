@@ -141,12 +141,25 @@ export const logic = {
           {
             type: 'text',
             content:
-              'Gói fcitx5-lotus hiện được cộng đồng đóng gói trong kho VUR. Hướng dẫn dành cho bản x86_64 glibc (Chưa có bản musl do xung đột với CGo).',
+              'Gói fcitx5-lotus hiện được cộng đồng đóng gói trong kho VUR. Hướng dẫn dành cho bản x86_64 và aarch64 glibc (Chưa có bản musl do xung đột với CGo).',
+          },
+          {
+            type: 'text',
+            content: 'Với kiến trúc x86_64:',
           },
           {
             type: 'code',
             content:
               'echo repository=https://repo.osowoso.org/x86_64 | sudo tee /etc/xbps.d/10-VUR.conf\nsudo xbps-install -S',
+          },
+          {
+            type: 'text',
+            content: 'Với kiến trúc aarch64:',
+          },
+          {
+            type: 'code',
+            content:
+              'echo repository=https://repo.osowoso.org/aarch64 | sudo tee /etc/xbps.d/10-VUR.conf\nsudo xbps-install -S',
           },
           {
             type: 'text',
