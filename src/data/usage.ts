@@ -188,18 +188,24 @@ export const typingModes: TypingMode[] = [
   {
     mode: 'Uinput (Smooth)',
     shortcut: '1',
-    description: 'Chế độ mặc định, phản hồi cực nhanh và mượt mà.',
+    description: 'Chế độ mặc định, phản hồi nhanh và mượt mà.',
   },
   {
     mode: 'Uinput (Super Smooth)',
     shortcut: 'a',
     description:
-      'Giống Uinput (Smooth) nhưng bỏ bước kiểm tra autofill — phản hồi nhanh nhất, không bao giờ xoá dôi ký tự.',
+      'Giống Uinput (Smooth) nhưng bỏ bước kiểm tra autofill — phản hồi nhanh nhất.',
   },
   {
     mode: 'Uinput (Slow)',
     shortcut: '2',
     description: 'Tốc độ gửi phím chậm hơn, tăng khả năng tương thích.',
+  },
+  {
+    mode: 'Uinput (Select)',
+    shortcut: '5',
+    description:
+      'Sử dụng shift + mũi tên trái để xoá từ, không hoạt động với các app không có ô input (ví dụ terminal)',
   },
   {
     mode: 'Minecraft',
@@ -209,12 +215,14 @@ export const typingModes: TypingMode[] = [
   {
     mode: 'Surrounding Text',
     shortcut: '4',
-    description: 'Sử dụng kỹ thuật surrounding text (Qt/GTK/Wayland).',
+    description:
+      'Sử dụng kỹ thuật surrounding text (Qt/GTK/Wayland), có thể xoá dấu từ cũ, rất kén app, gõ mượt nhất.',
   },
   {
     mode: 'Preedit',
     shortcut: 'Q',
-    description: 'Hiển thị đường gạch chân khi đang gõ.',
+    description:
+      'Hiển thị đường gạch chân khi đang gõ, tiêu chuẩn của bộ gõ Linux, tương thích rộng rãi nhất, fcitx5-lotus ưu tiên ẩn gạch chân nếu app hỗ trợ.',
   },
   {
     mode: 'Emoji Picker',
