@@ -183,7 +183,7 @@ export const logic = {
         Binary:
           'Void Linux không cung cấp gói Binary riêng, gói được cài qua xbps. Khuyến khích dùng phương thức Package Manager hoặc build from source (phương thức Source).',
         Source:
-          'sudo xbps-install -S fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt acl acl-progs cmake extra-cmake-modules libfcitx5-devel libevdev-devel libinput-devel  libnotify-devel eudev-libudev-devel gcc gettext pkgconf hicolor-icon-theme python3-QtPy python3-pyqt6 python3-pyqt6-gui python3-pyqt6-widgets\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
+          'sudo xbps-install -S fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt acl-progs cmake extra-cmake-modules libfcitx5-devel libevdev-devel libinput-devel  libnotify-devel eudev-libudev-devel gcc gettext pkgconf hicolor-icon-theme python3-QtPy python3-pyqt6 python3-pyqt6-gui python3-pyqt6-widgets\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
       },
       Gentoo: {
         'Package Manager': [
