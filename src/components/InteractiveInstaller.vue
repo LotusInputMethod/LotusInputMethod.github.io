@@ -63,10 +63,6 @@ const needsUserCreation = computed(() => {
   );
 });
 
-const needsSourceSteps = computed(() => {
-  return selectedDistro.value !== 'NixOS' && selectedDistro.value !== 'Arch Linux' && selectedMethod.value === 'Source';
-});
-
 const voidPmUserAutoCreated = computed(() => {
   return (
     selectedDistro.value === 'Void Linux' && selectedMethod.value === 'Package Manager'
@@ -361,17 +357,32 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
-        <div v-if="needsSourceSteps" class="step-card">
+        <div class="step-card">
           <div class="step-badge">1.6</div>
           <div class="step-content">
             <h4>Reload Udev Rules</h4>
             <p class="instruction">
-              Áp dụng các udev rules mới (99-lotus.rules) để thiết bị uinput có
+              Áp dụng các udev rules mới để thiết bị uinput có
               quyền đúng.
             </p>
             <div class="code-container">
               <CodeLines :code="udevReloadCmd" />
               <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(udevReloadCmd)" />
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-badge">1.9</div>
+          <div class="step-content">
+            <h4>Nạp Kernel Module uinput</h4>
+            <p class="instruction">
+              Module uinput cần được nạp lần đầu để fcitx5-lotus-server có thể tạo
+              thiết bị input ảo, lần sau khởi động sẽ tự động nạp.
+            </p>
+            <div class="code-container">
+              <CodeLines :code="uinputModprobeCmd" />
+              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(uinputModprobeCmd)" />
             </div>
           </div>
         </div>
@@ -390,21 +401,6 @@ const chromiumWaylandFlags = computed(() =>
                   <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(block.content)" />
                 </div>
               </template>
-            </div>
-          </div>
-        </div>
-
-        <div class="step-card">
-          <div class="step-badge">2.5</div>
-          <div class="step-content">
-            <h4>Nạp Kernel Module uinput</h4>
-            <p class="instruction">
-              Module uinput cần được nạp lần đầu để fcitx5-lotus-server có thể tạo
-              thiết bị input ảo, lần sau khởi động sẽ tự động nạp.
-            </p>
-            <div class="code-container">
-              <CodeLines :code="uinputModprobeCmd" />
-              <el-button class="copy-float" circle :icon="DocumentCopy" @click="copyToClipboard(uinputModprobeCmd)" />
             </div>
           </div>
         </div>
