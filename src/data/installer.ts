@@ -29,6 +29,7 @@ export const deWms = [
   'Sway',
   'Hyprland',
   'Niri',
+  'Halley',
 ];
 export const environments = ['X11', 'Wayland'];
 export const initSystems = ['systemd', 'OpenRC', 'runit'];
@@ -246,6 +247,8 @@ export const logic = {
       Hyprland:
         'Thêm `hl.exec_cmd("fcitx5 -d")` vào ~/.config/hypr/hyprland.lua',
       Niri: 'Thêm `spawn-sh-at-startup "fcitx5 -d"` vào ~/.config/niri/config.kdl',
+      Halley:
+        'Thêm `once "fcitx5 -d"` vào khối `autostart:` trong ~/.config/halley/halley.rune',
     },
     wayland_extras: {
       General: {
@@ -270,6 +273,14 @@ export const logic = {
         ],
         caveats:
           'niri không hỗ trợ Xorg trực tiếp. Hãy cài chung với xwayland-satellite',
+      },
+      Halley: {
+        best_setup: [
+          'Halley chặn IME mặc định. Chạy lệnh sau để tự tạo systemd drop-in cấp quyền cho Fcitx5:',
+        ],
+        code: "mkdir -p ~/.config/systemd/user/halley.service.d\ncat > ~/.config/systemd/user/halley.service.d/ime.conf <<'EOF'\n[Service]\nEnvironment=HALLEY_ALLOW_INPUT_METHOD=/usr/bin/fcitx5\nEnvironment=HALLEY_ALLOW_VIRTUAL_KEYBOARD=/usr/bin/fcitx5\nEOF\nsystemctl --user daemon-reload",
+        caveats:
+          'Sau khi sửa cần phải logout và login mới hoạt động.',
       },
     },
   },

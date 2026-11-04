@@ -181,7 +181,11 @@ const envCmd = computed(() => {
   if (selectedEnv.value === 'Wayland') {
     if (selectedDe.value === 'KDE Plasma') {
       vars = ['export XMODIFIERS=@im=fcitx', 'export GLFW_IM_MODULE=ibus'];
-    } else if (selectedDe.value === 'GNOME' || selectedDe.value === 'Sway') {
+    } else if (
+      selectedDe.value === 'GNOME' ||
+      selectedDe.value === 'Sway' ||
+      selectedDe.value === 'Halley'
+    ) {
       vars = [
         'export XMODIFIERS=@im=fcitx',
         'export QT_IM_MODULE=fcitx',
@@ -495,12 +499,15 @@ const chromiumWaylandFlags = computed(() =>
                     waylandDeSpecific.best_setup &&
                     waylandDeSpecific.best_setup.length > 0
                   ">
-                    <p v-if="selectedDe !== 'KDE Plasma'" class="instruction">
-                      <b>Hướng dẫn cài đặt tốt nhất:</b>
-                    </p>
                     <ul class="setup-list-mini">
                       <li v-for="(point, idx) in waylandDeSpecific.best_setup" :key="idx" v-html="point"></li>
                     </ul>
+                  </div>
+
+                  <div v-if="waylandDeSpecific.code" class="code-container mini mt-2">
+                    <CodeLines :code="waylandDeSpecific.code" />
+                    <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
+                      @click="copyToClipboard(waylandDeSpecific.code)" />
                   </div>
 
                   <el-alert v-if="waylandDeSpecific.caveats" title="Lưu ý" type="warning" :closable="false"
