@@ -499,6 +499,9 @@ const chromiumWaylandFlags = computed(() =>
                     waylandDeSpecific.best_setup &&
                     waylandDeSpecific.best_setup.length > 0
                   ">
+                    <p class="instruction">
+                      <b>Hướng dẫn cài đặt tốt nhất:</b>
+                    </p>
                     <ul class="setup-list-mini">
                       <li v-for="(point, idx) in waylandDeSpecific.best_setup" :key="idx" v-html="point"></li>
                     </ul>
