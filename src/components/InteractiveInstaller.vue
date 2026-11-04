@@ -495,7 +495,7 @@ const chromiumWaylandFlags = computed(() =>
                     waylandDeSpecific.best_setup &&
                     waylandDeSpecific.best_setup.length > 0
                   ">
-                    <p v-if="selectedDe !== 'KDE Plasma'" class="instruction">
+                    <p class="instruction">
                       <b>Hướng dẫn cài đặt tốt nhất:</b>
                     </p>
                     <ul class="setup-list-mini">
