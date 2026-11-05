@@ -29,9 +29,16 @@ export const deWms = [
   'Sway',
   'Hyprland',
   'Niri',
+  'AwesomeWM'
 ];
 export const environments = ['X11', 'Wayland'];
 export const initSystems = ['systemd', 'OpenRC', 'runit'];
+const wmAliases: Record<string, Partial<Record<string, string>>> = {
+    AwesomeWM: { Wayland: 'SomeWM' },
+};
+export const resolveWM = (wm: string, env: string): string => {
+    return wmAliases[wm]?.[env] ?? wm;
+};
 
 export const logic = {
   steps: {
@@ -246,6 +253,10 @@ export const logic = {
       Hyprland:
         'Thêm `hl.exec_cmd("fcitx5 -d")` vào ~/.config/hypr/hyprland.lua',
       Niri: 'Thêm `spawn-sh-at-startup "fcitx5 -d"` vào ~/.config/niri/config.kdl',
+      AwesomeWM:
+        'Thêm `awful.spawn.once("fcitx5 -d")` vào ~/.config/awesome/rc.lua',
+      SomeWM:
+        'Thêm `awful.spawn.once("fcitx5 -d")` vào ~/.config/somewm/rc.lua',
     },
     wayland_extras: {
       General: {

@@ -10,6 +10,7 @@ import {
   shells,
   deWms,
   environments,
+  resolveWM,
   initSystems,
   logic,
   fcitx5Config,
@@ -41,6 +42,7 @@ const deIcons: Record<string, string> = {
   Sway: 'simple-icons:sway',
   Hyprland: 'simple-icons:hyprland',
   Niri: 'simple-icons:niri',
+  AwesomeWM: 'simple-icons:awesomewm',
 };
 
 const envBaseIcons: Record<string, string> = {
@@ -48,6 +50,7 @@ const envBaseIcons: Record<string, string> = {
 };
 
 const deIcon = (de: string): string | undefined => deIcons[de];
+const wmLabel = (de: string): string => resolveWM(de, selectedEnv.value);
 
 const envIcon = (env: string): string | undefined =>
   env === 'X11'
@@ -222,7 +225,7 @@ const copyToClipboard = async (text: string) => {
 const autostartText = computed(
   () =>
     logic.steps.autostart[
-    selectedDe.value as keyof typeof logic.steps.autostart
+    resolveWM(selectedDe.value, selectedEnv.value) as keyof typeof logic.steps.autostart
     ],
 );
 
@@ -265,7 +268,7 @@ const chromiumWaylandFlags = computed(() =>
             <div v-for="de in deWms" :key="de" class="de-card" :class="{ active: selectedDe === de }" role="button"
               tabindex="0" :aria-pressed="selectedDe === de" @click="selectedDe = de" @keydown.enter="selectedDe = de">
               <v-icon v-if="deIcon(de)" :icon="deIcon(de)" width="1.25em" height="1.25em" />
-              <span>{{ de }}</span>
+              <span>{{ wmLabel(de) }}</span>
             </div>
           </div>
         </div>
