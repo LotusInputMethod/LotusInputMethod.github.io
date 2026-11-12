@@ -29,15 +29,15 @@ export const deWms = [
   'Sway',
   'Hyprland',
   'Niri',
-  'AwesomeWM'
+  'AwesomeWM',
 ];
 export const environments = ['X11', 'Wayland'];
 export const initSystems = ['systemd', 'OpenRC', 'runit'];
 const wmAliases: Record<string, Partial<Record<string, string>>> = {
-    AwesomeWM: { Wayland: 'SomeWM' },
+  AwesomeWM: { Wayland: 'SomeWM' },
 };
 export const resolveWM = (wm: string, env: string): string => {
-    return wmAliases[wm]?.[env] ?? wm;
+  return wmAliases[wm]?.[env] ?? wm;
 };
 
 export const logic = {
@@ -55,7 +55,7 @@ export const logic = {
         },
         Binary: 'sudo dpkg -i fcitx5-lotus_*.deb',
         Source:
-          'sudo apt-get install acl cmake extra-cmake-modules libdbus-1-dev libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libevdev-dev libinput-dev libnotify-dev libudev-dev g++ hicolor-icon-theme pkg-config fcitx5-modules-dev python3 \ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib/x86_64-linux-gnu .\nmake\nsudo make install',
+          'sudo apt-get install cmake extra-cmake-modules libdbus-1-dev libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libevdev-dev libinput-dev libnotify-dev libudev-dev libxcb1-dev libxcb-xtest0-dev libwayland-dev libwayland-bin g++ hicolor-icon-theme pkg-config fcitx5-modules-dev python3-qtpy python3-dbus acl\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib/x86_64-linux-gnu .\nmake\nsudo make install',
       },
       Ubuntu: {
         'Package Manager': {
@@ -64,7 +64,7 @@ export const logic = {
         },
         Binary: 'sudo dpkg -i fcitx5-lotus_*.deb',
         Source:
-          'sudo apt-get install acl cmake extra-cmake-modules libdbus-1-dev libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libevdev-dev libinput-dev  libnotify-dev libudev-dev g++ hicolor-icon-theme pkg-config fcitx5-modules-dev python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib/x86_64-linux-gnu .\nmake\nsudo make install',
+          'sudo apt-get install cmake extra-cmake-modules libdbus-1-dev libfcitx5core-dev libfcitx5config-dev libfcitx5utils-dev libevdev-dev libinput-dev libnotify-dev libudev-dev libxcb1-dev libxcb-xtest0-dev libwayland-dev libwayland-bin g++ hicolor-icon-theme pkg-config fcitx5-modules-dev python3-qtpy python3-dbus acl\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib/x86_64-linux-gnu .\nmake\nsudo make install',
       },
       Fedora: {
         'Package Manager': {
@@ -73,14 +73,14 @@ export const logic = {
         },
         Binary: 'sudo rpm -i fcitx5-lotus-*.rpm',
         Source:
-          'sudo dnf install acl cmake extra-cmake-modules dbus-devel fcitx5-devel libevdev-devel libinput-devel  libnotify-devel libudev-devel gcc-c++ hicolor-icon-theme systemd-devel python3\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib64 .\nmake\nsudo make install',
+          'sudo dnf install cmake dbus-devel extra-cmake-modules fcitx5-devel libevdev-devel libinput-devel libnotify-devel libudev-devel libxcb-devel gcc-c++ hicolor-icon-theme systemd-devel python3-pyside6 python3-QtPy python3-dbus acl wayland-devel\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib64 .\nmake\nsudo make install',
       },
       openSUSE: {
         'Package Manager':
           'sudo rpm --import https://fcitx5-lotus.pages.dev/pubkey.gpg\nsudo zypper addrepo https://fcitx5-lotus.pages.dev/rpm/opensuse/fcitx5-lotus-tumbleweed.repo\nsudo zypper refresh\nsudo zypper install fcitx5-lotus',
         Binary: 'sudo rpm -i fcitx5-lotus-*.rpm',
         Source:
-          'sudo zypper install cmake kf6-extra-cmake-modules dbus-1-devel fcitx5-devel libevdev-devel libinput-devel libnotify-dev systemd-devel gcc-c++ hicolor-icon-theme systemd-devel python3-pyside6 python3-QtPy python3-dbus-python acl\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib64 .\nmake\nsudo make install',
+          'sudo zypper install cmake dbus-1-devel kf6-extra-cmake-modules fcitx5-devel libevdev-devel libinput-devel libnotify-devel libxcb-devel systemd-devel gcc-c++ hicolor-icon-theme systemd-devel python3-pyside6 python3-QtPy python3-dbus-python acl wayland-devel\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib64 .\nmake\nsudo make install',
       },
       NixOS: {
         'Package Manager': [
@@ -190,7 +190,7 @@ export const logic = {
         Binary:
           'Void Linux không cung cấp gói Binary riêng, gói được cài qua xbps. Khuyến khích dùng phương thức Package Manager hoặc build from source (phương thức Source).',
         Source:
-          'sudo xbps-install -S fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt acl-progs cmake extra-cmake-modules libfcitx5-devel libevdev-devel libinput-devel libnotify-devel eudev-libudev-devel gcc gettext pkgconf hicolor-icon-theme python3-QtPy python3-pyqt6 python3-pyqt6-gui python3-pyqt6-widgets dbus-devel\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
+          'sudo xbps-install -S fcitx5 fcitx5-configtool fcitx5-gtk fcitx5-qt acl-progs cmake extra-cmake-modules libfcitx5-devel libevdev-devel libinput-devel libnotify-devel eudev-libudev-devel gcc gettext pkgconf hicolor-icon-theme python3-QtPy python3-pyqt6 python3-pyqt6-gui python3-pyqt6-widgets dbus-devel wayland-devel libxcb-devel\n\ngit clone https://github.com/LotusInputMethod/fcitx5-lotus.git\ncd fcitx5-lotus\nmkdir build && cd build\ncmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DINSTALL_RUNIT=ON -DRUNIT_SV_DIR=/etc/sv ..\nmake\nsudo make install',
       },
       Gentoo: {
         'Package Manager': [
