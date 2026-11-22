@@ -66,6 +66,13 @@ const needsUserCreation = computed(() => {
   );
 });
 
+const showInputServerSteps = computed(() => {
+  return (
+    selectedEnv.value === 'Wayland' &&
+    (selectedDe.value === 'GNOME' || selectedDe.value === 'KDE Plasma')
+  );
+});
+
 const voidPmUserAutoCreated = computed(() => {
   return (
     selectedDistro.value === 'Void Linux' && selectedMethod.value === 'Package Manager'
@@ -338,7 +345,7 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
-        <div v-if="needsUserCreation" class="step-card">
+        <div v-if="needsUserCreation && showInputServerSteps" class="step-card">
           <div class="step-badge">1.5</div>
           <div class="step-content">
             <h4>Tạo User và Group (thay thế systemd-sysusers)</h4>
@@ -360,7 +367,7 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
-        <div class="step-card">
+        <div v-if="showInputServerSteps" class="step-card">
           <div class="step-badge">1.6</div>
           <div class="step-content">
             <h4>Reload Udev Rules</h4>
@@ -375,7 +382,7 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
-        <div class="step-card">
+        <div v-if="showInputServerSteps" class="step-card">
           <div class="step-badge">1.9</div>
           <div class="step-content">
             <h4>Nạp Kernel Module uinput</h4>
@@ -390,7 +397,7 @@ const chromiumWaylandFlags = computed(() =>
           </div>
         </div>
 
-        <div class="step-card">
+        <div v-if="showInputServerSteps" class="step-card">
           <div class="step-badge">2</div>
           <div class="step-content">
             <h4>Kích hoạt Server</h4>
@@ -541,6 +548,27 @@ const chromiumWaylandFlags = computed(() =>
                   <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
                     @click="copyToClipboard(chromiumWaylandFlags)" />
                 </div>
+              </div>
+            </div>
+
+            <div v-if="selectedEnv === 'X11'" class="extra-item">
+              <p class="instruction">
+                <b>Firefox:</b> Bật XInput2 để bộ gõ hoạt động tốt nhất trên X11:
+              </p>
+              <div class="code-container mini">
+                <CodeLines :code="'MOZ_USE_XINPUT2=1 firefox'" />
+                <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
+                  @click="copyToClipboard('MOZ_USE_XINPUT2=1 firefox')" />
+              </div>
+            </div>
+            <div v-else class="extra-item">
+              <p class="instruction">
+                <b>Firefox:</b> Chạy với frontend wayland thay vì dbus:
+              </p>
+              <div class="code-container mini">
+                <CodeLines :code="'GTK_IM_MODULE=wayland firefox'" />
+                <el-button class="copy-float" circle :icon="DocumentCopy" size="small"
+                  @click="copyToClipboard('GTK_IM_MODULE=wayland firefox')" />
               </div>
             </div>
 
