@@ -66,12 +66,14 @@ const needsUserCreation = computed(() => {
   );
 });
 
-const showInputServerSteps = computed(() => {
-  return (
-    selectedEnv.value === 'Wayland' &&
-    (selectedDe.value === 'GNOME' || selectedDe.value === 'KDE Plasma')
-  );
-});
+// const showInputServerSteps = computed(() => {
+//   return (
+//     selectedEnv.value === 'Wayland' &&
+//     (selectedDe.value === 'GNOME' || selectedDe.value === 'KDE Plasma')
+//   );
+// });
+
+const showInputServerSteps = true;
 
 const voidPmUserAutoCreated = computed(() => {
   return (
